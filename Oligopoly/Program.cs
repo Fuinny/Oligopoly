@@ -5,7 +5,7 @@
         /// <summary>
         ///  Program entry point.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">The array of strings to process.</param>
         public static void Main(string[] args)
         {
             RunMainMenu();
@@ -27,7 +27,7 @@
 ";
             string[] options = { "Play", "About", "Exit" };
 
-            Menu mainMenu = new Menu(prompt, options);
+            Menu mainMenu = new Menu(prompt, options, 0);
 
             int selectedOption = mainMenu.RunMenu();
 
@@ -50,7 +50,25 @@
         /// </summary>
         private static void RunStartMenu()
         {
+            string prompt = @"    On behalf of directors of Oligopoly Investments we would like to congratulate you on taking office as new CEO of our company.
+    We are confident that you have the vision, skills and experience to lead us to greater success and growth. As new CEO, you now have access to our company's internal software - Oligopoly. This software a modern and powerful tool, that will help you analyze market trends and opportunities. To access the program, simply click the button at the bottom of this email. 
+    We look forward to working with you and supporting you in your new role. Please do not hesitate to contact us if you have any questions or concerns.
 
+Sincerely,
+The Board of Directors
+
+";
+            string[] options = { "Get Access" };
+
+            Menu startMenu = new Menu(prompt, options, 30);
+
+            int selectedOption = startMenu.RunMenu();
+
+            switch (selectedOption) 
+            {
+                case 0:
+                    break;
+            }
         }
 
         /// <summary>
