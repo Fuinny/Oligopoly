@@ -4,6 +4,7 @@
     {
         // Create a class fields.
         private int SelectedIndex;
+        private int OutputDelay;
         private string Prompt;
         private string[] Options;
 
@@ -12,10 +13,12 @@
         /// </summary>
         /// <param name="prompt">The prompt to display above the menu.</param>
         /// <param name="options">The options to display in the menu.</param>
-        public Menu(string prompt, string[] options) 
+        /// <param name="outputDelay">The text output delay. Have to be a positive integer or zero.</param>
+        public Menu(string prompt, string[] options, int outputDelay) 
         {
             Prompt = prompt;
             Options = options;
+            OutputDelay = outputDelay;
             SelectedIndex = 0;
         }
 
@@ -25,7 +28,11 @@
         public void DisplayMenu()
         {
             // Display the prompt above the menu.
-            Console.WriteLine(Prompt);
+            foreach (char symbol in Prompt)
+            {
+                Thread.Sleep(OutputDelay);
+                Console.Write(symbol);
+            }
 
             // Display all options inside the menu and redraw it when user select other option.
             for (int i = 0; i < Options.Length; i++)
