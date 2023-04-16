@@ -1,4 +1,7 @@
-﻿namespace Oligopoly
+﻿using System.Xml;
+using System.Xml.Serialization;
+
+namespace Oligopoly
 {
     public class Program
     {
@@ -67,7 +70,31 @@ The Board of Directors
             switch (selectedOption) 
             {
                 case 0:
+                    Console.Clear();
+                    RunGameMenu();
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Runs game menu.
+        /// </summary>
+        private static void RunGameMenu()
+        {
+            Data? data = new Data();
+
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Data));
+
+                using (StringReader reader = new StringReader(File.ReadAllText("Data.xml")))
+                {
+                    data = (Data?)serializer.Deserialize(reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
