@@ -16,7 +16,7 @@ namespace Oligopoly
         public string? Industry { get; set; }
 
         [XmlElement("SharePrice")]
-        public int SharePrice { get; set; }
+        public double SharePrice { get; set; }
 
         [XmlElement("Description")]
         public string? Description { get; set; }

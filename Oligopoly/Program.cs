@@ -63,7 +63,7 @@ The Board of Directors
 ";
             string[] options = { "Get Access" };
 
-            Menu startMenu = new Menu(prompt, options, 30);
+            Menu startMenu = new Menu(prompt, options, 0);
 
             int selectedOption = startMenu.RunMenu();
 
@@ -95,6 +95,54 @@ The Board of Directors
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+
+            Random random = new Random();
+            int money = 5000, currentEvent = 0;
+
+            while (money > 0)
+            {  
+                currentEvent = random.Next(0, data?.gameEvents?.Count?? 0);
+
+                if (data.gameEvents[currentEvent].Type == "Positive")
+                {
+                    foreach (var currentCompany in data.gameCompanies)
+                    {
+                        if (currentCompany.Ticker == data.gameEvents[currentEvent].Target)
+                        {
+                            currentCompany.SharePrice = Math.Round(currentCompany.SharePrice + currentCompany.SharePrice * data.gameEvents[currentEvent].Effect / 100, 2);
+                        }
+                    }
+                }
+                else if (data.gameEvents[currentEvent].Type == "Negative")
+                {
+                    foreach (var currentCompany in data.gameCompanies)
+                    {
+                        if (currentCompany.Ticker == data.gameEvents[currentEvent].Target)
+                        {
+                            currentCompany.SharePrice = Math.Round(currentCompany.SharePrice - currentCompany.SharePrice * data.gameEvents[currentEvent].Effect / 100, 2);
+                        }
+                    }
+                }
+
+                string prompt = "\nUse up and down arrow keys to select an option: \n";
+                string[] options = { "Buy", "Sell", "Skip", "More About Companies" };
+                GameMenu gameMenu = new GameMenu(prompt, options, 0, currentEvent, data);
+
+                int selectedOption = gameMenu.RunMenu();
+
+                switch (selectedOption)
+                {
+                    case 0:
+
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
             }
         }
 
