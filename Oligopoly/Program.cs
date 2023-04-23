@@ -77,34 +77,46 @@ The Board of Directors
         }
 
         /// <summary>
-        /// Runs game menu.
+        /// Runs the game menu.
         /// </summary>
         private static void RunGameMenu()
         {
+            // Create a Data class object, that contains game companies and events.
             Data? data = new Data();
 
+            // Read the .xml file.
             try
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Data));
 
-                using (StringReader reader = new StringReader(File.ReadAllText("Data.xml")))
+                using (Stream stream = File.Open("Data.xml", FileMode.Open))
                 {
-                    data = (Data?)serializer.Deserialize(reader);
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        data = (Data?)serializer.Deserialize(reader);
+                    }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error! \nDetails: {ex.Message}");
             }
 
-            Random random = new Random();
-            int money = 5000, currentEvent = 0;
+            // Create variables.
+            double money = 10000;
+            int currentEvent, currentTurn;
 
+            // Create a Random class object to generate event.
+            Random random = new Random();
+
+            // Start of the game cycle.
             while (money > 0)
             {  
+                // Generate event for current turn.
                 currentEvent = random.Next(0, data?.gameEvents?.Count?? 0);
 
-                if (data.gameEvents[currentEvent].Type == "Positive")
+                // Determine current event's type.
+                if (data?.gameEvents?[currentEvent].Type == "Positive")  // If current event is positive.
                 {
                     foreach (var currentCompany in data.gameCompanies)
                     {
@@ -114,7 +126,7 @@ The Board of Directors
                         }
                     }
                 }
-                else if (data.gameEvents[currentEvent].Type == "Negative")
+                else if (data?.gameEvents?[currentEvent].Type == "Negative")  // If current event is negative.
                 {
                     foreach (var currentCompany in data.gameCompanies)
                     {
@@ -134,7 +146,6 @@ The Board of Directors
                 switch (selectedOption)
                 {
                     case 0:
-
                         break;
                     case 1:
                         break;
