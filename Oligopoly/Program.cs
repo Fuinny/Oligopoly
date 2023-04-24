@@ -97,7 +97,16 @@ The Board of Directors
                     }
                 }
             }
-            catch (Exception ex) 
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Error! In file Data.xml specified invalid value.");
+
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine(ex.InnerException.Message);
+                }
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error! \nDetails: {ex.Message}");
             }
@@ -137,23 +146,23 @@ The Board of Directors
                     }
                 }
 
-                string prompt = "\nUse up and down arrow keys to select an option: \n";
-                string[] options = { "Buy", "Sell", "Skip", "More About Companies" };
-                GameMenu gameMenu = new GameMenu(prompt, options, 0, currentEvent, data);
+                //string prompt = "\nUse up and down arrow keys to select an option: \n";
+                //string[] options = { "Buy", "Sell", "Skip", "More About Companies" };
+                //GameMenu gameMenu = new GameMenu(prompt, options, 0, currentEvent, data);
 
-                int selectedOption = gameMenu.RunMenu();
+                //int selectedOption = gameMenu.RunMenu();
 
-                switch (selectedOption)
-                {
-                    case 0:
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                }
+                //switch (selectedOption)
+                //{
+                //    case 0:
+                //        break;
+                //    case 1:
+                //        break;
+                //    case 2:
+                //        break;
+                //    case 3:
+                //        break;
+                //}
             }
         }
 
