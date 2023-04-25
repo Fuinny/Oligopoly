@@ -4,6 +4,7 @@
     {
         // Create a class fields.
         private int CurrentEvent;
+        private double Money;
         private Data? Data;
 
         /// <summary>
@@ -14,17 +15,26 @@
         /// <param name="outputDelay">The text output delay. Have to be a positive integer or zero.</param>
         /// <param name="currentEvent">The integer that represents current event.</param>
         /// <param name="data">The Data class object, which contains all companies and events.</param>
-        public GameMenu(string prompt, string[] options, int outputDelay, int currentEvent, Data? data) : base (prompt, options, outputDelay)
+        public GameMenu(string prompt, string[] options, int outputDelay, int currentEvent, double money, Data? data) 
+            : base (prompt, options, outputDelay)
         {
             CurrentEvent = currentEvent;
+            Money = money;
             Data = data;
         }
 
         /// <summary>
         /// Displays menu to the console and redraws it when user select other option.
         /// </summary>
-        public override void DisplayMenu()
+        protected override void DisplayMenu()
         {
+            // Display amount of money.
+            Console.WriteLine($"You have: {Money}$");
+            for (int i = 0; i < 122 - 2; i++)
+            {
+                Console.Write("═");
+            }
+
             // Display current event.
             Console.WriteLine($"{Data.gameEvents[CurrentEvent].Title}");
             Console.WriteLine($"\n{Data.gameEvents[CurrentEvent].Content}\n");
@@ -37,7 +47,7 @@
             }
             Console.WriteLine("╗");
 
-            Console.WriteLine(String.Format($"{"║ Company",-72} ║ {"Ticker",8} ║ {"Industry",10} ║ {"Share Price",19} ║"));
+            Console.WriteLine(String.Format($"{"║ Company",-52} ║ {"Ticker",8} ║ {"Industry",10} ║ {"Share Price",19} ║ {"You Have",17} ║"));
 
             Console.Write("╚");
             for (int i = 0; i < 120 - 2; i++)
@@ -55,7 +65,7 @@
 
             foreach (var company in Data.gameCompanies)
             {
-                Console.WriteLine(String.Format($"║ {company.Name,-70} ║ {company.Ticker,8} ║ {company.Industry,10} ║ {company.SharePrice,19} ║"));
+                Console.WriteLine(String.Format($"║ {company.Name,-50} ║ {company.Ticker,8} ║ {company.Industry,10} ║ {company.SharePrice,19} ║ {company.ShareAmount,17} ║"));
             }
 
             Console.Write("╚");

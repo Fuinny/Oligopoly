@@ -7,11 +7,11 @@ namespace Oligopoly
     public class Event
     {
         // Create a class fields.
-        public int effect;
-        public string? target;
-        public string? type;
-        public string? title;
-        public string? content;
+        private int effect;
+        private string? target;
+        private string? type;
+        private string? title;
+        private string? content;
 
         [XmlElement("Effect")]
         public int Effect
@@ -66,7 +66,7 @@ namespace Oligopoly
                 {
                     throw new InvalidOperationException("Type cannot be null or whitespace.");
                 }
-                else if (value != "Positive" || value != "Negative")
+                else if (value != "Positive" && value != "Negative")
                 {
                     throw new InvalidOperationException("Type cannot contain value other then Positive or Negative");
                 }
