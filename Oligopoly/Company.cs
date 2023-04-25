@@ -7,11 +7,12 @@ namespace Oligopoly
     public class Company
     {
         // Create a class fields.
-        public string? name;
-        public string? ticker;
-        public string? industry;
-        public string? description;
-        public double sharePrice;
+        private string? name;
+        private string? ticker;
+        private string? industry;
+        private string? description;
+        private double sharePrice;
+        private double shareAmount;
 
         [XmlElement("Name")]
         public string? Name
@@ -89,6 +90,25 @@ namespace Oligopoly
                 else
                 {
                     sharePrice = value;
+                }
+            }
+        }
+
+        public double ShareAmount
+        {
+            get
+            {
+                return shareAmount;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new InvalidOperationException("Share amount cannot be less or equal to zero.");
+                }
+                else
+                {
+                    shareAmount = value;
                 }
             }
         }

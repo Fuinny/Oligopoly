@@ -25,7 +25,7 @@
         /// <summary>
         /// Displays menu to the console and redraws it when user select other option.
         /// </summary>
-        public virtual void DisplayMenu()
+        protected virtual void DisplayMenu()
         {
             // Display the prompt above the menu.
             foreach (char symbol in Prompt)
