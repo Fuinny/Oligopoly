@@ -104,7 +104,7 @@ namespace Oligopoly
             {
                 if (value < 0)
                 {
-                    throw new InvalidOperationException("Share amount cannot be less or equal to zero.");
+                    throw new InvalidOperationException("Share amount cannot be less than a zero.");
                 }
                 else
                 {

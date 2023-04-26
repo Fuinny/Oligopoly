@@ -280,7 +280,7 @@ The board of directors of Oligopoly Investments
             {
                 data.gameCompanies[selectedCompanyIndex - 1].ShareAmount += buyAmount;
             }
-            money -= (buyAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0));
+            money -= buyAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0);
 
             // Confirm transaction.
             Console.WriteLine($"You have bought {buyAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1]?.Name} company.");
@@ -318,14 +318,17 @@ The board of directors of Oligopoly Investments
             } while (!int.TryParse(Console.ReadLine(), out sellAmount) || sellAmount < 1 || sellAmount < data?.gameCompanies?[selectedCompanyIndex - 1].ShareAmount);
 
             // Sell shares.
-            if (data != null && data.gameCompanies != null && data.gameCompanies.Count >= selectedCompanyIndex)
+            if (data != null && data.gameCompanies != null && data.gameCompanies.Count >= selectedCompanyIndex && data.gameCompanies[selectedCompanyIndex - 1].ShareAmount - sellAmount >= 0)
             {
-                data.gameCompanies[selectedCompanyIndex - 1].ShareAmount += sellAmount;
+                data.gameCompanies[selectedCompanyIndex - 1].ShareAmount -= sellAmount;
+                money += sellAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0);
+                Console.WriteLine($"You have sold {sellAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1].Name} company.");
             }
-            money += (sellAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0));
+            else
+            {
+                Console.WriteLine("Entered not a valid value");
+            }
 
-            // Confirm transaction.
-            Console.WriteLine($"You have sold {sellAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1].Name} company.");
             Console.WriteLine("Press any key to exit the menu...");
             Console.ReadKey();
         }
