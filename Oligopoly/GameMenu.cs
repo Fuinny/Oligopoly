@@ -36,8 +36,8 @@
             }
 
             // Display current event.
-            Console.WriteLine($"{Data.gameEvents[CurrentEvent].Title}");
-            Console.WriteLine($"\n{Data.gameEvents[CurrentEvent].Content}\n");
+            Console.WriteLine($"{Data?.gameEvents?[CurrentEvent]?.Title}");
+            Console.WriteLine($"\n{Data?.gameEvents?[CurrentEvent]?.Content}\n");
 
             // Display companies.
             Console.Write("╔");
@@ -63,7 +63,7 @@
             }
             Console.WriteLine("╗");
 
-            foreach (var company in Data.gameCompanies)
+            foreach (var company in Data?.gameCompanies ?? Enumerable.Empty<Company>())
             {
                 Console.WriteLine(String.Format($"║ {company.Name,-50} ║ {company.Ticker,8} ║ {company.Industry,10} ║ {company.SharePrice,19} ║ {company.ShareAmount,17} ║"));
             }
