@@ -29,7 +29,7 @@
         protected override void DisplayMenu()
         {
             // Display amount of money.
-            Console.WriteLine(String.Format($"You have: {Money}$\n", -50));
+            Console.WriteLine(String.Format($"You have: {Math.Round(Money, 2)}$\n", -50));
 
             // Display current event.
             Console.WriteLine($"{Data?.gameEvents?[CurrentEvent]?.Title}");
