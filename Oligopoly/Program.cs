@@ -53,17 +53,18 @@ namespace Oligopoly
         /// </summary>
         private static void RunStartMenu()
         {
-            string prompt = @"    On behalf of directors of Oligopoly Investments we would like to congratulate you on taking office as new CEO of our company.
-    We are confident that you have the vision, skills and experience to lead us to greater success and growth. As new CEO, you now have access to our company's internal software - Oligopoly. This software a modern and powerful tool, that will help you analyze market trends and opportunities. To access the program, simply click the button at the bottom of this email. 
-    We look forward to working with you and supporting you in your new role. Please do not hesitate to contact us if you have any questions or concerns.
+            string prompt = @"Dear, new CEO
+    On behalf of the board of directors of Oligopoly Investments, we would like to congratulate you on becoming our new CEO. We are confident that you will lead our company to new heights of success and innovation.
+    As CEO, you now have access to our exclusive internal software called Oligopoly, where you can track the latest news from leading companies and buy and sell their shares. This software will give you an edge over the competition and help you make important decisions for our company. To access the program, simply click the button at the bottom of this email.
+    We look forward to working with you and supporting you in your new role.
 
 Sincerely,
-The Board of Directors
+The board of directors of Oligopoly Investments
 
 ";
             string[] options = { "Get Access" };
 
-            Menu startMenu = new Menu(prompt, options, 30);
+            Menu startMenu = new Menu(prompt, options, 15);
 
             int selectedOption = startMenu.RunMenu();
 
@@ -112,14 +113,15 @@ The Board of Directors
             }
 
             // Create variables.
-            double money = 10000;
             int currentEvent;
-
+            double money = 10000;
+            bool endGame = false;
+            
             // Create a Random class object to generate event.
             Random random = new Random();
 
             // Start of the game cycle.
-            while (money > 0)
+            while (!endGame)
             {  
                 // Generate event for current turn.
                 currentEvent = random.Next(0, data?.gameEvents?.Count?? 0);
@@ -127,27 +129,27 @@ The Board of Directors
                 // Determine current event's type.
                 if (data?.gameEvents?[currentEvent].Type == "Positive")  // If current event is positive.
                 {
-                    foreach (var currentCompany in data.gameCompanies)
+                    foreach (var currentCompany in data?.gameCompanies ?? Enumerable.Empty<Company>())
                     {
-                        if (currentCompany.Ticker == data.gameEvents[currentEvent].Target)
+                        if (currentCompany.Ticker == data?.gameEvents?[currentEvent]?.Target)
                         {
-                            currentCompany.SharePrice = Math.Round(currentCompany.SharePrice + currentCompany.SharePrice * data.gameEvents[currentEvent].Effect / 100, 2);
+                            currentCompany.SharePrice = Math.Round(currentCompany.SharePrice + currentCompany.SharePrice * (data?.gameEvents[currentEvent]?.Effect ?? 0) / 100, 2);
                         }
                     }
                 }
                 else if (data?.gameEvents?[currentEvent].Type == "Negative")  // If current event is negative.
                 {
-                    foreach (var currentCompany in data.gameCompanies)
+                    foreach (var currentCompany in data?.gameCompanies ?? Enumerable.Empty<Company>())
                     {
-                        if (currentCompany.Ticker == data.gameEvents[currentEvent].Target)
+                        if (currentCompany.Ticker == data?.gameEvents?[currentEvent]?.Target)
                         {
-                            currentCompany.SharePrice = Math.Round(currentCompany.SharePrice - currentCompany.SharePrice * data.gameEvents[currentEvent].Effect / 100, 2);
+                            currentCompany.SharePrice = Math.Round(currentCompany.SharePrice - currentCompany.SharePrice * (data?.gameEvents[currentEvent]?.Effect ?? 0) / 100, 2);
                         }
                     }
                 }
 
                 string prompt = "\nUse up and down arrow keys to select an option: \n";
-                string[] options = { "Buy", "Sell", "Skip", "More About Companies" };
+                string[] options = { "Skip", "Buy", "Sell", "More About Companies" };
                 GameMenu gameMenu = new GameMenu(prompt, options, 0, currentEvent, money, data);
 
                 int selectedOption = gameMenu.RunMenu();
@@ -155,22 +157,76 @@ The Board of Directors
                 switch (selectedOption)
                 {
                     case 0:
+                        break;
+                    case 1:
                         Console.Clear();
                         DisplayBuyMenu(ref money, data);
                         Console.Clear();
                         break;
-                    case 1:
+                    case 2:
                         Console.Clear();
                         DisplaySellMenu(ref money, data);
                         Console.Clear();
                         break;
-                    case 2:
-                        continue;
                     case 3:
                         Console.Clear();
                         DisplayMoreAboutCompaniesMenu(data);
                         Console.Clear();
                         break;
+                }
+
+                // Check for win or loss.
+                if (money < 0)
+                {
+                    Console.Clear();
+
+                    string message = @"Dear, former CEO
+    We regret to inform you that you are being removed from the position of CEO and fired from the company, effective immediately.
+    The board of directors of Oligopoly Investments has decided to take this action because you have spent the budget allocated to you, and your investment turned out to be unprofitable for the company.
+    We appreciate your service and wish you all the best in your future endeavors.
+
+Sincerely,
+The board of directors of Oligopoly Investments
+
+";
+                    foreach (char symbol in message)
+                    {
+                        Thread.Sleep(15);
+                        Console.Write(symbol);
+                    }
+
+                    endGame = true;
+                    Console.WriteLine("Press any key to exit the game...");
+                    Console.ReadKey();
+                    RunMainMenu();
+                }
+                else if (money >= 50000)
+                {
+                    Console.Clear();
+
+                    string message = @"Dear CEO,
+    On behalf of the board of directors of Oligopoly Investments, we would like to express our gratitude and understanding for your decision to leave your post. You have been a remarkable leader and a visionary strategist, who played the stock market skillfully and increased our budget by five times. We are proud of your achievements and we wish you all the best in your future endeavors.
+    As a token of our appreciation, we are pleased to inform you that the company will pay you a bonus of $1 million. You deserve this reward for your hard work and dedication. We hope you will enjoy it and remember us fondly.
+    Thank you for your service and your contribution to Oligopoly Investments. You will be missed.
+
+Sincerely,
+The board of directors of Oligopoly Investments
+
+";
+                    foreach (char symbol in message)
+                    {
+                        Thread.Sleep(15);
+                        Console.Write(symbol);
+                    }
+
+                    endGame = true;
+                    Console.WriteLine("Press any key to exit the game...");
+                    Console.ReadKey();
+                    RunMainMenu();
+                }
+                else
+                {
+                    continue;
                 }
             }
         }
@@ -181,7 +237,7 @@ The Board of Directors
         /// <param name="data">An Data class object, that contain information about companies and events.</param>
         private static void DisplayMoreAboutCompaniesMenu(Data? data)
         {
-            foreach (var company in data.gameCompanies)
+            foreach (var company in data?.gameCompanies ?? Enumerable.Empty<Company>())
             {
                 Console.WriteLine($"{company.Name} - {company.Description}\n");
             }
@@ -198,7 +254,7 @@ The Board of Directors
         private static void DisplayBuyMenu(ref double money, Data? data)
         {
             // Display all game companies.
-            for (int i = 0; i < data.gameCompanies.Count; i++)
+            for (int i = 0; i < data?.gameCompanies?.Count; i++)
             {
                 Console.WriteLine($"[{i + 1}] {data.gameCompanies[i].Name}");
             }
@@ -209,7 +265,7 @@ The Board of Directors
             do
             {
                 Console.Write("Select a company: ");
-            } while (!int.TryParse(Console.ReadLine(), out selectedCompanyIndex) || selectedCompanyIndex < 1 || selectedCompanyIndex > data.gameCompanies.Count);
+            } while (!int.TryParse(Console.ReadLine(), out selectedCompanyIndex) || selectedCompanyIndex < 1 || selectedCompanyIndex > data?.gameCompanies?.Count);
 
             // Ask user to type amount of shares.
             int buyAmount;
@@ -220,11 +276,14 @@ The Board of Directors
             } while (!int.TryParse(Console.ReadLine(), out buyAmount) || buyAmount < 1);
 
             // Buy shares.
-            data.gameCompanies[selectedCompanyIndex - 1].ShareAmount += buyAmount;
-            money = money - (buyAmount * data.gameCompanies[selectedCompanyIndex - 1].SharePrice);
+            if (data != null && data.gameCompanies != null && data.gameCompanies.Count >= selectedCompanyIndex)
+            {
+                data.gameCompanies[selectedCompanyIndex - 1].ShareAmount += buyAmount;
+            }
+            money -= (buyAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0));
 
             // Confirm transaction.
-            Console.WriteLine($"You have bought {buyAmount} shares of {data.gameCompanies[selectedCompanyIndex - 1].Name} company.");
+            Console.WriteLine($"You have bought {buyAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1]?.Name} company.");
             Console.WriteLine("Press any key to exit the menu...");
             Console.ReadKey();
         }
@@ -237,7 +296,7 @@ The Board of Directors
         private static void DisplaySellMenu(ref double money, Data? data)
         {
             // Display all game companies.
-            for (int i = 0; i < data.gameCompanies.Count; i++)
+            for (int i = 0; i < data?.gameCompanies?.Count; i++)
             {
                 Console.WriteLine($"[{i + 1}] {data.gameCompanies[i].Name}");
             }
@@ -248,7 +307,7 @@ The Board of Directors
             do
             {
                 Console.Write("Select a company: ");
-            } while (!int.TryParse(Console.ReadLine(), out selectedCompanyIndex) || selectedCompanyIndex < 1 || selectedCompanyIndex > data.gameCompanies.Count);
+            } while (!int.TryParse(Console.ReadLine(), out selectedCompanyIndex) || selectedCompanyIndex < 1 || selectedCompanyIndex > data?.gameCompanies?.Count);
 
             // Ask user to type amount of shares.
             int sellAmount;
@@ -256,14 +315,17 @@ The Board of Directors
             do
             {
                 Console.Write("Enter amount of shares: ");
-            } while (!int.TryParse(Console.ReadLine(), out sellAmount) || sellAmount < 1 || sellAmount < data.gameCompanies[selectedCompanyIndex - 1].ShareAmount);
+            } while (!int.TryParse(Console.ReadLine(), out sellAmount) || sellAmount < 1 || sellAmount < data?.gameCompanies?[selectedCompanyIndex - 1].ShareAmount);
 
-            // Buy shares.
-            data.gameCompanies[selectedCompanyIndex - 1].ShareAmount -= sellAmount;
-            money = money + (sellAmount * data.gameCompanies[selectedCompanyIndex - 1].SharePrice);
+            // Sell shares.
+            if (data != null && data.gameCompanies != null && data.gameCompanies.Count >= selectedCompanyIndex)
+            {
+                data.gameCompanies[selectedCompanyIndex - 1].ShareAmount += sellAmount;
+            }
+            money += (sellAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0));
 
             // Confirm transaction.
-            Console.WriteLine($"You have sold {sellAmount} shares of {data.gameCompanies[selectedCompanyIndex - 1].Name} company.");
+            Console.WriteLine($"You have sold {sellAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1].Name} company.");
             Console.WriteLine("Press any key to exit the menu...");
             Console.ReadKey();
         }
