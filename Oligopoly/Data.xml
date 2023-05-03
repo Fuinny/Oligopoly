@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Data>
+	<Companies>
+		<Company id="BNG">
+			<Name>Bingoo</Name>
+			<Ticker>BNG</Ticker>
+			<Industry>Web</Industry>
+			<SharePrice>1500</SharePrice>
+			<Description>Promising search company. Leader in the development of various web services and web applications. Bingoo is known for its innovative and user-friendly products that aim to make the web more accessible and enjoyable. Bingoo also invests in artificial intelligence and machine learning to enhance its search engine and other services.</Description>
+		</Company>
+		<Company id="QST">
+			<Name>Quantum Software</Name>
+			<Ticker>QST</Ticker>
+			<Industry>Software</Industry>
+			<SharePrice>2000</SharePrice>
+			<Description>Software development company. The company is best known for its own operating system and various software packages. Quantum Software is a pioneer in the field of software engineering and has a reputation for creating reliable and fast products. Quantum Software also collaborates with other companies and organizations to provide customized solutions for their needs.</Description>
+		</Company>
+		<Company id="EDSN">
+			<Name>Edison Incorporated</Name>
+			<Ticker>EDSN</Ticker>
+			<Industry>Energy</Industry>
+			<SharePrice>1000</SharePrice>
+			<Description>An innovative company engaged in the development and production of electric vehicles, batteries, solar panels. Edison Incorporated is a leader in the green energy sector and strives to reduce the environmental impact of transportation and energy consumption. Edison Incorporated also offers a range of services and products for consumers and businesses who want to switch to renewable energy sources.</Description>
+		</Company>
+		<Company id="NTF">
+			<Name>Netfilm</Name>
+			<Ticker>NTF</Ticker>
+			<Industry>Movies</Industry>
+			<SharePrice>800</SharePrice>
+			<Description>A leading company in the field of online movies and series, also engaged in the development of video hosting. Netfilm is a popular platform for streaming and watching movies and series of various genres and languages. Netfilm also produces its own original content that attracts millions of viewers. Netfilm also provides a video hosting service that allows users to upload and share their own videos.</Description>
+		</Company>
+		<Company id="CSC">
+			<Name>COBRA Security Consulting</Name>
+			<Ticker>CSC</Ticker>
+			<Industry>Army</Industry>
+			<SharePrice>1200</SharePrice>
+			<Description>COBRA (stands for Counter-Offensive Brigades for Rapid Action) are private special forces units equipped with the latest technology. The company fulfills orders all over the world and cooperates with various governments. COBRA Security Consulting is a professional and discreet company that offers security services for high-risk situations and locations. COBRA Security Consulting also trains and equips its operatives with advanced weapons and gadgets to ensure their success.</Description>
+		</Company>
+	</Companies>
+	<Events>
+		<Event id="BNG_new_search_engine">
+			<Effect>10</Effect>
+			<Target>BNG</Target>
+			<Type>Positive</Type>
+			<Title>Bingoo announcing their new search engine</Title>
+			<Content>The company has announced its new search engine that will be more productive and user-friendly than the previous one. The search engine also uses artificial intelligence technology to improve search results and provide personalized recommendations to users. Experts predict that this will increase the value of the company’s shares and attract more customers to its products and services.</Content>
+		</Event>
+		<Event id="BNG_user_privacy">
+			<Effect>15</Effect>
+			<Target>BNG</Target>
+			<Type>Negative</Type>
+			<Title>Bingoo was accused of violating user privacy</Title>
+			<Content>The company was accused of stealing the personal data of its users and selling it to third parties without their consent. The case is currently under investigation by the authorities, but experts believe that this scandal will harm the company and its reputation. The company may face legal consequences and lose the trust of its users.</Content>
+		</Event>
+		<Event id="QST_new_operating_system">
+			<Effect>12</Effect>
+			<Target>QST</Target>
+			<Type>Positive</Type>
+			<Title>Quantum Software announces new operating system</Title>
+			<Content>The company has introduced its new operating system from the Qore OS family at a presentation event. The company claims that the new operating system is more reliable and faster than the competitors’ ones. The new operating system also has new features and functions that enhance the user experience. Experts expect the company’s share price to rise and the new operating system to become popular among users.</Content>
+		</Event>
+		<Event id="QST_cyber_attack">
+			<Effect>8</Effect>
+			<Target>QST</Target>
+			<Type>Negative</Type>
+			<Title>Quantum Software reported a data breach</Title>
+			<Content>Some of the company’s servers were hacked by unknown attackers. The company is working with the police on this matter, but it is already known that their development of an unreleased operating system was stolen. The stolen data may contain sensitive information and secrets that could damage the company’s business. The company may also face legal action from its partners and customers who were affected by the breach.</Content>
+		</Event>
+		<Event id="EDSN_new_vehicle">
+			<Effect>20</Effect>
+			<Target>EDSN</Target>
+			<Type>Positive</Type>
+			<Title>Edison Incorporated presents its new electric car</Title>
+			<Content>The company’s new electric cars with autopilot function went on sale in several countries. Edison Incorporated has managed to reduce the charging time of the car and increase its battery life by using innovative technology and materials. The first owners of electric cars are already leaving positive reviews and praising the performance and design of the car. The company expects to increase its sales and market share in the electric vehicle industry.</Content>
+		</Event>
+		<Event id="EDSN_production_difficulties">
+			<Effect>20</Effect>
+			<Target>EDSN</Target>
+			<Type>Negative</Type>
+			<Title>Edison Incorporated is facing production difficulties</Title>
+			<Content>The company said it was having difficulty mining lithium, which is a key material for producing batteries for electric vehicles. The company blamed the shortage of lithium on environmental issues and political instability in some regions. Edison Incorporated assures that the difficulties are temporary and that it is looking for alternative sources of lithium. But we can already say that they harmed the company’s production and profits.</Content>
+		</Event>
+		<Event id="NTF_new_series">
+			<Effect>8</Effect>
+			<Target>NTF</Target>
+			<Type>Positive</Type>
+			<Title>Netfilm announces new series</Title>
+			<Content>The company has confirmed the creation of its new series, which will be exclusive to its platform. The title and plot are still unknown, but the public already looks interested and curious. The company said that the new series will be a high-quality production with a talented cast and crew. The company hopes that the new series will attract more subscribers and viewers to its platform.</Content>
+		</Event>
+		<Event id="NTF_lawsuit">
+			<Effect>5</Effect>
+			<Target>NTF</Target>
+			<Type>Negative</Type>
+			<Title>Netfilm faced lawsuit</Title>
+			<Content>Netfilm sued by movie studios for streaming their content without permission. Netfilm denies the charges and says it has a fair use policy that allows it to stream content for educational and entertainment purposes. The lawsuit could affect the online streaming industry and set a precedent for future cases. The company may have to pay a large amount of money in damages or remove some content from its platform.</Content>
+		</Event>
+		<Event id="CSC_government_contract">
+			<Effect>20</Effect>
+			<Target>CSC</Target>
+			<Type>Positive</Type>
+			<Title>COBRA Security Consulting signs a contract with the government</Title>
+			<Content>The company signed a contract with the government to ensure the security of state facilities such as military bases, power plants, airports, etc. COBRA operatives are already arriving at the facilities and setting up security measures. The exact amount of the contract was not disclosed, but it is already clear that the contract is beneficial to both parties. The contract will provide a stable income for the company and enhance the security of the state facilities.</Content>
+		</Event>
+		<Event id="CSC_violent_actions">
+			<Effect>25</Effect>
+			<Target>CSC</Target>
+			<Type>Negative</Type>
+			<Title>COBRA Security Consulting is being criticized for their violent actions</Title>
+			<Content>COBRA Security Consulting has been criticized for its harsh actions in the Middle East on the territory of the facilities under its protection. The company’s management states that this is necessary to ensure security in the region and prevent terrorist attacks. However, some human rights organizations and media outlets accuse the company of using excessive force and violating international law. Congress has already become interested in this case, and most likely the company will face punishment such as sanctions, fines, or termination of contracts.</Content>
+		</Event>
+	</Events>
+</Data>
