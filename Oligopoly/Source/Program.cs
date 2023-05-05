@@ -1,7 +1,6 @@
-﻿using System.Xml;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
-namespace Oligopoly
+namespace Oligopoly.Source
 {
     public class Program
     {
@@ -34,7 +33,7 @@ namespace Oligopoly
 
             int selectedOption = mainMenu.RunMenu();
 
-            switch (selectedOption) 
+            switch (selectedOption)
             {
                 case 0:
                     RunStartMenu();
@@ -68,7 +67,7 @@ The board of directors of Oligopoly Investments
 
             int selectedOption = startMenu.RunMenu();
 
-            switch (selectedOption) 
+            switch (selectedOption)
             {
                 case 0:
                     Console.Clear();
@@ -90,7 +89,7 @@ The board of directors of Oligopoly Investments
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(Data));
 
-                using (Stream stream = File.Open("Data.xml", FileMode.Open))
+                using (Stream stream = File.Open("Data\\Data.xml", FileMode.Open))
                 {
                     using (StreamReader reader = new StreamReader(stream))
                     {
@@ -116,15 +115,15 @@ The board of directors of Oligopoly Investments
             int currentEvent;
             double money = 10000;
             bool endGame = false;
-            
+
             // Create a Random class object to generate event.
             Random random = new Random();
 
             // Start of the game cycle.
             while (!endGame)
-            {  
+            {
                 // Generate event for current turn.
-                currentEvent = random.Next(0, data?.gameEvents?.Count?? 0);
+                currentEvent = random.Next(0, data?.gameEvents?.Count ?? 0);
 
                 // Determine current event's type.
                 if (data?.gameEvents?[currentEvent].Type == "Positive")  // If current event is positive.

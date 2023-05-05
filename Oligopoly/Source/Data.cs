@@ -1,7 +1,6 @@
-﻿using System.Xml;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
-namespace Oligopoly
+namespace Oligopoly.Source
 {
     [XmlRoot("Data")]
     public class Data
