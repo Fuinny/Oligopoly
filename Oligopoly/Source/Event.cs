@@ -1,7 +1,7 @@
 ﻿using System.Xml;
 using System.Xml.Serialization;
 
-namespace Oligopoly
+namespace Oligopoly.Source
 {
     [XmlRoot("Events")]
     public class Event
