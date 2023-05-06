@@ -1,6 +1,6 @@
 # Documentation
-The documentation contains instructions for adding new companies and events to the game. 
-To add your company or event, you will need to edit the Data.xml file, which contains all the data used in the game.
+This documentation provides instructions on how to add new companies and events to the game.
+To add your company or event, you will need to edit the Data.xml file, which contains all the necessary data for the game.
 
 ## How to add your own company
 1. Open Data.xml file
@@ -34,7 +34,7 @@ To add your company or event, you will need to edit the Data.xml file, which con
   <Type>EVENT_TYPE</Type>
   <Title>EVENT_TITLE</Title>
   <Content>EVENT_CONTENT</Content>
-</Company>
+</Event>
 ```
 4.Replace EVENT_ID, EVENT_EFFECT, EVENT_TARGET, EVENT_TYPE, EVENT_TITLE and EVENT_CONTENT with the appropriate values for your new event.
 - Please note that:
