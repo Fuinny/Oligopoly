@@ -36,13 +36,39 @@ namespace Oligopoly.Source
             switch (selectedOption)
             {
                 case 0:
-                    RunStartMenu();
+                    RunSkipMenu();
                     break;
                 case 1:
                     DisplayAboutInfo();
                     break;
                 case 2:
                     ExitGame();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Runs skip menu.
+        /// </summary>
+        private static void RunSkipMenu()
+        {
+            string prompt = @"Welcome to Oligopoly!
+Do you want to read the introductory letter or do you want to jump right into the gameplay?
+
+";
+            string[] options = { "Read introductory letter", "Skip introductory letter" };
+
+            Menu skipMenu = new Menu(prompt, options, 0);
+
+            int selectedOption = skipMenu.RunMenu();
+
+            switch (selectedOption) 
+            {
+                case 0:
+                    RunStartMenu();
+                    break;
+                case 1:
+                    RunGameMenu();
                     break;
             }
         }
