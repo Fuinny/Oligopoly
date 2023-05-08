@@ -150,5 +150,70 @@
             // Return the selected option.
             return SelectedIndex;
         }
+
+        /// <summary>
+        /// Runs the amount menu.
+        /// </summary>
+        /// <returns>An integer, that represents the amount of shares.</returns>
+        public int RunAmountMenu()
+        {
+            // Create variable, that contains key that was pressed.
+            ConsoleKey keyPressed;
+
+            int amount = 0;
+
+            do
+            {
+                // Redraw the menu.
+                Console.Clear();
+                DisplayMenu();
+
+                // Display current amount of shares.
+                Console.WriteLine($"Current amount: {amount}");
+
+                //Read the user's input.
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+                // Get the key that was pressed.
+                keyPressed = keyInfo.Key;
+
+                // Move the selection up or down, based on the pressed key.
+                if (keyPressed == ConsoleKey.UpArrow)
+                {
+                    SelectedIndex--;
+
+                    // Wrap around if user is out of range.
+                    if (SelectedIndex == -1)
+                    {
+                        SelectedIndex = Options.Length - 1;
+                    }
+                }
+                else if (keyPressed == ConsoleKey.DownArrow)
+                {
+                    SelectedIndex++;
+
+                    // Wrap around if user is out of range.
+                    if (SelectedIndex == Options.Length)
+                    {
+                        SelectedIndex = 0;
+                    }
+                }
+
+                if (keyPressed == ConsoleKey.Enter && SelectedIndex == 0)
+                {
+                    amount++;
+                }
+                else if (keyPressed == ConsoleKey.Enter && SelectedIndex == 1)
+                {
+                    if (amount > 0)
+                    {
+                        amount--;
+                    }
+                }
+            } while (!(keyPressed == ConsoleKey.Enter && SelectedIndex == 2));
+
+            // Return the amount of shares.
+            return amount;
+        }
     }
 }

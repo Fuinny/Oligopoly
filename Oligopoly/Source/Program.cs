@@ -40,6 +40,7 @@ namespace Oligopoly.Source
                     break;
                 case 1:
                     DisplayAboutInfo();
+                    RunMainMenu();
                     break;
                 case 2:
                     ExitGame();
@@ -62,7 +63,7 @@ Do you want to read the introductory letter or do you want to jump right into th
 
             int selectedOption = skipMenu.RunMenu();
 
-            switch (selectedOption) 
+            switch (selectedOption)
             {
                 case 0:
                     RunStartMenu();
@@ -184,19 +185,14 @@ The board of directors of Oligopoly Investments
                     case 0:
                         break;
                     case 1:
-                        Console.Clear();
-                        DisplayBuyMenu(ref money, data);
-                        Console.Clear();
+                        RunActionMenu(ref money, currentEvent, data, true);
                         break;
                     case 2:
-                        Console.Clear();
-                        DisplaySellMenu(ref money, data);
-                        Console.Clear();
+                        RunActionMenu(ref money, currentEvent, data, false);
                         break;
                     case 3:
-                        Console.Clear();
                         DisplayMoreAboutCompaniesMenu(data);
-                        Console.Clear();
+                        gameMenu.RunMenu();
                         break;
                 }
 
@@ -257,105 +253,71 @@ The board of directors of Oligopoly Investments
         }
 
         /// <summary>
+        /// Runs action menu, that is buying or selling menu.
+        /// </summary>
+        /// <param name="money">The amount of money that user currently has.</param>
+        /// <param name="currentEvent">The index of current generated event.</param>
+        /// <param name="data">An Data class object, that contain information about companies and events.</param>
+        /// <param name="isBuying">Flag that determines the mode of the method. True - buying, false - selling.</param>
+        private static void RunActionMenu(ref double money, int currentEvent, Data? data, bool isBuying)
+        {
+            string actionPrompt = "Select a company: \n";
+            string amountPrompt = "Select an amount: \n";
+            string[] actionOptions = new string[(data?.gameCompanies?.Count ?? 0)];
+            string[] amountOptions = { "Increase (+)", "Decrease (-)", "Enter" };
+
+            for (int i = 0; i < actionOptions.Length; i++)
+            {
+                actionOptions[i] = data?.gameCompanies?[i].Name;
+            }
+
+            GameMenu actionMenu = new GameMenu(actionPrompt, actionOptions, 0, currentEvent, money, data);
+            GameMenu amountMenu = new GameMenu(amountPrompt, amountOptions, 0, currentEvent, money, data);
+
+            int selectedCompany = actionMenu.RunMenu();
+            int amountOfShares = amountMenu.RunAmountMenu();
+
+            if (isBuying)
+            {
+                data.gameCompanies[selectedCompany].ShareAmount += amountOfShares;
+                money -= amountOfShares * data.gameCompanies[selectedCompany].SharePrice;
+
+                Console.WriteLine($"You have bought {amountOfShares} shares of {data.gameCompanies[selectedCompany].Name} company.");
+                Thread.Sleep(2500);
+            }
+            else
+            {
+                if (amountOfShares <= data?.gameCompanies?[selectedCompany].ShareAmount)
+                {
+                    data.gameCompanies[selectedCompany].ShareAmount -= amountOfShares;
+                    money += amountOfShares * data.gameCompanies[selectedCompany].SharePrice;
+
+                    Console.WriteLine($"You have sold {amountOfShares} shares of {data.gameCompanies[selectedCompany].Name} company.");
+                    Thread.Sleep(2500);
+                }
+                else
+                {
+                    Console.WriteLine("Entered not a valid value");
+                    Thread.Sleep(2500);
+                }
+            }
+        }
+
+        /// <summary>
         /// Displays companies descriptions to the console.
         /// </summary>
         /// <param name="data">An Data class object, that contain information about companies and events.</param>
         private static void DisplayMoreAboutCompaniesMenu(Data? data)
         {
+            Console.Clear();
+
             foreach (var company in data?.gameCompanies ?? Enumerable.Empty<Company>())
             {
                 Console.WriteLine($"{company.Name} - {company.Description}\n");
             }
 
             Console.WriteLine("Press any key to exit the menu...");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Displays buy menu.
-        /// </summary>
-        /// <param name="money">The amount of money the user has.</param>
-        /// <param name="data">An Data class object, that contain information about companies and events.</param>
-        private static void DisplayBuyMenu(ref double money, Data? data)
-        {
-            // Display all game companies.
-            for (int i = 0; i < data?.gameCompanies?.Count; i++)
-            {
-                Console.WriteLine($"[{i + 1}] {data.gameCompanies[i].Name}");
-            }
-
-            // Ask user to select a company.
-            int selectedCompanyIndex;
-
-            do
-            {
-                Console.Write("Select a company: ");
-            } while (!int.TryParse(Console.ReadLine(), out selectedCompanyIndex) || selectedCompanyIndex < 1 || selectedCompanyIndex > data?.gameCompanies?.Count);
-
-            // Ask user to type amount of shares.
-            int buyAmount;
-
-            do
-            {
-                Console.Write("Enter amount of shares: ");
-            } while (!int.TryParse(Console.ReadLine(), out buyAmount) || buyAmount < 1);
-
-            // Buy shares.
-            if (data != null && data.gameCompanies != null && data.gameCompanies.Count >= selectedCompanyIndex)
-            {
-                data.gameCompanies[selectedCompanyIndex - 1].ShareAmount += buyAmount;
-            }
-            money -= buyAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0);
-
-            // Confirm transaction.
-            Console.WriteLine($"You have bought {buyAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1]?.Name} company.");
-            Console.WriteLine("Press any key to exit the menu...");
-            Console.ReadKey();
-        }
-
-        /// <summary>
-        /// Displays sell menu.
-        /// </summary>
-        /// <param name="money">The amount of money the user has. </param>
-        /// <param name="data">An Data class object, that contain information about companies and events.</param>
-        private static void DisplaySellMenu(ref double money, Data? data)
-        {
-            // Display all game companies.
-            for (int i = 0; i < data?.gameCompanies?.Count; i++)
-            {
-                Console.WriteLine($"[{i + 1}] {data.gameCompanies[i].Name}");
-            }
-
-            // Ask user to select a company.
-            int selectedCompanyIndex;
-
-            do
-            {
-                Console.Write("Select a company: ");
-            } while (!int.TryParse(Console.ReadLine(), out selectedCompanyIndex) || selectedCompanyIndex < 1 || selectedCompanyIndex > data?.gameCompanies?.Count);
-
-            // Ask user to type amount of shares.
-            int sellAmount;
-
-            do
-            {
-                Console.Write("Enter amount of shares: ");
-            } while (!int.TryParse(Console.ReadLine(), out sellAmount) || sellAmount < 1 || sellAmount < data?.gameCompanies?[selectedCompanyIndex - 1].ShareAmount);
-
-            // Sell shares.
-            if (data != null && data.gameCompanies != null && data.gameCompanies.Count >= selectedCompanyIndex && data.gameCompanies[selectedCompanyIndex - 1].ShareAmount - sellAmount >= 0)
-            {
-                data.gameCompanies[selectedCompanyIndex - 1].ShareAmount -= sellAmount;
-                money += sellAmount * (data?.gameCompanies?[selectedCompanyIndex - 1]?.SharePrice ?? 0);
-                Console.WriteLine($"You have sold {sellAmount} shares of {data?.gameCompanies?[selectedCompanyIndex - 1].Name} company.");
-            }
-            else
-            {
-                Console.WriteLine("Entered not a valid value");
-            }
-
-            Console.WriteLine("Press any key to exit the menu...");
-            Console.ReadKey();
+            Console.ReadKey(true);
         }
 
         /// <summary>
@@ -372,7 +334,6 @@ My GitHub profile: https://github.com/Fuinny
 
 Press any key to exit the menu...");
             Console.ReadKey(true);
-            RunMainMenu();
         }
 
         /// <summary>
