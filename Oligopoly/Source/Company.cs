@@ -7,15 +7,15 @@ namespace Oligopoly.Source
     public class Company
     {
         // Create a class fields.
-        private string? name;
-        private string? ticker;
-        private string? industry;
-        private string? description;
+        private string name;
+        private string ticker;
+        private string industry;
+        private string description;
         private double sharePrice;
         private double shareAmount;
 
         [XmlElement("Name")]
-        public string? Name
+        public string Name
         {
             get
             {
@@ -35,7 +35,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Ticker")]
-        public string? Ticker
+        public string Ticker
         {
             get
             {
@@ -55,7 +55,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Industry")]
-        public string? Industry
+        public string Industry
         {
             get
             {
@@ -114,7 +114,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Description")]
-        public string? Description
+        public string Description
         {
             get
             {
