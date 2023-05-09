@@ -5,7 +5,7 @@
         // Create a class fields.
         private int CurrentEvent;
         private double Money;
-        private Data? Data;
+        private Data Data;
 
         /// <summary>
         /// Initializes a new instance of the GameMenu class with given parameters.
@@ -15,7 +15,7 @@
         /// <param name="outputDelay">The text output delay. Have to be a positive integer or zero.</param>
         /// <param name="currentEvent">The integer that represents current event.</param>
         /// <param name="data">The Data class object, which contains all companies and events.</param>
-        public GameMenu(string prompt, string[] options, int outputDelay, int currentEvent, double money, Data? data)
+        public GameMenu(string prompt, string[] options, int outputDelay, int currentEvent, double money, Data data)
             : base(prompt, options, outputDelay)
         {
             CurrentEvent = currentEvent;
@@ -32,8 +32,8 @@
             Console.WriteLine(string.Format($"You have: {Math.Round(Money, 2)}$\n", -50));
 
             // Display current event.
-            Console.WriteLine($"{Data?.gameEvents?[CurrentEvent]?.Title}");
-            Console.WriteLine($"\n{Data?.gameEvents?[CurrentEvent]?.Content}\n");
+            Console.WriteLine($"{Data.gameEvents[CurrentEvent].Title}");
+            Console.WriteLine($"\n{Data.gameEvents[CurrentEvent].Content}\n");
 
             // Display companies.
             Console.Write("╔");
@@ -59,7 +59,7 @@
             }
             Console.WriteLine("╗");
 
-            foreach (var company in Data?.gameCompanies ?? Enumerable.Empty<Company>())
+            foreach (var company in Data.gameCompanies)
             {
                 Console.WriteLine(string.Format($"║ {company.Name,-50} ║ {company.Ticker,8} ║ {company.Industry,10} ║ {company.SharePrice,19} ║ {company.ShareAmount,17} ║"));
             }

@@ -8,10 +8,10 @@ namespace Oligopoly.Source
     {
         // Create a class fields.
         private int effect;
-        private string? target;
-        private string? type;
-        private string? title;
-        private string? content;
+        private string target;
+        private string type;
+        private string title;
+        private string content;
 
         [XmlElement("Effect")]
         public int Effect
@@ -34,7 +34,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Target")]
-        public string? Target
+        public string Target
         {
             get
             {
@@ -54,7 +54,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Type")]
-        public string? Type
+        public string Type
         {
             get
             {
@@ -78,7 +78,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Title")]
-        public string? Title
+        public string Title
         {
             get
             {
@@ -98,7 +98,7 @@ namespace Oligopoly.Source
         }
 
         [XmlElement("Content")]
-        public string? Content
+        public string Content
         {
             get
             {

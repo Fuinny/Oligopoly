@@ -7,10 +7,10 @@ namespace Oligopoly.Source
     {
         [XmlArray("Companies")]
         [XmlArrayItem("Company")]
-        public List<Company>? gameCompanies { get; set; }
+        public List<Company> gameCompanies { get; set; }
 
         [XmlArray("Events")]
         [XmlArrayItem("Event")]
-        public List<Event>? gameEvents { get; set; }
+        public List<Event> gameEvents { get; set; }
     }
 }
