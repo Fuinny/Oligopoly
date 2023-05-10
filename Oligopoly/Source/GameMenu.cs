@@ -109,6 +109,10 @@
         /// <returns>An integer that represents the selected option.</returns>
         public override int RunMenu()
         {
+            // Set output delay to 0.
+            // This is necessary so that the menu does not draw with a delay when updating the console.
+            OutputDelay = 0;
+
             // Create variable, that contains key that was pressed.
             ConsoleKey keyPressed;
 
@@ -157,6 +161,10 @@
         /// <returns>An integer, that represents the amount of shares.</returns>
         public int RunAmountMenu()
         {
+            // Set output delay to 0.
+            // This is necessary so that the menu does not draw with a delay when updating the console.
+            OutputDelay = 0;
+
             // Create variable, that contains key that was pressed.
             ConsoleKey keyPressed;
 
