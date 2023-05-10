@@ -13,7 +13,7 @@
         /// </summary>
         /// <param name="prompt">The prompt to display above the menu.</param>
         /// <param name="options">The options to display in the menu.</param>
-        /// <param name="outputDelay">The text output delay. Have to be a positive integer or zero.</param>
+        /// <param name="outputDelay">The text output delay. Have to be a positive integer or zero!</param>
         public Menu(string prompt, string[] options, int outputDelay)
         {
             Prompt = prompt;
@@ -66,6 +66,10 @@
         /// <returns>An integer that represents the selected option.</returns>
         public virtual int RunMenu()
         {
+            // Set output delay to 0.
+            // This is necessary so that the menu does not draw with a delay when updating the console.
+            OutputDelay = 0;
+
             // Create variable, that contains key that was pressed.
             ConsoleKey keyPressed;
 
