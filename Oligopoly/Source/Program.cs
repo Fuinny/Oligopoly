@@ -12,7 +12,9 @@ namespace Oligopoly
 
         public static void Main(string[] args)
         {
-
+            Console.CursorVisible = false;
+            LoadEmbeddedResources();
+            MainMenuScreen();
         }
 
         private static void LoadEmbeddedResources()
@@ -56,6 +58,31 @@ namespace Oligopoly
                 Console.WriteLine($"Error! \nDetails: {ex.Message}");
                 Console.WriteLine("Press any key to exit the game...");
                 Console.ReadKey(true);
+                Environment.Exit(0);
+            }
+        }
+
+        private static void MainMenuScreen()
+        {
+            string prompt = @"
+ ██████╗ ██╗     ██╗ ██████╗  ██████╗ ██████╗  ██████╗ ██╗  ██╗   ██╗
+██╔═══██╗██║     ██║██╔════╝ ██╔═══██╗██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝
+██║   ██║██║     ██║██║  ███╗██║   ██║██████╔╝██║   ██║██║   ╚████╔╝ 
+██║   ██║██║     ██║██║   ██║██║   ██║██╔═══╝ ██║   ██║██║    ╚██╔╝  
+╚██████╔╝███████╗██║╚██████╔╝╚██████╔╝██║     ╚██████╔╝███████╗██║   
+ ╚═════╝ ╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝╚═╝
+           Use up and down arrow keys to select an option
+";
+            string[] options = { "Play", "About", "Exit" };
+            Menu mainMenu = new Menu(prompt, options);
+            switch (mainMenu.DisplayGenericMenu())
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
             }
         }
     }
