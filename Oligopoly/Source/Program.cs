@@ -21,7 +21,7 @@ namespace Oligopoly
             {
                 XDocument document;
                 {
-                    document = XDocument.Load("Data\\Companies.xml");
+                    document = XDocument.Load(Path.Combine("Data", "Companies.xml"));
                     foreach (XElement companyElement in document.Root.Elements("Company"))
                     {
                         Company currentCompany = new Company
@@ -36,7 +36,7 @@ namespace Oligopoly
                     }
                 }
                 {
-                    document = XDocument.Load("Data\\Events.xml");
+                    document = XDocument.Load(Path.Combine("Data", "Events.xml"));
                     foreach (XElement eventElement in document.Root.Elements("Event"))
                     {
                         Event currentEvent = new Event
