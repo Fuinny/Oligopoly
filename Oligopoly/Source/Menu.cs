@@ -37,7 +37,7 @@ namespace Oligopoly
             }
         }
 
-        public int DisplayGenericMenu()
+        public int RunGenericMenu()
         {
             ConsoleKey keyPressed;
 
