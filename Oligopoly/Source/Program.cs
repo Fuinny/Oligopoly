@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -87,7 +87,7 @@ namespace Oligopoly
                     case 0:
                         DisplayDifficultiesScreen();
                         InitializeGame();
-                        // Show introductory letter.
+                        DisplayIntroductionLetter();
                         // Run game loop.
                         break;
                     case 1:
@@ -138,6 +138,43 @@ namespace Oligopoly
                     WinningNetWorth = 100000.00M;
                     break;
             }
+        }
+
+        private static void DisplayIntroductionLetter()
+        {
+            string prompt = @"
+╔════════════════════════════════════════════════════════════════════════════════╗
+║ Dear new CEO,                                                                  ║
+║                                                                                ║
+║ Welcome to Oligopoly!                                                          ║
+║                                                                                ║
+║ On behalf of the board of directors of Oligopoly Investments, we would like to ║
+║ congratulate you on becoming our new CEO. We are confident that you will lead  ║
+║ our company to new heights of success and innovation. As CEO, you now have     ║
+║ access to our exclusive internal software called Oligopoly, where you can      ║
+║ track the latest news from leading companies and buy and sell their shares.    ║
+║ This software will give you an edge over the competition and help you make     ║
+║ important decisions for our company. To access the program, simply click the   ║
+║ button at the bottom of this email. We look forward to working with you and    ║
+║ supporting you in your new role.                                               ║
+║                                                                                ║
+║ Sincerely,                                                                     ║
+║ The board of directors of Oligopoly Investments                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+";
+            string[] options = { "Start the Game" };
+            Menu introductionMenu = new Menu(prompt, options);
+            introductionMenu.RunGenericMenu();
+        }
+
+        private static void DisplayWinLetter()
+        {
+
+        }
+
+        private static void DisplayLoseLetter()
+        {
+
         }
 
         private static void DisplayAboutGameMenu()
