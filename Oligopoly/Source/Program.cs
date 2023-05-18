@@ -99,7 +99,7 @@ namespace Oligopoly
                 }
             }
         }
-    private static void DisplayDifficultiesScreen() 
+        private static void DisplayDifficultiesScreen()
         {
             string prompt = "Select difficulty: ";
             string[] options = { "Easy", "Normal", "Hard" };
@@ -144,22 +144,26 @@ namespace Oligopoly
         {
             bool isGameEnded = false;
 
-            while (!isGameEnded) 
+            while (!isGameEnded)
             {
                 StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-                prompt.AppendLine($"\n You have: {Money}");
+                prompt.AppendLine($"\nYou have: {Money}$");
                 string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
                 Menu gameMenu = new Menu(prompt.ToString(), options);
-                switch (gameMenu.RunMenu()) 
+                switch (gameMenu.RunMenu())
                 {
+                    case 0:
+                        GenerateEvent();
+                        break;
                     case 1:
+                        DisplayBuyOrSellMenu(true);
                         break;
                     case 2:
+                        DisplayBuyOrSellMenu(false);
                         break;
                     case 3:
                         break;
                 }
-                GenerateEvent();
             }
         }
 
@@ -175,10 +179,41 @@ namespace Oligopoly
                 }
             }
 
-            StringBuilder prompt = Menu.DrawCompaniesTableWithEvent(Companies, currentEvent);
+            StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
+            prompt.AppendLine($"\n{currentEvent.Title}");
+            prompt.AppendLine($"\n{currentEvent.Content}");
             string[] options = { "Continue" };
             Menu eventMenu = new Menu(prompt.ToString(), options);
             eventMenu.RunMenu();
+        }
+
+        public static void DisplayBuyOrSellMenu(bool isBuying)
+        {
+            StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
+            prompt.AppendLine($"\nYou have: {Money}$");
+            prompt.AppendLine("\nUse an arrow keys to select company and amount of shares. Press enter to confirm: ");
+            int[] numberOfSharesToProcess = new int[Companies.Count];
+            string[] options = new string[Companies.Count];
+            for (int i = 0; i < Companies.Count; i++)
+            {
+                options[i] = Companies[i].Name;
+            }
+            Menu buyOrSellMenu = new Menu(prompt.ToString(), options);
+            buyOrSellMenu.RunBuyOrSellMenu(ref numberOfSharesToProcess, Companies, Money);
+
+            for (int i = 0; i < numberOfSharesToProcess.Length; i++)
+            {
+                if (isBuying)
+                {
+                    Money -= numberOfSharesToProcess[i] * Companies[i].SharePrice;
+                    Companies[i].NumberShares += numberOfSharesToProcess[i];
+                }
+                else
+                {
+                    Money += numberOfSharesToProcess[i] * Companies[i].SharePrice;
+                    Companies[i].NumberShares -= numberOfSharesToProcess[i];
+                }
+            }
         }
 
         private static void DisplayIntroductionLetter()
