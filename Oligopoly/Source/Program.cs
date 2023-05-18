@@ -12,6 +12,7 @@ namespace Oligopoly
         private static List<Event> Events = new List<Event>();
         private static string Difficulty;
         private static decimal Money;
+        private static decimal NetWorth;
         private static decimal LosingNetWorth;
         private static decimal WinningNetWorth;
 
@@ -146,8 +147,9 @@ namespace Oligopoly
 
             while (!isGameEnded)
             {
+                CalculateNetWorth();
                 StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-                prompt.AppendLine($"\nYou have: {Money}$");
+                prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$     Your Net Worth: {Math.Round(NetWorth, 2)}$");
                 string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
                 Menu gameMenu = new Menu(prompt.ToString(), options);
                 switch (gameMenu.RunMenu())
@@ -156,12 +158,13 @@ namespace Oligopoly
                         GenerateEvent();
                         break;
                     case 1:
-                        DisplayBuyOrSellMenu(true);
+                        DisplayBuyOrSellScreen(true);
                         break;
                     case 2:
-                        DisplayBuyOrSellMenu(false);
+                        DisplayBuyOrSellScreen(false);
                         break;
                     case 3:
+                        DisplayMoreAboutCompaniesScreen();
                         break;
                 }
             }
@@ -187,7 +190,7 @@ namespace Oligopoly
             eventMenu.RunMenu();
         }
 
-        public static void DisplayBuyOrSellMenu(bool isBuying)
+        public static void DisplayBuyOrSellScreen(bool isBuying)
         {
             StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
             prompt.AppendLine($"\nYou have: {Money}$");
@@ -213,6 +216,30 @@ namespace Oligopoly
                     Money += numberOfSharesToProcess[i] * Companies[i].SharePrice;
                     Companies[i].NumberShares -= numberOfSharesToProcess[i];
                 }
+            }
+        }
+
+        private static void DisplayMoreAboutCompaniesScreen()
+        {
+            StringBuilder prompt = new StringBuilder();
+
+            foreach (Company company in Companies)
+            {
+                prompt.AppendLine($"{company.Name} - {company.Description}");
+                prompt.AppendLine();
+            }
+
+            string[] options = { "Continue" };
+            Menu aboutCompaniesMenu = new Menu(prompt.ToString(), options);
+            aboutCompaniesMenu.RunMenu();
+        }
+
+        private static void CalculateNetWorth()
+        {
+            NetWorth = Money;
+            foreach (Company company in Companies)
+            {
+                NetWorth += company.NumberShares * company.SharePrice;
             }
         }
 
