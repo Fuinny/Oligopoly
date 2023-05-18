@@ -82,13 +82,13 @@ namespace Oligopoly
             Menu mainMenu = new Menu(prompt, options);
             while (true)
             {
-                switch (mainMenu.RunGenericMenu())
+                switch (mainMenu.RunMenu())
                 {
                     case 0:
                         DisplayDifficultiesScreen();
                         InitializeGame();
                         DisplayIntroductionLetter();
-                        // Run game loop.
+                        GameLoop();
                         break;
                     case 1:
                         DisplayAboutGameMenu();
@@ -102,9 +102,9 @@ namespace Oligopoly
     private static void DisplayDifficultiesScreen() 
         {
             string prompt = "Select difficulty: ";
-            string[] options = { "Easy", "Normal", "Hard"};
+            string[] options = { "Easy", "Normal", "Hard" };
             Menu difficultiesMenu = new Menu(prompt, options);
-            switch (difficultiesMenu.RunGenericMenu())
+            switch (difficultiesMenu.RunMenu())
             {
                 case 0:
                     Difficulty = "easy";
@@ -132,12 +132,53 @@ namespace Oligopoly
                     LosingNetWorth = 2000.00M;
                     WinningNetWorth = 50000.00M;
                     break;
-                case "difficult":
+                case "hard":
                     Money = 5000.00M;
                     LosingNetWorth = 3000.00M;
                     WinningNetWorth = 100000.00M;
                     break;
             }
+        }
+
+        private static void GameLoop()
+        {
+            bool isGameEnded = false;
+
+            while (!isGameEnded) 
+            {
+                StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
+                prompt.AppendLine($"\n You have: {Money}");
+                string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
+                Menu gameMenu = new Menu(prompt.ToString(), options);
+                switch (gameMenu.RunMenu()) 
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
+                GenerateEvent();
+            }
+        }
+
+        private static void GenerateEvent()
+        {
+            Event currentEvent = Events[Random.Shared.Next(0, Events.Count)];
+
+            foreach (Company currentCompany in Companies)
+            {
+                if (currentCompany.Name == currentEvent.Target)
+                {
+                    currentCompany.SharePrice += currentCompany.SharePrice * currentEvent.Effect / 100;
+                }
+            }
+
+            StringBuilder prompt = Menu.DrawCompaniesTableWithEvent(Companies, currentEvent);
+            string[] options = { "Continue" };
+            Menu eventMenu = new Menu(prompt.ToString(), options);
+            eventMenu.RunMenu();
         }
 
         private static void DisplayIntroductionLetter()
@@ -164,7 +205,7 @@ namespace Oligopoly
 ";
             string[] options = { "Start the Game" };
             Menu introductionMenu = new Menu(prompt, options);
-            introductionMenu.RunGenericMenu();
+            introductionMenu.RunMenu();
         }
 
         private static void DisplayWinLetter()
@@ -191,7 +232,7 @@ namespace Oligopoly
 ";
             string[] options = { "Return to Main Menu" };
             Menu aboutGameMenu = new Menu(prompt, options);
-            aboutGameMenu.RunGenericMenu();
+            aboutGameMenu.RunMenu();
         }
 
         private static void DisplayExitMenu()
@@ -199,7 +240,7 @@ namespace Oligopoly
             string prompt = "Are you sure you want to exit the game?";
             string[] options = { "Exit the Game", "Back" };
             Menu exitMenu = new Menu(prompt, options);
-            switch (exitMenu.RunGenericMenu())
+            switch (exitMenu.RunMenu())
             {
                 case 0:
                     Environment.Exit(0);

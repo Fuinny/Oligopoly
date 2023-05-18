@@ -38,7 +38,7 @@ namespace Oligopoly
             }
         }
 
-        public int RunGenericMenu()
+        public int RunMenu()
         {
             ConsoleKey keyPressed;
 
@@ -82,9 +82,28 @@ namespace Oligopoly
             companiesTable.AppendLine($"╠═{new('═', c0)}═╬═{new('═', c1)}═╬═{new('═', c2)}═╬═{new('═', c3)}═╣");
             foreach (Company company in companies) 
             {
-                companiesTable.AppendLine($"║ {company.Name, -c0} ║ {company.Industry, c1} ║ {company.SharePrice, c2} ║ {company.NumberShares, c3} ║");
+                companiesTable.AppendLine($"║ {company.Name, -c0} ║ {company.Industry, c1} ║ {Math.Round(company.SharePrice, 3), c2} ║ {company.NumberShares, c3} ║");
             }
             companiesTable.AppendLine($"╚═{new('═', c0)}═╩═{new('═', c1)}═╩═{new('═', c2)}═╩═{new('═', c3)}═╝");
+
+            return companiesTable;
+        }
+
+        public static StringBuilder DrawCompaniesTableWithEvent(List<Company> companies, Event currentEvent)
+        {
+            const int c0 = 30, c1 = 10, c2 = 20, c3 = 15;
+
+            StringBuilder companiesTable = new StringBuilder();
+            companiesTable.AppendLine($"╔═{new('═', c0)}═╦═{new('═', c1)}═╦═{new('═', c2)}═╦═{new('═', c3)}═╗");
+            companiesTable.AppendLine($"║ {"Company",-c0} ║ {"Industry",c1} ║ {"Share Price",c2} ║ {"You Have",c3} ║");
+            companiesTable.AppendLine($"╠═{new('═', c0)}═╬═{new('═', c1)}═╬═{new('═', c2)}═╬═{new('═', c3)}═╣");
+            foreach (Company company in companies)
+            {
+                companiesTable.AppendLine($"║ {company.Name,-c0} ║ {company.Industry,c1} ║ {Math.Round(company.SharePrice, 3), c2} ║ {company.NumberShares,c3} ║");
+            }
+            companiesTable.AppendLine($"╚═{new('═', c0)}═╩═{new('═', c1)}═╩═{new('═', c2)}═╩═{new('═', c3)}═╝");
+            companiesTable.AppendLine($"\n{currentEvent.Title}");
+            companiesTable.AppendLine($"\n{currentEvent.Content}");
 
             return companiesTable;
         }
