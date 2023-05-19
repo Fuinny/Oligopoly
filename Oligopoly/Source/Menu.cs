@@ -204,7 +204,7 @@ namespace Oligopoly
                         {
                             if (numberOfSharesToProcess[SelectedIndex] < companies[SelectedIndex].NumberShares)
                             {
-                                numberOfSharesToProcess[SelectedIndex]--;
+                                numberOfSharesToProcess[SelectedIndex]++;
                             }
                         }
                         break;
