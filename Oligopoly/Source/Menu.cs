@@ -67,7 +67,7 @@ namespace Oligopoly
             return SelectedIndex;
         }
 
-        public void RunBuyOrSellMenu(ref int[] numberOfSharesToProcess, List<Company> companies, decimal money)
+        public void RunBuyOrSellMenu(ref int[] numberOfSharesToProcess, List<Company> companies, decimal money, bool isBuying)
         {
             ConsoleKey keyPressed;
 
@@ -124,9 +124,19 @@ namespace Oligopoly
                         }
                         break;
                     case ConsoleKey.RightArrow:
-                        if (transactionCost + companies[SelectedIndex].SharePrice <= money)
+                        if (isBuying)
                         {
-                            numberOfSharesToProcess[SelectedIndex]++;
+                            if (transactionCost + companies[SelectedIndex].SharePrice <= money)
+                            {
+                                numberOfSharesToProcess[SelectedIndex]++;
+                            }
+                        }
+                        else
+                        {
+                            if (numberOfSharesToProcess[SelectedIndex] < companies[SelectedIndex].NumberShares)
+                            {
+                                numberOfSharesToProcess[SelectedIndex]--;
+                            }
                         }
                         break;
                 }
