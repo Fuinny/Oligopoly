@@ -148,13 +148,17 @@ namespace Oligopoly
             while (!isGameEnded)
             {
                 CalculateNetWorth();
+
                 StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
                 prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$     Your Net Worth: {Math.Round(NetWorth, 2)}$");
                 string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
+
                 Menu gameMenu = new Menu(prompt.ToString(), options);
+
                 switch (gameMenu.RunMenu())
                 {
                     case 0:
+                        ChangeMarketPrices();
                         GenerateEvent();
                         break;
                     case 1:
@@ -167,6 +171,45 @@ namespace Oligopoly
                         DisplayMoreAboutCompaniesScreen();
                         break;
                 }
+
+                if (NetWorth > WinningNetWorth)
+                {
+                    isGameEnded = true;
+                    DisplayWinLetter();
+                }
+                else if (NetWorth < LosingNetWorth)
+                {
+                    isGameEnded = true;
+                    DisplayLoseLetter();
+                }
+            }
+        }
+
+        private static void ChangeMarketPrices()
+        {
+            for (int i = 0; i < Companies.Count; i++) 
+            {
+                Random random = new Random();
+                int effect = random.Next(0, 2);
+
+                switch (effect) 
+                {
+                    case 0:
+                        Companies[i].SharePrice += Companies[i].SharePrice * 3 / 100;
+                        break;
+                    case 1:
+                        Companies[i].SharePrice += Companies[i].SharePrice * -3 / 100;
+                        break;
+                }
+            }
+        }
+
+        private static void CalculateNetWorth()
+        {
+            NetWorth = Money;
+            foreach (Company company in Companies)
+            {
+                NetWorth += company.NumberShares * company.SharePrice;
             }
         }
 
@@ -202,7 +245,7 @@ namespace Oligopoly
                 options[i] = Companies[i].Name;
             }
             Menu buyOrSellMenu = new Menu(prompt.ToString(), options);
-            buyOrSellMenu.RunBuyOrSellMenu(ref numberOfSharesToProcess, Companies, Money);
+            buyOrSellMenu.RunBuyOrSellMenu(ref numberOfSharesToProcess, Companies, Money, isBuying);
 
             for (int i = 0; i < numberOfSharesToProcess.Length; i++)
             {
@@ -222,25 +265,14 @@ namespace Oligopoly
         private static void DisplayMoreAboutCompaniesScreen()
         {
             StringBuilder prompt = new StringBuilder();
-
             foreach (Company company in Companies)
             {
                 prompt.AppendLine($"{company.Name} - {company.Description}");
                 prompt.AppendLine();
             }
-
             string[] options = { "Continue" };
             Menu aboutCompaniesMenu = new Menu(prompt.ToString(), options);
             aboutCompaniesMenu.RunMenu();
-        }
-
-        private static void CalculateNetWorth()
-        {
-            NetWorth = Money;
-            foreach (Company company in Companies)
-            {
-                NetWorth += company.NumberShares * company.SharePrice;
-            }
         }
 
         private static void DisplayIntroductionLetter()
@@ -272,12 +304,54 @@ namespace Oligopoly
 
         private static void DisplayWinLetter()
         {
-
+            string prompt = @$"
+╔════════════════════════════════════════════════════════════════════════════════╗
+║ Dear CEO,                                                                      ║
+║                                                                                ║
+║ On behalf of the board of directors of Oligopoly Investments, we would like to ║
+║ express our gratitude and understanding for your decision to leave your post.  ║
+║ You have been a remarkable leader and a visionary strategist, who played the   ║
+║ stock market skillfully and increased our budget by five times. We are proud   ║
+║ of your achievements and we wish you all the best in your future endeavors. As ║
+║ a token of our appreciation, we are pleased to inform you that the company     ║
+║ will pay you a bonus of $1 million. You deserve this reward for your hard work ║
+║ and dedication. We hope you will enjoy it and remember us fondly. Thank you    ║
+║ for your service and your contribution to Oligopoly Investments.               ║
+║ You will be missed.                                                            ║
+║                                                                                ║
+║ Sincerely,                                                                     ║
+║ The board of directors of Oligopoly Investments                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+\nYour Net Worth is over {WinningNetWorth}$
+\nYou win! Congratulations!
+";
+            string[] options = { "Return to Main Menu" };
+            Menu winMenu = new Menu(prompt, options);
+            winMenu.RunMenu();
         }
 
         private static void DisplayLoseLetter()
         {
-
+            string prompt = @$"
+╔════════════════════════════════════════════════════════════════════════════════╗
+║ Dear former CEO,                                                               ║
+║                                                                                ║
+║ We regret to inform you that you are being removed from the position of CEO    ║
+║ and fired from the company, effective immediately. The board of directors of   ║
+║ Oligopoly Investments has decided to take this action because you have spent   ║
+║ the budget allocated to you, and your investment turned out to be unprofitable ║
+║ for the company. We appreciate your service and wish you all the best in your  ║
+║ future endeavors.                                                              ║
+║                                                                                ║
+║ Sincerely,                                                                     ║
+║ The board of directors of Oligopoly Investments                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+\nYour Net Worth dropped below {LosingNetWorth}$
+\nYou Lose! Better luck next time...
+";
+            string[] options = { "Return to Main Menu" };
+            Menu loseMenu = new Menu(prompt, options);
+            loseMenu.RunMenu();
         }
 
         private static void DisplayAboutGameMenu()
