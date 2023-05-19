@@ -67,6 +67,75 @@ namespace Oligopoly
             return SelectedIndex;
         }
 
+        public int RunDifficultiesMenu()
+        {
+            ConsoleKey keyPressed;
+
+            do
+            {
+                Console.Clear();
+                Console.WriteLine(Prompt);
+
+                for (int i = 0; i < Options.Length; i++)
+                {
+                    if (i == SelectedIndex)
+                    {
+                        (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
+                        Console.WriteLine($"[*] {Options[i]}");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[ ] {Options[i]}");
+                    }
+                }
+
+                Console.WriteLine();
+
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("You will have 20000$");
+                        Console.WriteLine("You will lose if your net worth drop below 1000$");
+                        Console.WriteLine("You will win if your net worth will be over 30000$");
+                        break;
+                    case 1:
+                        Console.WriteLine("You will have 10000$");
+                        Console.WriteLine("You will lose if your net worth drop below 2000$");
+                        Console.WriteLine("You will win if your net worth will be over 50000$");
+                        break;
+                    case 2:
+                        Console.WriteLine("You will have 5000$");
+                        Console.WriteLine("You will lose if your net worth drop below 3000$");
+                        Console.WriteLine("You will win if your net worth will be over 100000$");
+                        break;
+                }
+
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                keyPressed = keyInfo.Key;
+
+                switch (keyPressed)
+                {
+                    case ConsoleKey.UpArrow:
+                        SelectedIndex--;
+                        if (SelectedIndex == -1)
+                        {
+                            SelectedIndex = Options.Length - 1;
+                        }
+                        break;
+                    case ConsoleKey.DownArrow:
+                        SelectedIndex++;
+                        if (SelectedIndex > Options.Length - 1)
+                        {
+                            SelectedIndex = 0;
+                        }
+                        break;
+                }
+            } while (keyPressed != ConsoleKey.Enter);
+
+            return SelectedIndex;
+        }
+
         public void RunBuyOrSellMenu(ref int[] numberOfSharesToProcess, List<Company> companies, decimal money, bool isBuying)
         {
             ConsoleKey keyPressed;

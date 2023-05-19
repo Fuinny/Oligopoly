@@ -105,7 +105,7 @@ namespace Oligopoly
             string prompt = "Select difficulty: ";
             string[] options = { "Easy", "Normal", "Hard" };
             Menu difficultiesMenu = new Menu(prompt, options);
-            switch (difficultiesMenu.RunMenu())
+            switch (difficultiesMenu.RunDifficultiesMenu())
             {
                 case 0:
                     Difficulty = "easy";
