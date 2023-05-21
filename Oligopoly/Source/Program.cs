@@ -18,7 +18,13 @@ namespace Oligopoly
 
         public static void Main(string[] args)
         {
+            
             Console.CursorVisible = false;
+            if (OperatingSystem.IsWindows())
+            {
+                Console.BufferHeight = Console.WindowHeight;
+                Console.BufferWidth = Console.WindowWidth;
+            }
             DisplayMainMenuScreen();
         }
 
