@@ -93,7 +93,7 @@ namespace Oligopoly
             }
         }
 
-        public int NumberShares
+        public int NumberOfShares
         {
             get
             {

@@ -19,7 +19,6 @@ namespace Oligopoly
         public static void Main(string[] args)
         {
             Console.CursorVisible = false;
-            LoadEmbeddedResources();
             DisplayMainMenuScreen();
         }
 
@@ -89,6 +88,7 @@ namespace Oligopoly
                         DisplayDifficultiesScreen();
                         InitializeGame();
                         DisplayIntroductionLetter();
+                        LoadEmbeddedResources();
                         GameLoop();
                         break;
                     case 1:
@@ -188,6 +188,9 @@ namespace Oligopoly
                     DisplayLoseLetter();
                 }
             }
+
+            Companies.Clear();
+            Events.Clear();
         }
 
         private static void ChangeMarketPrices()
@@ -200,10 +203,10 @@ namespace Oligopoly
                 switch (effect) 
                 {
                     case 0:
-                        Companies[i].SharePrice += Companies[i].SharePrice * 3 / 100;
+                        Companies[i].SharePrice += Companies[i].SharePrice * Random.Shared.Next(1, 4) / 100;
                         break;
                     case 1:
-                        Companies[i].SharePrice += Companies[i].SharePrice * -3 / 100;
+                        Companies[i].SharePrice += Companies[i].SharePrice * Random.Shared.Next(-3, 0) / 100;
                         break;
                 }
             }
@@ -214,7 +217,7 @@ namespace Oligopoly
             NetWorth = Money;
             foreach (Company company in Companies)
             {
-                NetWorth += company.NumberShares * company.SharePrice;
+                NetWorth += company.NumberOfShares * company.SharePrice;
             }
         }
 
@@ -257,12 +260,12 @@ namespace Oligopoly
                 if (isBuying)
                 {
                     Money -= numberOfSharesToProcess[i] * Companies[i].SharePrice;
-                    Companies[i].NumberShares += numberOfSharesToProcess[i];
+                    Companies[i].NumberOfShares += numberOfSharesToProcess[i];
                 }
                 else
                 {
                     Money += numberOfSharesToProcess[i] * Companies[i].SharePrice;
-                    Companies[i].NumberShares -= numberOfSharesToProcess[i];
+                    Companies[i].NumberOfShares -= numberOfSharesToProcess[i];
                 }
             }
         }

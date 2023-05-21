@@ -184,7 +184,7 @@ namespace Oligopoly
                         }
                         else
                         {
-                            if (numberOfSharesToProcess[SelectedIndex] < companies[SelectedIndex].NumberShares)
+                            if (numberOfSharesToProcess[SelectedIndex] < companies[SelectedIndex].NumberOfShares)
                             {
                                 numberOfSharesToProcess[SelectedIndex]++;
                             }
@@ -211,7 +211,7 @@ namespace Oligopoly
             companiesTable.AppendLine($"╠═{new('═', c0)}═╬═{new('═', c1)}═╬═{new('═', c2)}═╬═{new('═', c3)}═╣");
             foreach (Company company in companies)
             {
-                companiesTable.AppendLine($"║ {company.Name,-c0} ║ {company.Industry,c1} ║ {Math.Round(company.SharePrice, 2),c2} ║ {company.NumberShares,c3} ║");
+                companiesTable.AppendLine($"║ {company.Name,-c0} ║ {company.Industry,c1} ║ {Math.Round(company.SharePrice, 2),c2} ║ {company.NumberOfShares,c3} ║");
             }
             companiesTable.AppendLine($"╚═{new('═', c0)}═╩═{new('═', c1)}═╩═{new('═', c2)}═╩═{new('═', c3)}═╝");
 
