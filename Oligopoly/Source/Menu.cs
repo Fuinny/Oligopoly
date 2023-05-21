@@ -67,7 +67,7 @@ namespace Oligopoly
             return SelectedIndex;
         }
 
-        public int RunDifficultiesMenu()
+        public int RunMenuWithDescription(string[] descriptions)
         {
             ConsoleKey keyPressed;
 
@@ -90,26 +90,8 @@ namespace Oligopoly
                     }
                 }
 
-                Console.WriteLine();
-
-                switch (SelectedIndex)
-                {
-                    case 0:
-                        Console.WriteLine("You will have 20000$");
-                        Console.WriteLine("You will lose if your net worth drop below 1000$");
-                        Console.WriteLine("You will win if your net worth will be over 30000$");
-                        break;
-                    case 1:
-                        Console.WriteLine("You will have 10000$");
-                        Console.WriteLine("You will lose if your net worth drop below 2000$");
-                        Console.WriteLine("You will win if your net worth will be over 50000$");
-                        break;
-                    case 2:
-                        Console.WriteLine("You will have 5000$");
-                        Console.WriteLine("You will lose if your net worth drop below 3000$");
-                        Console.WriteLine("You will win if your net worth will be over 100000$");
-                        break;
-                }
+                Console.WriteLine("\nDescription:");
+                Console.WriteLine(descriptions[SelectedIndex]);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 keyPressed = keyInfo.Key;
@@ -156,16 +138,16 @@ namespace Oligopoly
                     if (i == SelectedIndex)
                     {
                         (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
-                        Console.WriteLine($"[{numberOfSharesToProcess[i]}] {Options[i]}");
+                        Console.WriteLine($"[*] <{numberOfSharesToProcess[i]}> {Options[i]}");
                         Console.ResetColor();
                     }
                     else
                     {
-                        Console.WriteLine($"[{numberOfSharesToProcess[i]}] {Options[i]}");
+                        Console.WriteLine($"[ ] <{numberOfSharesToProcess[i]}> {Options[i]}");
                     }
                 }
 
-                Console.WriteLine($"\nTransaction amount: {transactionCost}$");
+                Console.WriteLine($"\nTransaction amount: {Math.Round(transactionCost, 2)}$");
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 keyPressed = keyInfo.Key;

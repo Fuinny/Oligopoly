@@ -104,8 +104,13 @@ namespace Oligopoly
         {
             string prompt = "Select difficulty: ";
             string[] options = { "Easy", "Normal", "Hard" };
+            string[] descriptions = {
+                "You will have 20000$\nYou will lose if your net worth drop below 1000$\nYou will win if your net worth will be over 30000$",
+                "You will have 10000$\nYou will lose if your net worth drop below 2000$\nYou will win if your net worth will be over 50000$",
+                "You will have 5000$\nYou will lose if your net worth drop below 3000$\nYou will win if your net worth will be over 100000$"
+            };
             Menu difficultiesMenu = new Menu(prompt, options);
-            switch (difficultiesMenu.RunDifficultiesMenu())
+            switch (difficultiesMenu.RunMenuWithDescription(descriptions))
             {
                 case 0:
                     Difficulty = "easy";
@@ -322,8 +327,9 @@ namespace Oligopoly
 ║ Sincerely,                                                                     ║
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
-\nYour Net Worth is over {WinningNetWorth}$
-\nYou win! Congratulations!
+
+Your Net Worth is over {WinningNetWorth}$
+You win! Congratulations!
 ";
             string[] options = { "Return to Main Menu" };
             Menu winMenu = new Menu(prompt, options);
@@ -346,8 +352,9 @@ namespace Oligopoly
 ║ Sincerely,                                                                     ║
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
-\nYour Net Worth dropped below {LosingNetWorth}$
-\nYou Lose! Better luck next time...
+
+Your Net Worth dropped below {LosingNetWorth}$
+You Lose! Better luck next time...
 ";
             string[] options = { "Return to Main Menu" };
             Menu loseMenu = new Menu(prompt, options);
