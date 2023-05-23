@@ -19,6 +19,10 @@ namespace Oligopoly
             SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Runs menu with options.
+        /// </summary>
+        /// <returns>An integer, that represents selected option.</returns>
         public int RunMenu()
         {
             ConsoleKey keyPressed;
@@ -67,6 +71,12 @@ namespace Oligopoly
             return SelectedIndex;
         }
 
+        /// <summary>
+        /// Runs menu with options.
+        /// When an option is selected, its description is displayed at the bottom of the menu.
+        /// </summary>
+        /// <param name="descriptions">Descriptions of options.</param>
+        /// <returns>An integer, that represents selected option.</returns>
         public int RunMenuWithDescription(string[] descriptions)
         {
             ConsoleKey keyPressed;
@@ -118,6 +128,13 @@ namespace Oligopoly
             return SelectedIndex;
         }
 
+        /// <summary>
+        /// Runs buy or sell menu.
+        /// </summary>
+        /// <param name="numberOfSharesToProcess">The number of shares that will need to be processed after the player is selected.</param>
+        /// <param name="companies">List of all in-game companies.</param>
+        /// <param name="money">The player's current amount of money.</param>
+        /// <param name="isBuying">A flag that specifies how the method should work. True - buy. False - sell.</param>
         public void RunBuyOrSellMenu(ref int[] numberOfSharesToProcess, List<Company> companies, decimal money, bool isBuying)
         {
             ConsoleKey keyPressed;
@@ -201,6 +218,11 @@ namespace Oligopoly
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Draws table with information about all in-game companies.
+        /// </summary>
+        /// <param name="companies">List of all in-game companies.</param>
+        /// <returns>A StringBuilder object, that contains table.</returns>
         public static StringBuilder DrawCompaniesTable(List<Company> companies)
         {
             const int c0 = 30, c1 = 10, c2 = 20, c3 = 15;

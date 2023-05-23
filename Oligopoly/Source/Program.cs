@@ -16,7 +16,11 @@ namespace Oligopoly
         private static decimal LosingNetWorth;
         private static decimal WinningNetWorth;
 
-        public static void Main(string[] args)
+
+        /// <summary>
+        /// Program entry point.
+        /// </summary>
+        public static void Main()
         {
             
             Console.CursorVisible = false;
@@ -28,6 +32,9 @@ namespace Oligopoly
             DisplayMainMenuScreen();
         }
 
+        /// <summary>
+        /// Reads .xml files and checks data from files for correctness.
+        /// </summary>
         private static void LoadEmbeddedResources()
         {
             try
@@ -73,6 +80,9 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Displays main menu to the console.
+        /// </summary>
         private static void DisplayMainMenuScreen()
         {
             string prompt = @"
@@ -106,6 +116,10 @@ namespace Oligopoly
                 }
             }
         }
+
+        /// <summary>
+        /// Displays difficulties screen.
+        /// </summary>
         private static void DisplayDifficultiesScreen()
         {
             string prompt = "Select difficulty: ";
@@ -130,6 +144,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Initializes the game with the selected difficulty.
+        /// Sets money values and win/lose conditions.
+        /// </summary>
         private static void InitializeGame()
         {
             switch (Difficulty)
@@ -152,6 +170,9 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Runs a game session.
+        /// </summary>
         private static void GameLoop()
         {
             bool isGameEnded = false;
@@ -199,6 +220,9 @@ namespace Oligopoly
             Events.Clear();
         }
 
+        /// <summary>
+        /// Changes the share prices of all companies from (-)1 to (-)3 percent
+        /// </summary>
         private static void ChangeMarketPrices()
         {
             for (int i = 0; i < Companies.Count; i++) 
@@ -218,6 +242,9 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Calculates current net worth.
+        /// </summary>
         private static void CalculateNetWorth()
         {
             NetWorth = Money;
@@ -227,6 +254,9 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Generates a random event.
+        /// </summary>
         private static void GenerateEvent()
         {
             Event currentEvent = Events[Random.Shared.Next(0, Events.Count)];
@@ -247,6 +277,10 @@ namespace Oligopoly
             eventMenu.RunMenu();
         }
 
+        /// <summary>
+        /// Displays buy or sell menu.
+        /// </summary>
+        /// <param name="isBuying">A flag that specifies how the method should work. True - buy. False - sell.</param>
         public static void DisplayBuyOrSellScreen(bool isBuying)
         {
             StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
@@ -276,6 +310,9 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Displays companies descriptions to the console.
+        /// </summary>
         private static void DisplayMoreAboutCompaniesScreen()
         {
             StringBuilder prompt = new StringBuilder();
@@ -289,6 +326,9 @@ namespace Oligopoly
             aboutCompaniesMenu.RunMenu();
         }
 
+        /// <summary>
+        /// Displays introduction letter.
+        /// </summary>
         private static void DisplayIntroductionLetter()
         {
             string prompt = @"
@@ -316,6 +356,9 @@ namespace Oligopoly
             introductionMenu.RunMenu();
         }
 
+        /// <summary>
+        /// Displays win letter.
+        /// </summary>
         private static void DisplayWinLetter()
         {
             string prompt = @$"
@@ -345,6 +388,9 @@ You win! Congratulations!
             winMenu.RunMenu();
         }
 
+        /// <summary>
+        /// Displays lose letter.
+        /// </summary>
         private static void DisplayLoseLetter()
         {
             string prompt = @$"
@@ -370,6 +416,9 @@ You Lose! Better luck next time...
             loseMenu.RunMenu();
         }
 
+        /// <summary>
+        /// Displays thanks to the player and information about the creator of the game.
+        /// </summary>
         private static void DisplayAboutGameMenu()
         {
             string prompt = @"
@@ -387,6 +436,9 @@ You Lose! Better luck next time...
             aboutGameMenu.RunMenu();
         }
 
+        /// <summary>
+        /// Displays exit menu.
+        /// </summary>
         private static void DisplayExitMenu()
         {
             string prompt = "Are you sure you want to exit the game?";

@@ -13,6 +13,10 @@ namespace Oligopoly
         private decimal sharePrice;
         private int numberOfShares;
 
+        /// <summary>
+        /// Gets or sets the name of the company.
+        /// The name cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Name")]
         public string Name
         {
@@ -33,6 +37,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the industry of the company.
+        /// The industry cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Industry")]
         public string Industry
         {
@@ -53,6 +61,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the description of the company.
+        /// The description cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Description")]
         public string Description
         {
@@ -73,6 +85,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the share price of the company.
+        /// The share price cannot less than or equal to zero.
+        /// </summary>
         [XmlElement("SharePrice")]
         public decimal SharePrice
         {
@@ -93,6 +109,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the number of shares of the company.
+        /// The number of share cannot be less than or equal to zero.
+        /// </summary>
         public int NumberOfShares
         {
             get

@@ -12,6 +12,11 @@ namespace Oligopoly
         private string title;
         private string content;
 
+        /// <summary>
+        /// Gets or sets the effect of the event.
+        /// That is, the value by which the price of the <see cref="Company.SharePrice"/> should change.
+        /// The effect cannot be equal to zero.
+        /// </summary>
         [XmlElement("Effect")]
         public int Effect
         {
@@ -32,6 +37,11 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the target of the event.
+        /// That is, the company to which the <see cref="Event.Effect"/> will be applied.
+        /// The target cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Target")]
         public string Target
         {
@@ -52,6 +62,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the title of the event.
+        /// The title cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Title")]
         public string Title
         {
@@ -72,6 +86,10 @@ namespace Oligopoly
             }
         }
 
+        /// <summary>
+        /// Gets or sets the content of the event.
+        /// The content cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Content")]
         public string Content
         {
