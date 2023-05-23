@@ -7,6 +7,25 @@ They do not reflect the author's point of view on these companies and events, an
 
 This is not a professional project, so don't expect high quality code or regular updates.
 
+```
+╔════════════════════════════════╦════════════╦══════════════════════╦═════════════════╗
+║ Company                        ║   Industry ║          Share Price ║        You Have ║
+╠════════════════════════════════╬════════════╬══════════════════════╬═════════════════╣
+║ Bingoo                         ║        Web ║              1536.97 ║               1 ║
+║ Quantum Software               ║   Software ║              2037.35 ║               0 ║
+║ Edison Incorporated            ║     Energy ║               965.83 ║               2 ║
+║ Netfilm                        ║     Movies ║               831.66 ║               1 ║
+║ COBRA Security Consulting      ║       Army ║              1417.60 ║               4 ║
+╚════════════════════════════════╩════════════╩══════════════════════╩═════════════════╝
+
+You have: 900.00$     Your Net Worth: 10870.70$
+
+[*] Wait For Market Change
+[ ] Buy
+[ ] Sell
+[ ] More About Companies
+```
+
 ## How to start the game
 You can start the game using any of these methods:
 
