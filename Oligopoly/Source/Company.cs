@@ -1,19 +1,22 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Oligopoly.Source
+namespace Oligopoly
 {
-    [XmlRoot("Company")]
     public class Company
     {
-        // Create a class fields.
         private string name;
-        private string ticker;
         private string industry;
         private string description;
-        private double sharePrice;
-        private double shareAmount;
+        private decimal sharePrice;
+        private int numberOfShares;
 
+        /// <summary>
+        /// Gets or sets the name of the company.
+        /// The name cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Name")]
         public string Name
         {
@@ -23,9 +26,9 @@ namespace Oligopoly.Source
             }
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrEmpty(value))
                 {
-                    throw new InvalidOperationException("Name cannot be null or whitespace.");
+                    throw new Exception("Name cannot be null or whitespace!");
                 }
                 else
                 {
@@ -34,26 +37,10 @@ namespace Oligopoly.Source
             }
         }
 
-        [XmlElement("Ticker")]
-        public string Ticker
-        {
-            get
-            {
-                return ticker;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new InvalidOperationException("Ticker cannot be null or whitespace.");
-                }
-                else
-                {
-                    ticker = value;
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets or sets the industry of the company.
+        /// The industry cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Industry")]
         public string Industry
         {
@@ -65,7 +52,7 @@ namespace Oligopoly.Source
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new InvalidOperationException("Industry cannot be null of whitespace.");
+                    throw new Exception("Industry cannot be null or whitespace!");
                 }
                 else
                 {
@@ -74,45 +61,10 @@ namespace Oligopoly.Source
             }
         }
 
-        [XmlElement("SharePrice")]
-        public double SharePrice
-        {
-            get
-            {
-                return sharePrice;
-            }
-            set
-            {
-                if (value <= 0)
-                {
-                    throw new InvalidOperationException("Share price cannot be less or equal to zero.");
-                }
-                else
-                {
-                    sharePrice = value;
-                }
-            }
-        }
-
-        public double ShareAmount
-        {
-            get
-            {
-                return shareAmount;
-            }
-            set
-            {
-                if (value < 0)
-                {
-                    throw new InvalidOperationException("Share amount cannot be less than a zero.");
-                }
-                else
-                {
-                    shareAmount = value;
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets or sets the description of the company.
+        /// The description cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Description")]
         public string Description
         {
@@ -124,11 +76,58 @@ namespace Oligopoly.Source
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new InvalidOperationException("Description cannot be null or whitespace.");
+                    throw new Exception("Description cannot be null or whitespace!");
                 }
                 else
                 {
                     description = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the share price of the company.
+        /// The share price cannot less than or equal to zero.
+        /// </summary>
+        [XmlElement("SharePrice")]
+        public decimal SharePrice
+        {
+            get
+            {
+                return sharePrice;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new Exception("Share Price cannot be less than or equal to zero!");
+                }
+                else
+                {
+                    sharePrice = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the number of shares of the company.
+        /// The number of share cannot be less than or equal to zero.
+        /// </summary>
+        public int NumberOfShares
+        {
+            get
+            {
+                return numberOfShares;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    throw new Exception("Number of Shares cannot be less than zero!");
+                }
+                else
+                {
+                    numberOfShares = value;
                 }
             }
         }
