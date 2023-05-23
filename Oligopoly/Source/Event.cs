@@ -1,18 +1,22 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Oligopoly.Source
+namespace Oligopoly
 {
-    [XmlRoot("Events")]
     public class Event
     {
-        // Create a class fields.
         private int effect;
         private string target;
-        private string type;
         private string title;
         private string content;
 
+        /// <summary>
+        /// Gets or sets the effect of the event.
+        /// That is, the value by which the price of the <see cref="Company.SharePrice"/> should change.
+        /// The effect cannot be equal to zero.
+        /// </summary>
         [XmlElement("Effect")]
         public int Effect
         {
@@ -22,9 +26,9 @@ namespace Oligopoly.Source
             }
             set
             {
-                if (value <= 0)
+                if (value == 0)
                 {
-                    throw new InvalidOperationException("Effect cannot be less or equal to zero.");
+                    throw new Exception("Effect cannot be equal to zero!");
                 }
                 else
                 {
@@ -33,6 +37,11 @@ namespace Oligopoly.Source
             }
         }
 
+        /// <summary>
+        /// Gets or sets the target of the event.
+        /// That is, the company to which the <see cref="Event.Effect"/> will be applied.
+        /// The target cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Target")]
         public string Target
         {
@@ -42,9 +51,9 @@ namespace Oligopoly.Source
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new InvalidOperationException("Target cannot be null or whitespace.");
+                    throw new Exception("Target cannot be null or whitespace!");
                 }
                 else
                 {
@@ -53,30 +62,10 @@ namespace Oligopoly.Source
             }
         }
 
-        [XmlElement("Type")]
-        public string Type
-        {
-            get
-            {
-                return type;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new InvalidOperationException("Type cannot be null or whitespace.");
-                }
-                else if (value != "Positive" && value != "Negative")
-                {
-                    throw new InvalidOperationException("Type cannot contain value other then Positive or Negative");
-                }
-                else
-                {
-                    type = value;
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets or sets the title of the event.
+        /// The title cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Title")]
         public string Title
         {
@@ -88,7 +77,7 @@ namespace Oligopoly.Source
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new InvalidOperationException("Title cannot be null or whitespace.");
+                    throw new Exception("Title cannot be null or whitespace!");
                 }
                 else
                 {
@@ -97,6 +86,10 @@ namespace Oligopoly.Source
             }
         }
 
+        /// <summary>
+        /// Gets or sets the content of the event.
+        /// The content cannot be null or whitespace.
+        /// </summary>
         [XmlElement("Content")]
         public string Content
         {
@@ -106,9 +99,9 @@ namespace Oligopoly.Source
             }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new InvalidOperationException("Content cannot be null or whitespace.");
+                    throw new Exception("Content cannot be null or whitespace!");
                 }
                 else
                 {
