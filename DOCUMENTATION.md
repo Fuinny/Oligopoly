@@ -1,6 +1,8 @@
 # Documentation
 This documentation provides instructions on how to add new companies and events to the game.
-To add your company or event, you will need to edit the .xml files in Data folder, which contain all the necessary data for the game.
+To add your company or event, you will need to edit the appropriate .xml file in Data folder, which contain all the necessary data for the game.
+
+Also, thank you for your interest in adding your own content to the game :P
 
 ## How to add your own company
 1. Open Companies.xml file.
@@ -21,13 +23,13 @@ To add your company or event, you will need to edit the .xml files in Data folde
 > 
 > **COMPANY_ID** - can be anything, make it so that it is easier for you to navigate in the xml file, **but** you need to use underscore between words. Company name is used by default, but you can use something else.
 > 
-> Like: ```ABC_Company_Id```.
+> Example: ```ABC_Company_Id```
 > 
 > **COMPANY_NAME**, **COMPANY_INDUSTRY** and **COMPANY_DESCRIPTION** - can be anything, except null or whitespace.
 > 
-> Like: ```ABC Company Name```, ```ABC Company Industry``` and ```ABC Company long-long-long description.```.
+> Example: ```ABC Company Name```, ```ABC Company Industry``` and ```ABC Company long-long-long description.```
 >
-> **COMPANY_SHARE_PRICE** - can be any value gearter than zero.
+> **COMPANY_SHARE_PRICE** - can be any value greater than zero.
 
 ## How to add your own event
 1. Open Events.xml file.
@@ -49,12 +51,12 @@ To add your company or event, you will need to edit the .xml files in Data folde
 > **EVENT_ID** - can be anything, make it so that it is easier for you to navigate in the xml file, **but** you need to use underscore between words.
 > The default structure is: Company_Event, but you can use other structure.
 >
-> Like: ```ABC_Company_new_event```
+> Example: ```ABC_Company_new_event```
 >
 > **EVENT_TARGET** - **must** match the name of the company to which the effect is to be applied. Obviously cannot be null or whitespace.
 >
-> Like: ```ABC Company Name```
+> Example: ```ABC Company Name```
 >
 > **EVENT_TITLE** and **EVENT_CONTENT** - can be anything, except null or whitespace.
 >
-> Like: ```ABC Company something happened``` and ```ABC Company long-long-long event content.```
+> Example: ```ABC Company something happened``` and ```ABC Company long-long-long event content.```
