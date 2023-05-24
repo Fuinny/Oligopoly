@@ -1,11 +1,7 @@
 # Oligopoly
 Oligopoly is a command-line interface (CLI) game written in C# that allows players to buy and sell shares of various in-game companies. 
-The value of these shares is affected by in-game events, which occur at the beginning of each turn. The game is played in a turn-based format.
-
-Please note that all in-game companies and events in Oligopoly are completely fictitious and have no relation to real entities or events. 
-They do not reflect the author's point of view on these companies and events, and coincidences are accidental. The game is intended for entertainment purposes only.
-
-This is not a professional project, so don't expect high quality code or regular updates.
+The value of these shares is affected by in-game events that occur every turn.
+The goal of the player is to buy shares of the company and then try to sell them at a higher price in order to increase their net worth.
 
 ```
 ╔════════════════════════════════╦════════════╦══════════════════════╦═════════════════╗
@@ -25,6 +21,11 @@ You have: 900.00$     Your Net Worth: 10870.70$
 [ ] Sell
 [ ] More About Companies
 ```
+## Disclaimer
+Please note that all in-game companies and events in Oligopoly are completely fictitious and have no relation to real entities or events. 
+They do not reflect the author's point of view on these companies and events, and coincidences are accidental. The game is intended for entertainment purposes only.
+
+This is not a professional project, so don't expect high quality code or regular updates.
 
 ## How to start the game
 You can start the game using any of these methods:
@@ -66,6 +67,8 @@ You can start the game using any of these methods:
 </details>
 
 After following any of these methods, you should be able to run Oligopoly in your command line (terminal). If for some reason you didn't succeed, let me know :D
+
+Also, thanks for playing or trying to play this simple CLI game! It means a lot :P
 
 ## How to add your own company and event
 This game supports the ability to add your companies and events to the game or edit existing ones.
