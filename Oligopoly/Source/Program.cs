@@ -11,6 +11,7 @@ namespace Oligopoly
         private static List<Company> Companies = new List<Company>();
         private static List<Event> Events = new List<Event>();
         private static string Difficulty;
+        private static int TurnCounter;
         private static decimal Money;
         private static decimal NetWorth;
         private static decimal LosingNetWorth;
@@ -182,7 +183,7 @@ namespace Oligopoly
                 CalculateNetWorth();
 
                 StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-                prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$     Your Net Worth: {Math.Round(NetWorth, 2)}$");
+                prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$     Your Net Worth: {Math.Round(NetWorth, 2)}$     Current Turn: {TurnCounter}");
                 string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
 
                 Menu gameMenu = new Menu(prompt.ToString(), options);
@@ -190,7 +191,7 @@ namespace Oligopoly
                 switch (gameMenu.RunMenu())
                 {
                     case 0:
-                        ChangeMarketPrices();
+                        UpdateMarketPrices();
                         GenerateEvent();
                         break;
                     case 1:
@@ -214,6 +215,8 @@ namespace Oligopoly
                     isGameEnded = true;
                     DisplayLoseLetter();
                 }
+
+                TurnCounter++;
             }
 
             Companies.Clear();
@@ -223,7 +226,7 @@ namespace Oligopoly
         /// <summary>
         /// Changes the share prices of all companies from (-)1 to (-)3 percent
         /// </summary>
-        private static void ChangeMarketPrices()
+        private static void UpdateMarketPrices()
         {
             for (int i = 0; i < Companies.Count; i++) 
             {
@@ -284,7 +287,7 @@ namespace Oligopoly
         public static void DisplayBuyOrSellScreen(bool isBuying)
         {
             StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-            prompt.AppendLine($"\nYou have: {Money}$");
+            prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$");
             prompt.AppendLine("\nUse an arrow keys to select company and amount of shares. Press enter to confirm: ");
             int[] numberOfSharesToProcess = new int[Companies.Count];
             string[] options = new string[Companies.Count];
@@ -381,6 +384,7 @@ namespace Oligopoly
 ╚════════════════════════════════════════════════════════════════════════════════╝
 
 Your Net Worth is over {WinningNetWorth}$
+You have played {TurnCounter} turns
 You win! Congratulations!
 ";
             string[] options = { "Return to Main Menu" };
@@ -409,6 +413,7 @@ You win! Congratulations!
 ╚════════════════════════════════════════════════════════════════════════════════╝
 
 Your Net Worth dropped below {LosingNetWorth}$
+You have played {TurnCounter} turns
 You Lose! Better luck next time...
 ";
             string[] options = { "Return to Main Menu" };
