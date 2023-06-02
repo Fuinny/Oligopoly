@@ -155,7 +155,7 @@ namespace Oligopoly
                     if (i == SelectedIndex)
                     {
                         (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
-                        Console.WriteLine($"[*] <{numberOfSharesToProcess[i]}> {Options[i]}");
+                        Console.WriteLine($"[*] <{numberOfSharesToProcess[i]}{(isBuying ? "" : $"/{companies[i].NumberOfShares}")}> {Options[i]}");
                         Console.ResetColor();
                     }
                     else
@@ -164,7 +164,7 @@ namespace Oligopoly
                     }
                 }
 
-                Console.WriteLine($"\nTransaction amount: {Math.Round(transactionCost, 2)}$");
+                Console.WriteLine($"\nTransaction {(isBuying ? "cost" : "payout")}: {Math.Round(transactionCost, 2)}$");
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 keyPressed = keyInfo.Key;
