@@ -7,14 +7,16 @@ The goal of the player is to buy shares of the company and then try to sell them
 ╔════════════════════════════════╦════════════╦══════════════════════╦═════════════════╗
 ║ Company                        ║   Industry ║          Share Price ║        You Have ║
 ╠════════════════════════════════╬════════════╬══════════════════════╬═════════════════╣
-║ Bingoo                         ║        Web ║              1536.97 ║               1 ║
-║ Quantum Software               ║   Software ║              2037.35 ║               0 ║
-║ Edison Incorporated            ║     Energy ║               965.83 ║               2 ║
-║ Netfilm                        ║     Movies ║               831.66 ║               1 ║
-║ COBRA Security Consulting      ║       Army ║              1417.60 ║               4 ║
+║ Bingoo                         ║        Web ║              1372.28 ║               1 ║
+║ Quantum Software               ║   Software ║              2094.98 ║               0 ║
+║ Edison Incorporated            ║     Energy ║              1036.80 ║               2 ║
+║ Netfilm                        ║     Movies ║               838.80 ║               1 ║
+║ COBRA Security Consulting      ║       Army ║              1283.29 ║               4 ║
+║ Rockland Games                 ║      Games ║               885.15 ║               0 ║
+║ Astro Technologies             ║      Space ║              2319.93 ║               0 ║
 ╚════════════════════════════════╩════════════╩══════════════════════╩═════════════════╝
 
-You have: 900.00$     Your Net Worth: 10870.70$
+You have: 900.00$     Your Net Worth: 10317.83$     Current Turn: 10
 
 [*] Wait For Market Change
 [ ] Buy
