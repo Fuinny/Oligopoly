@@ -17,16 +17,14 @@ namespace Oligopoly
         private static decimal LosingNetWorth;
         private static decimal WinningNetWorth;
 
-
         /// <summary>
         /// Program entry point.
         /// </summary>
         public static void Main()
         {
-            
-            Console.CursorVisible = false;
             if (OperatingSystem.IsWindows())
             {
+                Console.CursorVisible = false;
                 Console.BufferHeight = Console.WindowHeight;
                 Console.BufferWidth = Console.WindowWidth;
             }
@@ -288,7 +286,7 @@ namespace Oligopoly
         {
             StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
             prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$");
-            prompt.AppendLine("\nUse an arrow keys to select company and amount of shares. Press enter to confirm: ");
+            prompt.AppendLine($"\nUse the arrow keys and enter to confirm how many shares to {(isBuying ? "buy" : "sell")}:");
             int[] numberOfSharesToProcess = new int[Companies.Count];
             string[] options = new string[Companies.Count];
             for (int i = 0; i < Companies.Count; i++)
