@@ -12,6 +12,7 @@ namespace Oligopoly
         private static List<Event> Events = new List<Event>();
         private static List<Event> GlobalEvents = new List<Event>();
         private static string Difficulty;
+        private static string GameMode;
         private static int TurnCounter = 1;
         private static decimal Money;
         private static decimal NetWorth;
@@ -116,10 +117,25 @@ namespace Oligopoly
                 switch (mainMenu.RunMenu())
                 {
                     case 0:
-                        DisplayDifficultiesScreen();
-                        InitializeGame();
-                        DisplayIntroductionLetter();
                         LoadEmbeddedResources();
+                        DisplayGameModeScreen();
+                        switch (GameMode)
+                        {
+                            case "default":
+                                DisplayDifficultiesScreen();
+                                InitializeGame();
+                                break;
+                            case "random":
+                                foreach (Company company in Companies)
+                                {
+                                    company.SharePrice = Random.Shared.Next(100, 5001);
+                                }
+                                Money = Random.Shared.Next(1000, 30001);
+                                LosingNetWorth = 2000.00M;
+                                WinningNetWorth = 50000.00M;
+                                break;
+                        }
+                        DisplayIntroductionLetter();
                         GameLoop();
                         break;
                     case 1:
@@ -129,6 +145,29 @@ namespace Oligopoly
                         DisplayExitMenu();
                         break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Displays game mode screen.
+        /// </summary>
+        private static void DisplayGameModeScreen()
+        {
+            string prompt = "Select game mode: ";
+            string[] options = { "Default", "Random" };
+            string[] descriptions = {
+                "This is the default game mode. Choose the difficulty, buy shares and try to sell them at a higher price to increase your net worth.",
+                "Want to go full random? In this mode, your money and company shares are randomly generated."
+            };
+            Menu gameModeMenu = new Menu(prompt, options);
+            switch (gameModeMenu.RunMenuWithDescription(descriptions))
+            {
+                case 0:
+                    GameMode = "default";
+                    break;
+                case 1:
+                    GameMode = "random";
+                    break;
             }
         }
 
