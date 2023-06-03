@@ -10,8 +10,9 @@ namespace Oligopoly
     {
         private static List<Company> Companies = new List<Company>();
         private static List<Event> Events = new List<Event>();
+        private static List<Event> GlobalEvents = new List<Event>();
         private static string Difficulty;
-        private static int TurnCounter;
+        private static int TurnCounter = 1;
         private static decimal Money;
         private static decimal NetWorth;
         private static decimal LosingNetWorth;
@@ -67,6 +68,21 @@ namespace Oligopoly
                         };
 
                         Events.Add(currentEvent);
+                    }
+                }
+                {
+                    document = XDocument.Load(Path.Combine("Data", "GlobalEvents.xml"));
+                    foreach (XElement eventElement in document.Root.Elements("GlobalEvent"))
+                    {
+                        Event currentEvent = new Event
+                        {
+                            Effect = int.Parse(eventElement.Element("Effect").Value),
+                            Target = "All",
+                            Title = eventElement.Element("Title").Value,
+                            Content = eventElement.Element("Content").Value
+                        };
+
+                        GlobalEvents.Add(currentEvent);
                     }
                 }
             }
@@ -260,18 +276,31 @@ namespace Oligopoly
         /// </summary>
         private static void GenerateEvent()
         {
-            Event currentEvent = Events[Random.Shared.Next(0, Events.Count)];
+            Event currentEvent;
+            StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
 
-            foreach (Company currentCompany in Companies)
+            if (TurnCounter % 50 == 0)
             {
-                if (currentCompany.Name == currentEvent.Target)
+                currentEvent = GlobalEvents[Random.Shared.Next(0, GlobalEvents.Count)];
+                foreach (Company currentCompany in Companies)
                 {
                     currentCompany.SharePrice += currentCompany.SharePrice * currentEvent.Effect / 100;
                 }
+                prompt.AppendLine($"\n{currentEvent.Title.ToUpper()}");
+            }
+            else
+            {
+                currentEvent = Events[Random.Shared.Next(0, Events.Count)];
+                foreach (Company currentCompany in Companies)
+                {
+                    if (currentCompany.Name == currentEvent.Target)
+                    {
+                        currentCompany.SharePrice += currentCompany.SharePrice * currentEvent.Effect / 100;
+                    }
+                }
+                prompt.AppendLine($"\n{currentEvent.Title}");
             }
 
-            StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-            prompt.AppendLine($"\n{currentEvent.Title}");
             prompt.AppendLine($"\n{currentEvent.Content}");
             string[] options = { "Continue" };
             Menu eventMenu = new Menu(prompt.ToString(), options);
