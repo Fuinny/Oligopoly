@@ -1,10 +1,10 @@
-# Documentation
+# :open_book: Documentation
 This documentation provides instructions on how to add new companies and events to the game.
 To add your company or event, you will need to edit the appropriate .xml file in Data folder, which contain all the necessary data for the game.
 
 Also, thank you for your interest in adding your own content to the game :P
 
-## How to add your own company
+## :question: How to add your own company
 1. Open Companies.xml file.
 2. Find Company element.
 3. Copy the following template and paste it below last Company element:
@@ -31,7 +31,7 @@ Also, thank you for your interest in adding your own content to the game :P
 >
 > **COMPANY_SHARE_PRICE** - can be any value greater than zero.
 
-## How to add your own event
+## :question: How to add your own event
 1. Open Events.xml file.
 2. Find Event element.
 3. Copy the following template and paste it below last Event element:
@@ -60,3 +60,21 @@ Also, thank you for your interest in adding your own content to the game :P
 > **EVENT_TITLE** and **EVENT_CONTENT** - can be anything, except null or whitespace.
 >
 > Example: ```ABC Company something happened``` and ```ABC Company long-long-long event content.```
+
+## :question: How to add your own global event
+1. Open GlobalEvents.xml file.
+2. Find GlobalEvent element.
+3. Copy the following template and paste it below last GlobalEvent element:
+      ```xml
+	<GlobalEvent id="GLOBAL_EVENT_ID">
+		<Effect>GLOBAL_EVENT_EFFECT</Effect>
+		<Title>GLOBAL_EVENT_TITLE</Title>
+		<Content>GLOBAL_EVENT_CONTENT</Content>
+	</GlobalEvent>
+      ```
+4. Replace EVENT_ID, EVENT_EFFECT, EVENT_TARGET, EVENT_TITLE and EVENT_CONTENT with the appropriate values for your new event.
+5. Save the changes to the GlobalEvents.xml file.
+
+> **Please note:**
+> 
+> Adding global events is the same as adding regular events, except that the Target attribute is not specified on global events.
