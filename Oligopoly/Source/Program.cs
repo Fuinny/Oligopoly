@@ -160,7 +160,7 @@ namespace Oligopoly
                 "Want to go full random? In this mode, your money and company shares are randomly generated."
             };
             Menu gameModeMenu = new Menu(prompt, options);
-            switch (gameModeMenu.RunMenuWithDescription(descriptions))
+            switch (gameModeMenu.RunMenu(descriptions))
             {
                 case 0:
                     GameMode = "default";
@@ -184,7 +184,7 @@ namespace Oligopoly
                 "You will have 5000$\nYou will lose if your net worth drop below 3000$\nYou will win if your net worth will be over 100000$"
             };
             Menu difficultiesMenu = new Menu(prompt, options);
-            switch (difficultiesMenu.RunMenuWithDescription(descriptions))
+            switch (difficultiesMenu.RunMenu(descriptions))
             {
                 case 0:
                     Difficulty = "easy";

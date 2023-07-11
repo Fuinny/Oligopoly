@@ -23,7 +23,7 @@ namespace Oligopoly
         /// Runs menu with options.
         /// </summary>
         /// <returns>An integer, that represents selected option.</returns>
-        public int RunMenu()
+        public int RunMenu(string[] descriptions = default)
         {
             ConsoleKey keyPressed;
 
@@ -46,62 +46,11 @@ namespace Oligopoly
                     }
                 }
 
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
-                keyPressed = keyInfo.Key;
-
-                switch (keyPressed)
+                if (descriptions != null)
                 {
-                    case ConsoleKey.UpArrow:
-                        SelectedIndex--;
-                        if (SelectedIndex == -1)
-                        {
-                            SelectedIndex = Options.Length - 1;
-                        }
-                        break;
-                    case ConsoleKey.DownArrow:
-                        SelectedIndex++;
-                        if (SelectedIndex > Options.Length - 1)
-                        {
-                            SelectedIndex = 0;
-                        }
-                        break;
+                    Console.WriteLine("\nDescription:");
+                    Console.WriteLine(descriptions[SelectedIndex]);
                 }
-            } while (keyPressed != ConsoleKey.Enter);
-
-            return SelectedIndex;
-        }
-
-        /// <summary>
-        /// Runs menu with options.
-        /// When an option is selected, its description is displayed at the bottom of the menu.
-        /// </summary>
-        /// <param name="descriptions">Descriptions of options.</param>
-        /// <returns>An integer, that represents selected option.</returns>
-        public int RunMenuWithDescription(string[] descriptions)
-        {
-            ConsoleKey keyPressed;
-
-            do
-            {
-                Console.Clear();
-                Console.WriteLine(Prompt);
-
-                for (int i = 0; i < Options.Length; i++)
-                {
-                    if (i == SelectedIndex)
-                    {
-                        (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
-                        Console.WriteLine($"[*] {Options[i]}");
-                        Console.ResetColor();
-                    }
-                    else
-                    {
-                        Console.WriteLine($"[ ] {Options[i]}");
-                    }
-                }
-
-                Console.WriteLine("\nDescription:");
-                Console.WriteLine(descriptions[SelectedIndex]);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 keyPressed = keyInfo.Key;
