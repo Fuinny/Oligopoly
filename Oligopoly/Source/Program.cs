@@ -148,6 +148,33 @@ namespace Oligopoly
             }
         }
 
+        private static void DisplayPauseMenu()
+        {
+            string prompt = @"
+ ██████╗  █████╗ ███╗   ███╗███████╗     ██████╗ ███╗   ██╗    ██████╗  █████╗ ██╗   ██╗███████╗███████╗
+██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔═══██╗████╗  ██║    ██╔══██╗██╔══██╗██║   ██║██╔════╝██╔════╝
+██║  ███╗███████║██╔████╔██║█████╗      ██║   ██║██╔██╗ ██║    ██████╔╝███████║██║   ██║███████╗█████╗  
+██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║██║╚██╗██║    ██╔═══╝ ██╔══██║██║   ██║╚════██║██╔══╝  
+╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝██║ ╚████║    ██║     ██║  ██║╚██████╔╝███████║███████╗
+ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝ ╚═╝  ╚═══╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
+                           Use up and down arrow keys to select an option
+";
+            string[] options = { "Save", "Load", "Exit" };
+            Menu pauseMenu = new Menu(prompt, options);
+            switch (pauseMenu.RunMenu(default, true))
+            {
+                case 0:
+                    // TODO: save the game.
+                    break;
+                case 1:
+                    // TODO: load the game.
+                    break;
+                case 2:
+                    DisplayExitMenu();
+                    break;
+            }
+        }
+
         /// <summary>
         /// Displays game mode screen.
         /// </summary>
@@ -241,8 +268,11 @@ namespace Oligopoly
 
                 Menu gameMenu = new Menu(prompt.ToString(), options);
 
-                switch (gameMenu.RunMenu())
+                switch (gameMenu.RunMenu(default, true))
                 {
+                    case -1:
+                        DisplayPauseMenu();
+                        continue;
                     case 0:
                         UpdateMarketPrices();
                         GenerateEvent();

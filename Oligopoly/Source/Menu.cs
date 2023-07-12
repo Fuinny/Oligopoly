@@ -19,11 +19,17 @@ namespace Oligopoly
             SelectedIndex = 0;
         }
 
+        // <summary>
+        // Runs menu with options.
+        // </summary>
+        // <returns>An integer, that represents selected option.</returns>
         /// <summary>
         /// Runs menu with options.
         /// </summary>
+        /// <param name="isPausable">Determines whether the menu can be paused. The default is false.</param>
+        /// <param name="descriptions">Contains all option descriptions. The default is null.</param>
         /// <returns>An integer, that represents selected option.</returns>
-        public int RunMenu(string[] descriptions = default)
+        public int RunMenu(string[] descriptions = default, bool isPausable = false)
         {
             ConsoleKey keyPressed;
 
@@ -55,22 +61,47 @@ namespace Oligopoly
                 ConsoleKeyInfo keyInfo = Console.ReadKey();
                 keyPressed = keyInfo.Key;
 
-                switch (keyPressed)
+                if (isPausable)
                 {
-                    case ConsoleKey.UpArrow:
-                        SelectedIndex--;
-                        if (SelectedIndex == -1)
-                        {
-                            SelectedIndex = Options.Length - 1;
-                        }
-                        break;
-                    case ConsoleKey.DownArrow:
-                        SelectedIndex++;
-                        if (SelectedIndex > Options.Length - 1)
-                        {
-                            SelectedIndex = 0;
-                        }
-                        break;
+                    switch (keyPressed)
+                    {
+                        case ConsoleKey.P:
+                            return -1;
+                        case ConsoleKey.UpArrow:
+                            SelectedIndex--;
+                            if (SelectedIndex == -1)
+                            {
+                                SelectedIndex = Options.Length - 1;
+                            }
+                            break;
+                        case ConsoleKey.DownArrow:
+                            SelectedIndex++;
+                            if (SelectedIndex > Options.Length - 1)
+                            {
+                                SelectedIndex = 0;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (keyPressed)
+                    {
+                        case ConsoleKey.UpArrow:
+                            SelectedIndex--;
+                            if (SelectedIndex == -1)
+                            {
+                                SelectedIndex = Options.Length - 1;
+                            }
+                            break;
+                        case ConsoleKey.DownArrow:
+                            SelectedIndex++;
+                            if (SelectedIndex > Options.Length - 1)
+                            {
+                                SelectedIndex = 0;
+                            }
+                            break;
+                    }
                 }
             } while (keyPressed != ConsoleKey.Enter);
 
