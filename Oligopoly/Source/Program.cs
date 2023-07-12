@@ -97,6 +97,52 @@ namespace Oligopoly
         }
 
         /// <summary>
+        /// Saves the current stage of the game.
+        /// </summary>
+        private static void SaveGame()
+        {
+            int fileCounter = 1;
+            string fileName = $"Save_{fileCounter}.xml";
+            string filePath = Path.Combine("Saves", fileName);
+
+            try
+            {
+                while (File.Exists(filePath))
+                {
+                    fileName = $"Save_{fileCounter}.xml";
+                    filePath = Path.Combine("Saves", fileName);
+                    fileCounter++;
+                }
+                XDocument saveFile = new XDocument(
+                    new XElement("SaveFile",
+                        new XElement("GameMode", GameMode),
+                        new XElement("Difficulty", Difficulty),
+                        new XElement("CurrentTurn", TurnCounter),
+                        new XElement("Money", Money),
+                        new XElement("SharePrices", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice))),
+                        new XElement("BuyedShares", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares)))
+                        )
+                    );
+                if (!Directory.Exists("Saves"))
+                {
+                    Directory.CreateDirectory("Saves");
+                }
+                saveFile.Save(filePath);
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"Error! \nDetails: {ex.Message}");
+                Console.WriteLine("Press any key to exit the menu...");
+                Console.ReadKey(true);
+            }
+            
+            Console.WriteLine($"\nYour file was successfully saved with the name {fileName}");
+            Console.WriteLine("You can find all of your save files in Saves folder.");
+            Console.WriteLine("\nPress any key to exit the menu...");
+            Console.ReadKey(true);
+        }
+
+        /// <summary>
         /// Displays main menu to the console.
         /// </summary>
         private static void DisplayMainMenuScreen()
@@ -164,7 +210,7 @@ namespace Oligopoly
             switch (pauseMenu.RunMenu(default, true))
             {
                 case 0:
-                    // TODO: save the game.
+                    SaveGame();
                     break;
                 case 1:
                     // TODO: load the game.
