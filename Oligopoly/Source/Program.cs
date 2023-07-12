@@ -24,6 +24,10 @@ namespace Oligopoly
         /// </summary>
         public static void Main()
         {
+            if (!Directory.Exists("Saves"))
+            {
+                Directory.CreateDirectory("Saves");
+            }
             if (OperatingSystem.IsWindows())
             {
                 Console.CursorVisible = false;
@@ -123,23 +127,82 @@ namespace Oligopoly
                         new XElement("BuyedShares", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares)))
                         )
                     );
-                if (!Directory.Exists("Saves"))
-                {
-                    Directory.CreateDirectory("Saves");
-                }
                 saveFile.Save(filePath);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error! \nDetails: {ex.Message}");
                 Console.WriteLine("Press any key to exit the menu...");
                 Console.ReadKey(true);
             }
-            
+
             Console.WriteLine($"\nYour file was successfully saved with the name {fileName}");
             Console.WriteLine("You can find all of your save files in Saves folder.");
             Console.WriteLine("\nPress any key to exit the menu...");
             Console.ReadKey(true);
+        }
+
+        /// <summary>
+        /// Loads the game from already created saves.
+        /// </summary>
+        private static bool LoadGame()
+        {
+            string[] saveFiles = Directory.GetFiles("Saves", "*.xml");
+
+            if (saveFiles.Length == 0)
+            {
+                Console.Clear();
+                Console.WriteLine("No save files found.");
+                Console.WriteLine("\nPress any key to exit the menu...");
+                Console.ReadKey(true);
+                return false;
+            }
+
+            Menu loadMenu = new Menu("Select file to load: ", saveFiles);
+            int selectedFile = loadMenu.RunMenu();
+
+            try
+            {
+                XDocument saveFile = XDocument.Load(saveFiles[selectedFile]);
+                GameMode = saveFile.Element("SaveFile").Element("GameMode").Value;
+                Difficulty = saveFile.Element("SaveFile").Element("Difficulty").Value;
+                TurnCounter = int.Parse(saveFile.Element("SaveFile").Element("CurrentTurn").Value);
+                Money = decimal.Parse(saveFile.Element("SaveFile").Element("Money").Value);
+                var sharePrices = saveFile.Element("SaveFile").Element("SharePrices").Elements();
+                var buyedShares = saveFile.Element("SaveFile").Element("BuyedShares").Elements();
+
+                foreach (var companyElement in sharePrices)
+                {
+                    string companyName = companyElement.Name.LocalName.Replace("_", " ");
+                    decimal sharePrice = decimal.Parse(companyElement.Value);
+
+                    Company company = Companies.FirstOrDefault(c => c.Name == companyName);
+                    if (company != null)
+                    {
+                        company.SharePrice = sharePrice;
+                    }
+                }
+                foreach (var companyElement in buyedShares)
+                {
+                    string companyName = companyElement.Name.LocalName.Replace("_", " ");
+                    int numberOfShares = int.Parse(companyElement.Value);
+
+                    Company company = Companies.FirstOrDefault(c => c.Name == companyName);
+                    if (company != null)
+                    {
+                        company.NumberOfShares = numberOfShares;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error! \nDetails: {ex.Message}");
+                Console.WriteLine("Press any key to exit the menu...");
+                Console.ReadKey(true);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -156,7 +219,7 @@ namespace Oligopoly
  ╚═════╝ ╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝╚═╝
            Use up and down arrow keys to select an option
 ";
-            string[] options = { "Play", "About", "Exit" };
+            string[] options = { "Play", "Load", "About", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
             while (true)
             {
@@ -185,9 +248,26 @@ namespace Oligopoly
                         GameLoop();
                         break;
                     case 1:
-                        DisplayAboutGameMenu();
+                        LoadEmbeddedResources();
+                        if (LoadGame())
+                        {
+                            switch (GameMode)
+                            {
+                                case "default":
+                                    InitializeGame();
+                                    break;
+                                case "random":
+                                    LosingNetWorth = 2000.00M;
+                                    WinningNetWorth = 50000.00M;
+                                    break;
+                            }
+                            GameLoop();
+                        }
                         break;
                     case 2:
+                        DisplayAboutGameMenu();
+                        break;
+                    case 3:
                         DisplayExitMenu();
                         break;
                 }
@@ -213,7 +293,7 @@ namespace Oligopoly
                     SaveGame();
                     break;
                 case 1:
-                    // TODO: load the game.
+                    LoadGame();
                     break;
                 case 2:
                     DisplayExitMenu();
@@ -357,12 +437,12 @@ namespace Oligopoly
         /// </summary>
         private static void UpdateMarketPrices()
         {
-            for (int i = 0; i < Companies.Count; i++) 
+            for (int i = 0; i < Companies.Count; i++)
             {
                 Random random = new Random();
                 int effect = random.Next(0, 2);
 
-                switch (effect) 
+                switch (effect)
                 {
                     case 0:
                         Companies[i].SharePrice += Companies[i].SharePrice * Random.Shared.Next(1, 4) / 100;
