@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oligopoly", "Oligopoly\Oligopoly.csproj", "{47B0EADF-B6C0-40F4-A034-9F559AEC7D18}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{E1685C41-EF1E-45FD-9FD5-1C3E769BCA35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oligopoly.Game", "Source\Oligopoly.Game\Oligopoly.Game.csproj", "{61F60199-937A-4B87-B5B7-E70318482D95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +13,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{47B0EADF-B6C0-40F4-A034-9F559AEC7D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47B0EADF-B6C0-40F4-A034-9F559AEC7D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47B0EADF-B6C0-40F4-A034-9F559AEC7D18}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{47B0EADF-B6C0-40F4-A034-9F559AEC7D18}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{61F60199-937A-4B87-B5B7-E70318482D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61F60199-937A-4B87-B5B7-E70318482D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61F60199-937A-4B87-B5B7-E70318482D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61F60199-937A-4B87-B5B7-E70318482D95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{61F60199-937A-4B87-B5B7-E70318482D95} = {E1685C41-EF1E-45FD-9FD5-1C3E769BCA35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE654BE1-60EF-4C2A-B4E7-783D35FCF7FC}
