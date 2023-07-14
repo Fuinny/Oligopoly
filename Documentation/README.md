@@ -21,10 +21,10 @@ To make these changes, you will need to edit the appropriate ```.xml``` file in 
 Also, thank you for your interest in adding your own content to the game :P
 
 # :globe_with_meridians: Links
-All standard ```.xml``` files in the ```Data``` folder you can see [here](https://github.com/Fuinny/Oligopoly/tree/new-file-structure/Source/Oligopoly.Game/Data).
+All standard ```.xml``` files in the ```Data``` folder you can see [here](https://github.com/Fuinny/Oligopoly/tree/main/Source/Oligopoly.Game/Data).
 
-If you want to add your ```company``` to the game, you can find instructions [here](https://github.com/Fuinny/Oligopoly/blob/new-file-structure/Documentation/How-to-add-company.md).
+If you want to add your ```company``` to the game, you can find instructions [here](https://github.com/Fuinny/Oligopoly/blob/main/Documentation/How-to-add-company.md).
 
-If you want to add your ```events``` to the game, you can find instructions [here](https://github.com/Fuinny/Oligopoly/blob/new-file-structure/Documentation/How-to-add-event.md).
+If you want to add your ```events``` to the game, you can find instructions [here](https://github.com/Fuinny/Oligopoly/blob/main/Documentation/How-to-add-event.md).
 
-If you want to add your ```global events``` to the game, you can find instructions [here](https://github.com/Fuinny/Oligopoly/blob/new-file-structure/Documentation/How-to-add-global-event.md).
+If you want to add your ```global events``` to the game, you can find instructions [here](https://github.com/Fuinny/Oligopoly/blob/main/Documentation/How-to-add-global-event.md).
