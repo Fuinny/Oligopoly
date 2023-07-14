@@ -90,7 +90,7 @@ After following any of these methods, you should be able to run Oligopoly in you
 Also, thanks for playing or trying to play this simple CLI game! It means a lot :P
 
 ## :mag_right: Additional information
-If you want to add your content to the game or you are just curious about how the game files are organized for some reason, you can look at this [kind of documentation](https://github.com/Fuinny/Oligopoly/blob/new-file-structure/Documentation/README.md).
+If you want to add your content to the game or you are just curious about how the game files are organized for some reason, you can look at this [kind of documentation](https://github.com/Fuinny/Oligopoly/blob/main/Documentation/README.md).
 
 ## :heart: Special thanks
 I want to give a special thanks to [ZacharyPatten](https://github.com/ZacharyPatten) for creating the web version, as well as improving the code and concept of the game!
