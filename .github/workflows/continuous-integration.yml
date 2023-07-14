@@ -6,17 +6,17 @@ on:
       - main
     paths-ignore:
       - '.github/**'
+      - 'Documentation/**'
       - 'LICENSE.md'
       - 'README.md'
-      - 'DOCUMENTATION.md'
   pull_request:
     branches:
       - main
     paths-ignore:
       - '.github/**'
+      - 'Documentation/**'
       - 'LICENSE.md'
       - 'README.md'
-      - 'DOCUMENTATION.md'
 jobs:
   continuous-integration:
     runs-on: windows-latest
