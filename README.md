@@ -3,7 +3,7 @@
   <h1>
     Oligopoly
     <br>
-    A stock market betting game.
+    A stock market betting game
   </h1>
   <p align="left">
     <a href="https://github.com/Fuinny/Oligopoly"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/github-repo.svg" alt="GitHub Repository"></a>
@@ -89,15 +89,11 @@ After following any of these methods, you should be able to run Oligopoly in you
 
 Also, thanks for playing or trying to play this simple CLI game! It means a lot :P
 
-## :question: How to add your own company and event
-This game supports the ability to add your companies and events to the game or edit existing ones.
-
-To make these changes, you need to edit the .xml files in Data folder. 
-
-You can read more information about the files structure [here](https://github.com/Fuinny/Oligopoly/blob/master/DOCUMENTATION.md).
+## :mag_right: Additional information
+If you want to add your content to the game or you are just curious about how the game files are organized for some reason, you can look at this [kind of documentation](https://github.com/Fuinny/Oligopoly/blob/new-file-structure/Documentation/README.md).
 
 ## :heart: Special thanks
 I want to give a special thanks to [ZacharyPatten](https://github.com/ZacharyPatten) for creating the web version, as well as improving the code and concept of the game!
 
 ## :balance_scale: License
-This project and [Oligopoly logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg) are licensed under the [MIT License](https://github.com/Fuinny/Oligopoly/blob/master/LICENSE.md).
+This project and [Oligopoly logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg) are licensed under the [MIT License](https://github.com/Fuinny/Oligopoly/blob/main/LICENSE.md).
