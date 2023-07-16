@@ -11,13 +11,14 @@ namespace Oligopoly
         private static List<Company> Companies = new List<Company>();
         private static List<Event> Events = new List<Event>();
         private static List<Event> GlobalEvents = new List<Event>();
-        private static string Difficulty;
-        private static string GameMode;
+        private static int Difficulty;
+        private static int GameMode;
         private static int TurnCounter = 1;
-        private static decimal Money;
+        private static int PositiveEventChance;
+        private static decimal Money = 10000M;
         private static decimal NetWorth;
-        private static decimal LosingNetWorth;
-        private static decimal WinningNetWorth;
+        private const decimal LosingNetWorth = 2000.00M;
+        private const decimal WinningNetWorth = 50000.00M;
 
         /// <summary>
         /// Program entry point.
@@ -164,8 +165,8 @@ namespace Oligopoly
             try
             {
                 XDocument saveFile = XDocument.Load(saveFiles[selectedFile]);
-                GameMode = saveFile.Element("SaveFile").Element("GameMode").Value;
-                Difficulty = saveFile.Element("SaveFile").Element("Difficulty").Value;
+                GameMode = int.Parse(saveFile.Element("SaveFile").Element("GameMode").Value);
+                Difficulty = int.Parse(saveFile.Element("SaveFile").Element("Difficulty").Value);
                 TurnCounter = int.Parse(saveFile.Element("SaveFile").Element("CurrentTurn").Value);
                 Money = decimal.Parse(saveFile.Element("SaveFile").Element("Money").Value);
                 var sharePrices = saveFile.Element("SaveFile").Element("SharePrices").Elements();
@@ -227,42 +228,14 @@ namespace Oligopoly
                 {
                     case 0:
                         LoadEmbeddedResources();
-                        DisplayGameModeScreen();
-                        switch (GameMode)
-                        {
-                            case "default":
-                                DisplayDifficultiesScreen();
-                                InitializeGame();
-                                break;
-                            case "random":
-                                foreach (Company company in Companies)
-                                {
-                                    company.SharePrice = Random.Shared.Next(100, 5001);
-                                }
-                                Money = Random.Shared.Next(1000, 30001);
-                                LosingNetWorth = 2000.00M;
-                                WinningNetWorth = 50000.00M;
-                                break;
-                        }
-                        DisplayIntroductionLetter();
+                        DisplayGameSetupMenu(false);
                         GameLoop();
                         break;
                     case 1:
                         LoadEmbeddedResources();
-                        if (LoadGame())
-                        {
-                            switch (GameMode)
-                            {
-                                case "default":
-                                    InitializeGame();
-                                    break;
-                                case "random":
-                                    LosingNetWorth = 2000.00M;
-                                    WinningNetWorth = 50000.00M;
-                                    break;
-                            }
-                            GameLoop();
-                        }
+                        LoadGame();
+                        DisplayGameSetupMenu(true);
+                        GameLoop();
                         break;
                     case 2:
                         DisplayAboutGameMenu();
@@ -301,79 +274,61 @@ namespace Oligopoly
             }
         }
 
-        /// <summary>
-        /// Displays game mode screen.
-        /// </summary>
-        private static void DisplayGameModeScreen()
+        private static void DisplayGameSetupMenu(bool isLoading)
         {
-            string prompt = "Select game mode: ";
-            string[] options = { "Default", "Random" };
-            string[] descriptions = {
-                "This is the default game mode. Choose the difficulty, buy shares and try to sell them at a higher price to increase your net worth.",
-                "Want to go full random? In this mode, your money and company shares are randomly generated."
-            };
-            Menu gameModeMenu = new Menu(prompt, options);
-            switch (gameModeMenu.RunMenu(descriptions))
+            string prompt = @"
+ ██████╗  █████╗ ███╗   ███╗███████╗    ███████╗███████╗████████╗██╗   ██╗██████╗
+██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
+██║  ███╗███████║██╔████╔██║█████╗      ███████╗█████╗     ██║   ██║   ██║██████╔╝
+██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝
+╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ███████║███████╗   ██║   ╚██████╔╝██║
+ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
+         Customize the game to make it interesting for you to play ;)
+";
+            if (!isLoading)
             {
-                case 0:
-                    GameMode = "default";
-                    break;
-                case 1:
-                    GameMode = "random";
-                    break;
-            }
-        }
+                string[] difficultiesOptions = { "Easy", "Normal", "Hard" };
+                string[] gameModesOptions = { "Standard", "Random", "Custom" };
+                string[] difficultiesDescriptions = {
+                    "60% chance that the next market event will be positive",
+                    "50% chance that the next market event will be positive/negative",
+                    "60% change that the next market event will be negative"
+                };
+                string[] gameModesDescriptions = {
+                    "Just standard mode, nothing out of the ordinary",
+                    "Your money and company shares prices will be randomly generated",
+                    "You can set the starting amount of your money"
+                };
 
-        /// <summary>
-        /// Displays difficulties screen.
-        /// </summary>
-        private static void DisplayDifficultiesScreen()
-        {
-            string prompt = "Select difficulty: ";
-            string[] options = { "Easy", "Normal", "Hard" };
-            string[] descriptions = {
-                "You will have 20000$\nYou will lose if your net worth drop below 1000$\nYou will win if your net worth will be over 30000$",
-                "You will have 10000$\nYou will lose if your net worth drop below 2000$\nYou will win if your net worth will be over 50000$",
-                "You will have 5000$\nYou will lose if your net worth drop below 3000$\nYou will win if your net worth will be over 100000$"
-            };
-            Menu difficultiesMenu = new Menu(prompt, options);
-            switch (difficultiesMenu.RunMenu(descriptions))
-            {
-                case 0:
-                    Difficulty = "easy";
-                    break;
-                case 1:
-                    Difficulty = "normal";
-                    break;
-                case 2:
-                    Difficulty = "hard";
-                    break;
-            }
-        }
+                TurnCounter = 1;
+                Menu setupMenu = new Menu(prompt, gameModesOptions);
+                GameMode = setupMenu.RunMenu(gameModesDescriptions);
+                setupMenu = new Menu(prompt, difficultiesOptions);
+                Difficulty = setupMenu.RunMenu(difficultiesDescriptions);
 
-        /// <summary>
-        /// Initializes the game with the selected difficulty.
-        /// Sets money values and win/lose conditions.
-        /// </summary>
-        private static void InitializeGame()
-        {
+                switch (GameMode)
+                {
+                    case 1:
+                        foreach (Company company in Companies)
+                        {
+                            company.SharePrice = Random.Shared.Next(100, 5001);
+                        }
+                        Money = Random.Shared.Next(1000, 30001);
+                        break;
+                    case 2:
+                        string moneyPrompt = "Select amount of money: ";
+                        string[] moneyOptions = { "(+) Increase", "(-) Decrease", "Done" };
+                        Menu moneyMenu = new Menu(moneyPrompt, moneyOptions);
+                        Money = moneyMenu.RunMoneySetupMenu();
+                        break;
+                }
+            }
+
             switch (Difficulty)
             {
-                case "easy":
-                    Money = 20000.00M;
-                    LosingNetWorth = 1000.00M;
-                    WinningNetWorth = 30000.00M;
-                    break;
-                case "normal":
-                    Money = 10000.00M;
-                    LosingNetWorth = 2000.00M;
-                    WinningNetWorth = 50000.00M;
-                    break;
-                case "hard":
-                    Money = 5000.00M;
-                    LosingNetWorth = 3000.00M;
-                    WinningNetWorth = 100000.00M;
-                    break;
+                case 0: PositiveEventChance = 60; break;
+                case 1: PositiveEventChance = 50; break;
+                case 2: PositiveEventChance = 40; break;
             }
         }
 
