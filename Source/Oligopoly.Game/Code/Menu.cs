@@ -108,6 +108,74 @@ namespace Oligopoly
             return SelectedIndex;
         }
 
+        public decimal RunMoneySetupMenu()
+        {
+            decimal customMoney = 1000M;
+            ConsoleKey keyPressed;
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine(Prompt);
+                Console.WriteLine($"\nYour starting amount of money will be set to {customMoney:C}");
+                Console.WriteLine("Use up and down arrow keys and enter to select an option:\n");
+
+                for (int i = 0; i < Options.Length; i++)
+                {
+                    if (i == SelectedIndex)
+                    {
+                        (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
+                        Console.WriteLine($"[*] {Options[i]}");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[ ] {Options[i]}");
+                    }
+                }
+
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                keyPressed = keyInfo.Key;
+
+
+                switch (keyPressed)
+                {
+                    case ConsoleKey.UpArrow:
+                        SelectedIndex--;
+                        if (SelectedIndex == -1)
+                        {
+                            SelectedIndex = Options.Length - 1;
+                        }
+                        break;
+                    case ConsoleKey.DownArrow:
+                        SelectedIndex++;
+                        if (SelectedIndex > Options.Length - 1)
+                        {
+                            SelectedIndex = 0;
+                        }
+                        break;
+                    case ConsoleKey.Enter:
+                        if (SelectedIndex == 0)
+                        {
+                            customMoney += 100;
+                        }
+                        else if (SelectedIndex == 1)
+                        {
+                            if (customMoney - 100 >= 1000)
+                            {
+                                customMoney -= 100;
+                            }
+                        }
+                        else
+                        {
+                            return customMoney;
+                        }
+                        break;
+                }
+
+            }
+        }
+
         /// <summary>
         /// Runs buy or sell menu.
         /// </summary>

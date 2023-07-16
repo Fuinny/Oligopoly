@@ -274,56 +274,6 @@ namespace Oligopoly
             }
         }
 
-        ///// <summary>
-        ///// Displays game mode screen.
-        ///// </summary>
-        //private static void DisplayGameModeScreen()
-        //{
-        //    string prompt = "Select game mode: ";
-        //    string[] options = { "Default", "Random" };
-        //    string[] descriptions = {
-        //        "This is the default game mode. Choose the difficulty, buy shares and try to sell them at a higher price to increase your net worth.",
-        //        "Want to go full random? In this mode, your money and company shares are randomly generated."
-        //    };
-        //    Menu gameModeMenu = new Menu(prompt, options);
-        //    switch (gameModeMenu.RunMenu(descriptions))
-        //    {
-        //        case 0:
-        //            GameMode = "default";
-        //            break;
-        //        case 1:
-        //            GameMode = "random";
-        //            break;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Displays difficulties screen.
-        ///// </summary>
-        //private static void DisplayDifficultiesScreen()
-        //{
-        //    string prompt = "Select difficulty: ";
-        //    string[] options = { "Easy", "Normal", "Hard" };
-        //    string[] descriptions = {
-        //        "You will have 20000$\nYou will lose if your net worth drop below 1000$\nYou will win if your net worth will be over 30000$",
-        //        "You will have 10000$\nYou will lose if your net worth drop below 2000$\nYou will win if your net worth will be over 50000$",
-        //        "You will have 5000$\nYou will lose if your net worth drop below 3000$\nYou will win if your net worth will be over 100000$"
-        //    };
-        //    Menu difficultiesMenu = new Menu(prompt, options);
-        //    switch (difficultiesMenu.RunMenu(descriptions))
-        //    {
-        //        case 0:
-        //            Difficulty = "easy";
-        //            break;
-        //        case 1:
-        //            Difficulty = "normal";
-        //            break;
-        //        case 2:
-        //            Difficulty = "hard";
-        //            break;
-        //    }
-        //}
-
         private static void DisplayGameSetupMenu(bool isLoading)
         {
             string prompt = @"
@@ -338,7 +288,7 @@ namespace Oligopoly
             if (!isLoading)
             {
                 string[] difficultiesOptions = { "Easy", "Normal", "Hard" };
-                string[] gameModesOptions = { "Standard", "Random" };
+                string[] gameModesOptions = { "Standard", "Random", "Custom" };
                 string[] difficultiesDescriptions = {
                     "60% chance that the next market event will be positive",
                     "50% chance that the next market event will be positive/negative",
@@ -364,6 +314,12 @@ namespace Oligopoly
                             company.SharePrice = Random.Shared.Next(100, 5001);
                         }
                         Money = Random.Shared.Next(1000, 30001);
+                        break;
+                    case 2:
+                        string moneyPrompt = "Select amount of money: ";
+                        string[] moneyOptions = { "(+) Increase", "(-) Decrease", "Done" };
+                        Menu moneyMenu = new Menu(moneyPrompt, moneyOptions);
+                        Money = moneyMenu.RunMoneySetupMenu();
                         break;
                 }
             }
