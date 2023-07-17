@@ -1,134 +1,131 @@
-﻿using System;
-using System.Xml;
-using System.Xml.Linq;
+﻿using System.Xml;
 using System.Xml.Serialization;
 
-namespace Oligopoly
+namespace Oligopoly.Game;
+
+public class Company
 {
-    public class Company
+    private string name;
+    private string industry;
+    private string description;
+    private decimal sharePrice;
+    private int numberOfShares;
+
+    /// <summary>
+    /// Gets or sets the name of the company.
+    /// The name cannot be null or whitespace.
+    /// </summary>
+    [XmlElement("Name")]
+    public string Name
     {
-        private string name;
-        private string industry;
-        private string description;
-        private decimal sharePrice;
-        private int numberOfShares;
-
-        /// <summary>
-        /// Gets or sets the name of the company.
-        /// The name cannot be null or whitespace.
-        /// </summary>
-        [XmlElement("Name")]
-        public string Name
+        get
         {
-            get
+            return name;
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
             {
-                return name;
+                throw new Exception("Name cannot be null or whitespace!");
             }
-            set
+            else
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new Exception("Name cannot be null or whitespace!");
-                }
-                else
-                {
-                    name = value;
-                }
+                name = value;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the industry of the company.
-        /// The industry cannot be null or whitespace.
-        /// </summary>
-        [XmlElement("Industry")]
-        public string Industry
+    /// <summary>
+    /// Gets or sets the industry of the company.
+    /// The industry cannot be null or whitespace.
+    /// </summary>
+    [XmlElement("Industry")]
+    public string Industry
+    {
+        get
         {
-            get
+            return industry;
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
             {
-                return industry;
+                throw new Exception("Industry cannot be null or whitespace!");
             }
-            set
+            else
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new Exception("Industry cannot be null or whitespace!");
-                }
-                else
-                {
-                    industry = value;
-                }
+                industry = value;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the description of the company.
-        /// The description cannot be null or whitespace.
-        /// </summary>
-        [XmlElement("Description")]
-        public string Description
+    /// <summary>
+    /// Gets or sets the description of the company.
+    /// The description cannot be null or whitespace.
+    /// </summary>
+    [XmlElement("Description")]
+    public string Description
+    {
+        get
         {
-            get
+            return description;
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
             {
-                return description;
+                throw new Exception("Description cannot be null or whitespace!");
             }
-            set
+            else
             {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new Exception("Description cannot be null or whitespace!");
-                }
-                else
-                {
-                    description = value;
-                }
+                description = value;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the share price of the company.
-        /// The share price cannot less than or equal to zero.
-        /// </summary>
-        [XmlElement("SharePrice")]
-        public decimal SharePrice
+    /// <summary>
+    /// Gets or sets the share price of the company.
+    /// The share price cannot less than or equal to zero.
+    /// </summary>
+    [XmlElement("SharePrice")]
+    public decimal SharePrice
+    {
+        get
         {
-            get
+            return sharePrice;
+        }
+        set
+        {
+            if (value <= 0)
             {
-                return sharePrice;
+                throw new Exception("Share Price cannot be less than or equal to zero!");
             }
-            set
+            else
             {
-                if (value <= 0)
-                {
-                    throw new Exception("Share Price cannot be less than or equal to zero!");
-                }
-                else
-                {
-                    sharePrice = value;
-                }
+                sharePrice = value;
             }
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the number of shares of the company.
-        /// The number of share cannot be less than or equal to zero.
-        /// </summary>
-        public int NumberOfShares
+    /// <summary>
+    /// Gets or sets the number of shares of the company.
+    /// The number of share cannot be less than or equal to zero.
+    /// </summary>
+    public int NumberOfShares
+    {
+        get
         {
-            get
+            return numberOfShares;
+        }
+        set
+        {
+            if (value < 0)
             {
-                return numberOfShares;
+                throw new Exception("Number of Shares cannot be less than zero!");
             }
-            set
+            else
             {
-                if (value < 0)
-                {
-                    throw new Exception("Number of Shares cannot be less than zero!");
-                }
-                else
-                {
-                    numberOfShares = value;
-                }
+                numberOfShares = value;
             }
         }
     }
