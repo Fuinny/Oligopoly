@@ -143,9 +143,10 @@ public class Program
     /// </summary>
     private static bool LoadGame()
     {
-        string[] saveFiles = Directory.GetFiles("Saves", "*.xml");
+        string[] saveFilesPaths = Directory.GetFiles("Saves", "*.xml");
+        string[] saveFileNames = Array.ConvertAll(saveFilesPaths, Path.GetFileName);
 
-        if (saveFiles.Length == 0)
+        if (saveFilesPaths.Length == 0)
         {
             Console.Clear();
             Console.WriteLine("No save files found.");
@@ -154,12 +155,12 @@ public class Program
             return false;
         }
 
-        Menu loadMenu = new Menu("Select file to load: ", saveFiles);
+        Menu loadMenu = new Menu("Select file to load: ", saveFileNames);
         int selectedFile = loadMenu.RunMenu();
 
         try
         {
-            XDocument saveFile = XDocument.Load(saveFiles[selectedFile]);
+            XDocument saveFile = XDocument.Load(saveFilesPaths[selectedFile]);
             GameMode = int.Parse(saveFile.Element("SaveFile").Element("GameMode").Value);
             Difficulty = int.Parse(saveFile.Element("SaveFile").Element("Difficulty").Value);
             TurnCounter = int.Parse(saveFile.Element("SaveFile").Element("CurrentTurn").Value);
@@ -224,6 +225,7 @@ public class Program
                 case 0:
                     LoadEmbeddedResources();
                     DisplayGameSetupMenu(false);
+                    DisplayIntroductionLetter();
                     GameLoop();
                     break;
                 case 1:
@@ -311,17 +313,17 @@ public class Program
             switch (GameMode)
             {
                 case 1:
+                    Money = Random.Shared.Next(1000, 30001);
                     foreach (Company company in Companies)
                     {
                         company.SharePrice = Random.Shared.Next(100, 5001);
                     }
-                    Money = Random.Shared.Next(1000, 30001);
                     break;
                 case 2:
-                    string moneyPrompt = "Select amount of money: ";
-                    string[] moneyOptions = { "(+) Increase", "(-) Decrease", "Done" };
-                    Menu moneyMenu = new Menu(moneyPrompt, moneyOptions);
-                    Money = moneyMenu.RunMoneySetupMenu();
+                    DisplayMoneySetupMenu();
+                    break;
+                case 3:
+                    DisplayMoneySetupMenu();
                     break;
             }
         }
@@ -332,6 +334,25 @@ public class Program
             case 1: PositiveEventChance = 50; break;
             case 2: PositiveEventChance = 40; break;
         }
+    }
+
+    /// <summary>
+    /// Displays money setup menu to the console.
+    /// </summary>
+    private static void DisplayMoneySetupMenu()
+    {
+        string prompt = @"
+███╗   ███╗███████╗███╗   ██╗██╗   ██╗    ███████╗███████╗████████╗██╗   ██╗██████╗
+████╗ ████║██╔════╝████╗  ██║██║   ██║    ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
+██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║    ███████╗█████╗     ██║   ██║   ██║██████╔╝
+██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║    ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝
+██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝    ███████║███████╗   ██║   ╚██████╔╝██║     
+╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝     ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
+                 Customize your starting amount of money
+";
+        string[] options = { "(+) Increase", "(-) Decrease", "Done" };
+        Menu moneyMenu = new Menu(prompt, options);
+        Money = moneyMenu.RunMoneySetupMenu();
     }
 
     /// <summary>
@@ -371,15 +392,16 @@ public class Program
                     break;
             }
 
-            if (NetWorth > WinningNetWorth)
+            switch (NetWorth)
             {
-                isGameEnded = true;
-                DisplayWinLetter();
-            }
-            else if (NetWorth < LosingNetWorth)
-            {
-                isGameEnded = true;
-                DisplayLoseLetter();
+                case < LosingNetWorth:
+                    isGameEnded = true;
+                    DisplayLoseLetter();
+                    break;
+                case > WinningNetWorth:
+                    isGameEnded = true;
+                    DisplayWinLetter();
+                    break;
             }
 
             TurnCounter++;
@@ -387,6 +409,7 @@ public class Program
 
         Companies.Clear();
         Events.Clear();
+        GlobalEvents.Clear();
     }
 
     /// <summary>
@@ -514,6 +537,12 @@ public class Program
     private static void DisplayIntroductionLetter()
     {
         string prompt = @"
+          ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
+          ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
+          ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗  
+          ██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝  
+          ╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗
+           ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║ Dear new CEO,                                                                  ║
 ║                                                                                ║
@@ -544,6 +573,12 @@ public class Program
     private static void DisplayWinLetter()
     {
         string prompt = @$"
+          ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗██╗███╗   ██╗
+          ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██║████╗  ██║
+           ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║██╔██╗ ██║
+            ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║██║╚██╗██║
+             ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║██║ ╚████║
+             ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║ Dear CEO,                                                                      ║
 ║                                                                                ║
@@ -564,7 +599,7 @@ public class Program
 
 Your Net Worth is over {WinningNetWorth}$
 You have played {TurnCounter} turns
-You win! Congratulations!
+Congratulations!
 ";
         string[] options = { "Return to Main Menu" };
         Menu winMenu = new Menu(prompt, options);
@@ -577,6 +612,12 @@ You win! Congratulations!
     private static void DisplayLoseLetter()
     {
         string prompt = @$"
+          ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗      ██████╗ ███████╗███████╗
+          ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║     ██╔═══██╗██╔════╝██╔════╝
+           ╚████╔╝ ██║   ██║██║   ██║    ██║     ██║   ██║███████╗█████╗  
+            ╚██╔╝  ██║   ██║██║   ██║    ██║     ██║   ██║╚════██║██╔══╝  
+             ██║   ╚██████╔╝╚██████╔╝    ███████╗╚██████╔╝███████║███████╗
+             ╚═╝    ╚═════╝  ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝╚══════╝
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║ Dear former CEO,                                                               ║
 ║                                                                                ║
@@ -593,7 +634,7 @@ You win! Congratulations!
 
 Your Net Worth dropped below {LosingNetWorth}$
 You have played {TurnCounter} turns
-You Lose! Better luck next time...
+Better luck next time...
 ";
         string[] options = { "Return to Main Menu" };
         Menu loseMenu = new Menu(prompt, options);
@@ -606,9 +647,13 @@ You Lose! Better luck next time...
     private static void DisplayAboutGameMenu()
     {
         string prompt = @"
+          ████████╗██╗  ██╗ █████╗ ███╗   ██╗██╗  ██╗███████╗██╗
+          ╚══██╔══╝██║  ██║██╔══██╗████╗  ██║██║ ██╔╝██╔════╝██║
+             ██║   ███████║███████║██╔██╗ ██║█████╔╝ ███████╗██║
+             ██║   ██╔══██║██╔══██║██║╚██╗██║██╔═██╗ ╚════██║╚═╝
+             ██║   ██║  ██║██║  ██║██║ ╚████║██║  ██╗███████║██╗
+             ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝
 ╔══════════════════════════════════════════════════════════════════════════════════╗
-║THANKS!                                                                           ║
-║                                                                                  ║
 ║No really, thank you for taking time to play this simple CLI game. It means a lot.║
 ║If you find any bug or have an idea how to improve the game, please let me know :D║
 ║                                                                                  ║
