@@ -15,16 +15,12 @@ public class Menu
         SelectedIndex = 0;
     }
 
-    // <summary>
-    // Runs menu with options.
-    // </summary>
-    // <returns>An integer, that represents selected option.</returns>
     /// <summary>
-    /// Runs menu with options.
+    /// Displays and updates menu with given prompt and options.
     /// </summary>
-    /// <param name="isPausable">Determines whether the menu can be paused. The default is false.</param>
-    /// <param name="descriptions">Contains all option descriptions. The default is null.</param>
-    /// <returns>An integer, that represents selected option.</returns>
+    /// <param name="descriptions">An array of descriptions for each menu option.</param>
+    /// <param name="isPausable">Determines if the pause menu can be called from this menu.</param>
+    /// <returns>An integer that represents selected option.</returns>
     public int RunMenu(string[] descriptions = default, bool isPausable = false)
     {
         ConsoleKey keyPressed;
@@ -104,6 +100,10 @@ public class Menu
         return SelectedIndex;
     }
 
+    /// <summary>
+    /// Displays and updates money setup menu with given prompt and options.
+    /// </summary>
+    /// <returns>A decimal value that represents selected amount of money.</returns>
     public decimal RunMoneySetupMenu()
     {
         decimal customMoney = 1000M;
@@ -173,12 +173,12 @@ public class Menu
     }
 
     /// <summary>
-    /// Runs buy or sell menu.
+    /// Displays and updates buy or sell menu with given prompt and options.
     /// </summary>
-    /// <param name="numberOfSharesToProcess">The number of shares that will need to be processed after the player is selected.</param>
+    /// <param name="numberOfSharesToProcess">Number of shares that player buy or sell.</param>
     /// <param name="companies">List of all in-game companies.</param>
-    /// <param name="money">The player's current amount of money.</param>
-    /// <param name="isBuying">A flag that specifies how the method should work. True - buy. False - sell.</param>
+    /// <param name="money">Current amount of player's money.</param>
+    /// <param name="isBuying">Determines if the player is buying or selling shares.</param>
     public void RunBuyOrSellMenu(ref int[] numberOfSharesToProcess, List<Company> companies, decimal money, bool isBuying)
     {
         ConsoleKey keyPressed;
@@ -266,7 +266,7 @@ public class Menu
     /// Draws table with information about all in-game companies.
     /// </summary>
     /// <param name="companies">List of all in-game companies.</param>
-    /// <returns>A StringBuilder object, that contains table.</returns>
+    /// <returns>A StringBuilder object that contains table.</returns>
     public static StringBuilder DrawCompaniesTable(List<Company> companies)
     {
         const int c0 = 30, c1 = 10, c2 = 20, c3 = 15;

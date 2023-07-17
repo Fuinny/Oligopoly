@@ -8,35 +8,33 @@ public class Program
     private static List<Company> Companies = new List<Company>();
     private static List<Event> Events = new List<Event>();
     private static List<Event> GlobalEvents = new List<Event>();
-    private static int Difficulty;
     private static int GameMode;
-    private static int TurnCounter = 1;
+    private static int Difficulty;
+    private static int TurnCounter;
     private static int PositiveEventChance;
-    private static decimal Money = 10000M;
     private static decimal NetWorth;
+    private static decimal Money = 10000M;
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
     /// <summary>
-    /// Program entry point.
+    /// Entry point for the game.
     /// </summary>
-    public static void Main()
+    private static void Main()
     {
-        if (!Directory.Exists("Saves"))
-        {
-            Directory.CreateDirectory("Saves");
-        }
+        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
         if (OperatingSystem.IsWindows())
         {
             Console.CursorVisible = false;
-            Console.BufferHeight = Console.WindowHeight;
             Console.BufferWidth = Console.WindowWidth;
+            Console.BufferHeight = Console.WindowHeight;
         }
         DisplayMainMenuScreen();
     }
 
     /// <summary>
-    /// Reads .xml files and checks data from files for correctness.
+    /// Tries to read .xml files from Data folder.
+    /// If it fails, method throw an exception and exits the program.
     /// </summary>
     private static void LoadEmbeddedResources()
     {
@@ -99,7 +97,7 @@ public class Program
     }
 
     /// <summary>
-    /// Saves the current stage of the game.
+    /// Saves the current state of the game to an .xml file in Saves folder.
     /// </summary>
     private static void SaveGame()
     {
@@ -141,7 +139,7 @@ public class Program
     }
 
     /// <summary>
-    /// Loads the game from already created saves.
+    /// Loads the game from already created .xml files from Saves folder.
     /// </summary>
     private static bool LoadGame()
     {
@@ -244,6 +242,9 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Displays pause menu to the console.
+    /// </summary>
     private static void DisplayPauseMenu()
     {
         string prompt = @"
@@ -271,6 +272,10 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// Displays game setup menu to the console.
+    /// </summary>
+    /// <param name="isLoading">Determines if the player is launching the game or loading a save.</param>
     private static void DisplayGameSetupMenu(bool isLoading)
     {
         string prompt = @"
@@ -385,7 +390,7 @@ public class Program
     }
 
     /// <summary>
-    /// Changes the share prices of all companies from (-)1 to (-)3 percent
+    /// Changes the share prices of all companies from (-)1 to (-)3 percent.
     /// </summary>
     private static void UpdateMarketPrices()
     {
@@ -419,7 +424,7 @@ public class Program
     }
 
     /// <summary>
-    /// Generates a random event.
+    /// Generates a random event or random global event.
     /// </summary>
     private static void GenerateEvent()
     {
@@ -455,9 +460,9 @@ public class Program
     }
 
     /// <summary>
-    /// Displays buy or sell menu.
+    /// Displays buy or sell menu to the console.
     /// </summary>
-    /// <param name="isBuying">A flag that specifies how the method should work. True - buy. False - sell.</param>
+    /// <param name="isBuying">Determines if the player is buying or selling shares.</param>
     public static void DisplayBuyOrSellScreen(bool isBuying)
     {
         StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
@@ -504,7 +509,7 @@ public class Program
     }
 
     /// <summary>
-    /// Displays introduction letter.
+    /// Displays introduction letter to the console.
     /// </summary>
     private static void DisplayIntroductionLetter()
     {
@@ -534,7 +539,7 @@ public class Program
     }
 
     /// <summary>
-    /// Displays win letter.
+    /// Displays win letter to the console.
     /// </summary>
     private static void DisplayWinLetter()
     {
@@ -567,7 +572,7 @@ You win! Congratulations!
     }
 
     /// <summary>
-    /// Displays lose letter.
+    /// Displays lose letter to the console.
     /// </summary>
     private static void DisplayLoseLetter()
     {
@@ -616,7 +621,7 @@ You Lose! Better luck next time...
     }
 
     /// <summary>
-    /// Displays exit menu.
+    /// Displays exit menu to the console.
     /// </summary>
     private static void DisplayExitMenu()
     {
