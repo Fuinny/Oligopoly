@@ -153,7 +153,10 @@ public class Menu
                 case ConsoleKey.Enter:
                     if (SelectedIndex == 0)
                     {
-                        customMoney += 100;
+                        if (customMoney + 100 <= 45000)
+                        {
+                            customMoney += 100;
+                        }
                     }
                     else if (SelectedIndex == 1)
                     {
