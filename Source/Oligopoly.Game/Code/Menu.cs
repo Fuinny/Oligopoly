@@ -208,7 +208,7 @@ public class Menu
                 }
             }
 
-            Console.WriteLine($"\nTransaction {(isBuying ? "cost" : "payout")}: {Math.Round(transactionCost, 2)}$");
+            Console.WriteLine($"\nTransaction {(isBuying ? "cost" : "payout")}: {Math.Round(transactionCost, 2):C}");
 
             ConsoleKeyInfo keyInfo = Console.ReadKey();
             keyPressed = keyInfo.Key;
@@ -277,7 +277,7 @@ public class Menu
         companiesTable.AppendLine($"╠═{new('═', c0)}═╬═{new('═', c1)}═╬═{new('═', c2)}═╬═{new('═', c3)}═╣");
         foreach (Company company in companies)
         {
-            companiesTable.AppendLine($"║ {company.Name,-c0} ║ {company.Industry,c1} ║ {Math.Round(company.SharePrice, 2),c2} ║ {company.NumberOfShares,c3} ║");
+            companiesTable.AppendLine($"║ {company.Name,-c0} ║ {company.Industry,c1} ║ {Math.Round(company.SharePrice, 2),c2:C} ║ {company.NumberOfShares,c3} ║");
         }
         companiesTable.AppendLine($"╚═{new('═', c0)}═╩═{new('═', c1)}═╩═{new('═', c2)}═╩═{new('═', c3)}═╝");
 

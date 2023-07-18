@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace Oligopoly.Game;
 
@@ -118,9 +119,9 @@ public class Program
                     new XElement("GameMode", GameMode),
                     new XElement("Difficulty", Difficulty),
                     new XElement("CurrentTurn", TurnCounter),
-                    new XElement("Money", Money),
-                    new XElement("SharePrices", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice))),
-                    new XElement("BuyedShares", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares)))
+                    new XElement("Money", Money.ToString(CultureInfo.CurrentCulture)),
+                    new XElement("SharePrices", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice.ToString(CultureInfo.CurrentCulture)))),
+                    new XElement("BuyedShares", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares.ToString(CultureInfo.CurrentCulture))))
                     )
                 );
             saveFile.Save(filePath);
@@ -367,7 +368,7 @@ public class Program
             CalculateNetWorth();
 
             StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-            prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$     Your Net Worth: {Math.Round(NetWorth, 2)}$     Current Turn: {TurnCounter}");
+            prompt.AppendLine($"\nYou have: {Math.Round(Money, 2):C}     Your Net Worth: {Math.Round(NetWorth, 2):C}     Current Turn: {TurnCounter}");
             string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
 
             Menu gameMenu = new Menu(prompt.ToString(), options);
