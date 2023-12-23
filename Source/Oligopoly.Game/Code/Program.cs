@@ -9,6 +9,7 @@ public class Program
     private static List<Company> Companies = new List<Company>();
     private static List<Event> Events = new List<Event>();
     private static List<Event> GlobalEvents = new List<Event>();
+    private static bool CloseRequested = false;
     private static int GameMode;
     private static int Difficulty;
     private static int TurnCounter;
@@ -19,7 +20,7 @@ public class Program
     private const decimal WinningNetWorth = 50000.00M;
 
     /// <summary>
-    /// Entry point for the game.
+    /// Contains entry point and main logic of the game.
     /// </summary>
     private static void Main()
     {
@@ -29,6 +30,31 @@ public class Program
             Console.CursorVisible = false;
             Console.BufferWidth = Console.WindowWidth;
             Console.BufferHeight = Console.WindowHeight;
+        }
+
+        while (!CloseRequested)
+        {
+            switch (DisplayMainMenuScreen())
+            {
+                case 0:
+                    LoadEmbeddedResources();
+                    DisplayGameSetupMenu(false);
+                    DisplayIntroductionLetter();
+                    GameLoop();
+                    break;
+                case 1:
+                    LoadEmbeddedResources();
+                    LoadGame();
+                    DisplayGameSetupMenu(true);
+                    GameLoop();
+                    break;
+                case 2:
+                    DisplayAboutGameMenu();
+                    break;
+                case 3:
+                    DisplayExitMenu();
+                    break;
+            }
         }
         DisplayMainMenuScreen();
     }
@@ -206,7 +232,7 @@ public class Program
     /// <summary>
     /// Displays main menu to the console.
     /// </summary>
-    private static void DisplayMainMenuScreen()
+    private static int DisplayMainMenuScreen()
     {
         string prompt = @"
  ██████╗ ██╗     ██╗ ██████╗  ██████╗ ██████╗  ██████╗ ██╗  ██╗   ██╗
@@ -219,30 +245,8 @@ public class Program
 ";
         string[] options = { "Play", "Load", "About", "Exit" };
         Menu mainMenu = new Menu(prompt, options);
-        while (true)
-        {
-            switch (mainMenu.RunMenu())
-            {
-                case 0:
-                    LoadEmbeddedResources();
-                    DisplayGameSetupMenu(false);
-                    DisplayIntroductionLetter();
-                    GameLoop();
-                    break;
-                case 1:
-                    LoadEmbeddedResources();
-                    LoadGame();
-                    DisplayGameSetupMenu(true);
-                    GameLoop();
-                    break;
-                case 2:
-                    DisplayAboutGameMenu();
-                    break;
-                case 3:
-                    DisplayExitMenu();
-                    break;
-            }
-        }
+
+        return mainMenu.RunMenu();
     }
 
     /// <summary>
@@ -677,7 +681,7 @@ Better luck next time...
         switch (exitMenu.RunMenu())
         {
             case 0:
-                Environment.Exit(0);
+                CloseRequested = true;
                 break;
         }
     }
