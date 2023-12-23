@@ -44,9 +44,11 @@ public class Program
                     break;
                 case 1:
                     LoadEmbeddedResources();
-                    LoadGame();
-                    DisplayGameSetupMenu(true);
-                    GameLoop();
+                    if (LoadGame())
+                    {
+                        DisplayGameSetupMenu(true);
+                        GameLoop();
+                    }
                     break;
                 case 2:
                     DisplayAboutGameMenu();
