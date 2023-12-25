@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Oligopoly.Game;
+﻿namespace Oligopoly.Game;
 
 public class Menu
 {

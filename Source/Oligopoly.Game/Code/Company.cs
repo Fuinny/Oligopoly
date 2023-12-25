@@ -1,7 +1,4 @@
-﻿using System.Xml;
-using System.Xml.Serialization;
-
-namespace Oligopoly.Game;
+﻿namespace Oligopoly.Game;
 
 public class Company
 {

@@ -1,8 +1,4 @@
-﻿using System.Text;
-using System.Xml.Linq;
-using System.Globalization;
-
-namespace Oligopoly.Game;
+﻿namespace Oligopoly.Game;
 
 public class Program
 {
