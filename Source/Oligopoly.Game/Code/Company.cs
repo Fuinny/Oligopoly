@@ -8,22 +8,17 @@ public class Company
     private decimal sharePrice;
     private int numberOfShares;
 
-    /// <summary>
-    /// Gets or sets the name of the company.
-    /// The name cannot be null or whitespace.
-    /// </summary>
+    /// <summary>Gets or sets the name of the company.</summary>
+    /// <remarks>Name of the company must not be null or whitespace.</remarks>
     [XmlElement("Name")]
     public string Name
     {
-        get
-        {
-            return name;
-        }
+        get => name;
         set
         {
             if (string.IsNullOrEmpty(value))
             {
-                throw new Exception("Name cannot be null or whitespace!");
+                throw new Exception("Name of the company must not be null or whitespace!");
             }
             else
             {
@@ -32,22 +27,17 @@ public class Company
         }
     }
 
-    /// <summary>
-    /// Gets or sets the industry of the company.
-    /// The industry cannot be null or whitespace.
-    /// </summary>
+    /// <summary>Gets or sets the industry of the company.</summary>
+    /// <remarks>Industry of the company must not be null or whitespace.</remarks>
     [XmlElement("Industry")]
     public string Industry
     {
-        get
-        {
-            return industry;
-        }
+        get => industry;
         set
         {
             if (string.IsNullOrEmpty(value))
             {
-                throw new Exception("Industry cannot be null or whitespace!");
+                throw new Exception("Industry of the company must not be null or whitespace!");
             }
             else
             {
@@ -56,22 +46,17 @@ public class Company
         }
     }
 
-    /// <summary>
-    /// Gets or sets the description of the company.
-    /// The description cannot be null or whitespace.
-    /// </summary>
+    /// <summary>Gets or sets the description of the company.</summary>
+    /// <remarks>Description of the company must not be null or whitespace.</remarks>
     [XmlElement("Description")]
     public string Description
     {
-        get
-        {
-            return description;
-        }
+        get => description;
         set
         {
             if (string.IsNullOrEmpty(value))
             {
-                throw new Exception("Description cannot be null or whitespace!");
+                throw new Exception("Description of the company must not be null or whitespace!");
             }
             else
             {
@@ -80,22 +65,17 @@ public class Company
         }
     }
 
-    /// <summary>
-    /// Gets or sets the share price of the company.
-    /// The share price cannot less than or equal to zero.
-    /// </summary>
+    /// <summary>Gets or sets the share price of the company.</summary>
+    /// <remarks>Share price of the company must be greater than zero.</remarks>
     [XmlElement("SharePrice")]
     public decimal SharePrice
     {
-        get
-        {
-            return sharePrice;
-        }
+        get => sharePrice;
         set
         {
-            if (value <= 0)
+            if (value <= 0) 
             {
-                throw new Exception("Share Price cannot be less than or equal to zero!");
+                throw new Exception("Share price of the company must be greater than zero!");
             }
             else
             {
@@ -104,21 +84,17 @@ public class Company
         }
     }
 
-    /// <summary>
-    /// Gets or sets the number of shares of the company.
-    /// The number of share cannot be less than or equal to zero.
-    /// </summary>
+    /// <summary>Gets or sets the number of shares of the company.</summary>
+    /// <remarks>Number of shares of the company must not be less than zero.</remarks>
+    [XmlElement("NumberOfShares")]
     public int NumberOfShares
     {
-        get
-        {
-            return numberOfShares;
-        }
+        get => numberOfShares;
         set
         {
             if (value < 0)
             {
-                throw new Exception("Number of Shares cannot be less than zero!");
+                throw new Exception("Number of shares of the company must not be less than zero!");
             }
             else
             {
