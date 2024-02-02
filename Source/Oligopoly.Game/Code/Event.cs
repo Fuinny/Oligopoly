@@ -7,23 +7,17 @@ public class Event
     private string title;
     private string content;
 
-    /// <summary>
-    /// Gets or sets the effect of the event.
-    /// That is, the value by which the price of the <see cref="Company.SharePrice"/> should change.
-    /// The effect cannot be equal to zero.
-    /// </summary>
+    /// <summary>Gets or sets the effect of the event, represented as a percentage.</summary>
+    /// <remarks>Effect of the event must be a non-zero integer.</remarks>
     [XmlElement("Effect")]
     public int Effect
     {
-        get
-        {
-            return effect;
-        }
+        get => effect;
         set
         {
             if (value == 0)
             {
-                throw new Exception("Effect cannot be equal to zero!");
+                throw new Exception("Effect of the event must be a non-zero integer!");
             }
             else
             {
@@ -32,23 +26,17 @@ public class Event
         }
     }
 
-    /// <summary>
-    /// Gets or sets the target of the event.
-    /// That is, the company to which the <see cref="Event.Effect"/> will be applied.
-    /// The target cannot be null or whitespace.
-    /// </summary>
+    /// <summary>Gets or sets the target company of the event.</summary>
+    /// <remarks>Target company of the event must not be null or whitespace.</remarks>
     [XmlElement("Target")]
     public string Target
     {
-        get
-        {
-            return target;
-        }
+        get => target;
         set
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new Exception("Target cannot be null or whitespace!");
+                throw new Exception("Target company of the event must not be null or whitespace!");
             }
             else
             {
@@ -57,22 +45,17 @@ public class Event
         }
     }
 
-    /// <summary>
-    /// Gets or sets the title of the event.
-    /// The title cannot be null or whitespace.
-    /// </summary>
+    /// <summary>Gets or sets the title of the event.</summary>
+    /// <remarks>Title of the event must not be null or whitespace.</remarks>
     [XmlElement("Title")]
     public string Title
     {
-        get
-        {
-            return title;
-        }
+        get => title;
         set
         {
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                throw new Exception("Title cannot be null or whitespace!");
+                throw new Exception("Title of the event must not be null or whitespace!");
             }
             else
             {
@@ -81,22 +64,17 @@ public class Event
         }
     }
 
-    /// <summary>
-    /// Gets or sets the content of the event.
-    /// The content cannot be null or whitespace.
-    /// </summary>
+    /// <summary>Gets or sets the content of the event.</summary>
+    /// <remarks>Content of the event must not be null or whitespace.</remarks>
     [XmlElement("Content")]
     public string Content
     {
-        get
-        {
-            return content;
-        }
+        get => content;
         set
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new Exception("Content cannot be null or whitespace!");
+                throw new Exception("Content of the event must not be null or whitespace!");
             }
             else
             {

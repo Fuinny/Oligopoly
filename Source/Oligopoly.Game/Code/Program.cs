@@ -15,9 +15,7 @@ public class Program
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
-    /// <summary>
-    /// Contains entry point and main logic of the game.
-    /// </summary>
+    /// <summary>Contains entry point and main logic of the game.</summary>
     private static void Main()
     {
         if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
@@ -54,13 +52,9 @@ public class Program
                     break;
             }
         }
-        DisplayMainMenuScreen();
     }
 
-    /// <summary>
-    /// Tries to read .xml files from Data folder.
-    /// If it fails, method throw an exception and exits the program.
-    /// </summary>
+    /// <summary>Tries to read .xml files from Data folder, if it fails, method throw an exception and exits the program.</summary>
     private static void LoadEmbeddedResources()
     {
         try
@@ -121,9 +115,7 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Saves the current state of the game to an .xml file in Saves folder.
-    /// </summary>
+    /// <summary> Saves the current state of the game to an .xml file in Saves folder.</summary>
     private static void SaveGame()
     {
         int fileCounter = 1;
@@ -163,9 +155,7 @@ public class Program
         Console.ReadKey(true);
     }
 
-    /// <summary>
-    /// Loads the game from already created .xml files from Saves folder.
-    /// </summary>
+    /// <summary>Loads the game from already created .xml files from Saves folder.</summary>
     private static bool LoadGame()
     {
         string[] saveFilesPaths = Directory.GetFiles("Saves", "*.xml");
@@ -227,9 +217,7 @@ public class Program
         return true;
     }
 
-    /// <summary>
-    /// Displays main menu to the console.
-    /// </summary>
+    /// <summary>Displays main menu to the console.</summary>
     private static int DisplayMainMenuScreen()
     {
         string prompt = @"
@@ -247,8 +235,7 @@ public class Program
         return mainMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays pause menu to the console.
+    /// <summary>Displays pause menu to the console.
     /// </summary>
     private static void DisplayPauseMenu()
     {
@@ -262,8 +249,8 @@ public class Program
                            Use up and down arrow keys to select an option
 ";
         string[] options = { "Save", "Load", "Exit" };
-        Menu pauseMenu = new Menu(prompt, options);
-        switch (pauseMenu.RunMenu(default, true))
+        Menu pauseMenu = new Menu(prompt, options, true);
+        switch (pauseMenu.RunMenu())
         {
             case 0:
                 SaveGame();
@@ -277,9 +264,7 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Displays game setup menu to the console.
-    /// </summary>
+    /// <summary>Displays game setup menu to the console.</summary>
     /// <param name="isLoading">Determines if the player is launching the game or loading a save.</param>
     private static void DisplayGameSetupMenu(bool isLoading)
     {
@@ -308,10 +293,10 @@ public class Program
             };
 
             TurnCounter = 1;
-            Menu setupMenu = new Menu(prompt, gameModesOptions);
-            GameMode = setupMenu.RunMenu(gameModesDescriptions);
-            setupMenu = new Menu(prompt, difficultiesOptions);
-            Difficulty = setupMenu.RunMenu(difficultiesDescriptions);
+            Menu setupMenu = new Menu(prompt, gameModesOptions, false, gameModesDescriptions);
+            GameMode = setupMenu.RunMenu();
+            setupMenu = new Menu(prompt, difficultiesOptions, false,difficultiesDescriptions);
+            Difficulty = setupMenu.RunMenu();
 
             switch (GameMode)
             {
@@ -339,9 +324,7 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Displays money setup menu to the console.
-    /// </summary>
+    /// <summary>Displays money setup menu to the console.</summary>
     private static void DisplayMoneySetupMenu()
     {
         string prompt = @"
@@ -359,9 +342,7 @@ public class Program
         Money = moneyMenu.RunMoneySetupMenu();
     }
 
-    /// <summary>
-    /// Runs a game session.
-    /// </summary>
+    /// <summary>Runs a game session.</summary>
     private static void GameLoop()
     {
         bool isGameEnded = false;
@@ -374,9 +355,9 @@ public class Program
             prompt.AppendLine($"\nYou have: {Math.Round(Money, 2):C}     Your Net Worth: {Math.Round(NetWorth, 2):C}     Current Turn: {TurnCounter}");
             string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
 
-            Menu gameMenu = new Menu(prompt.ToString(), options);
+            Menu gameMenu = new Menu(prompt.ToString(), options, true);
 
-            switch (gameMenu.RunMenu(default, true))
+            switch (gameMenu.RunMenu())
             {
                 case -1:
                     DisplayPauseMenu();
@@ -416,9 +397,7 @@ public class Program
         GlobalEvents.Clear();
     }
 
-    /// <summary>
-    /// Changes the share prices of all companies from (-)1 to (-)3 percent.
-    /// </summary>
+    /// <summary>Changes the share prices of all companies from (-)1 to (-)3 percent.</summary>
     private static void UpdateMarketPrices()
     {
         for (int i = 0; i < Companies.Count; i++)
@@ -438,9 +417,7 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Calculates current net worth.
-    /// </summary>
+    /// <summary>Calculates current net worth.</summary>
     private static void CalculateNetWorth()
     {
         NetWorth = Money;
@@ -450,9 +427,7 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Generates a random event or random global event.
-    /// </summary>
+    /// <summary>Generates a random event or random global event.</summary>
     private static void GenerateEvent()
     {
         Event currentEvent;
@@ -486,15 +461,14 @@ public class Program
         eventMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays buy or sell menu to the console.
-    /// </summary>
+    /// <summary>Displays buy or sell menu to the console.</summary>
     /// <param name="isBuying">Determines if the player is buying or selling shares.</param>
     public static void DisplayBuyOrSellScreen(bool isBuying)
     {
         StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
         prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$");
         prompt.AppendLine($"\nUse the arrow keys and enter to confirm how many shares to {(isBuying ? "buy" : "sell")}:");
+        decimal transactionValue = 0.0M;
         int[] numberOfSharesToProcess = new int[Companies.Count];
         string[] options = new string[Companies.Count];
         for (int i = 0; i < Companies.Count; i++)
@@ -502,7 +476,7 @@ public class Program
             options[i] = Companies[i].Name;
         }
         Menu buyOrSellMenu = new Menu(prompt.ToString(), options);
-        buyOrSellMenu.RunBuyOrSellMenu(ref numberOfSharesToProcess, Companies, Money, isBuying);
+        buyOrSellMenu.RunTransactionMenu(ref numberOfSharesToProcess,ref transactionValue, Money, Companies, isBuying);
 
         for (int i = 0; i < numberOfSharesToProcess.Length; i++)
         {
@@ -519,9 +493,7 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Displays companies descriptions to the console.
-    /// </summary>
+    /// <summary>Displays companies descriptions to the console.</summary>
     private static void DisplayMoreAboutCompaniesScreen()
     {
         StringBuilder prompt = new StringBuilder();
@@ -535,9 +507,7 @@ public class Program
         aboutCompaniesMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays introduction letter to the console.
-    /// </summary>
+    /// <summary>Displays introduction letter to the console.</summary>
     private static void DisplayIntroductionLetter()
     {
         string prompt = @"
@@ -571,9 +541,7 @@ public class Program
         introductionMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays win letter to the console.
-    /// </summary>
+    /// <summary> Displays win letter to the console.</summary>
     private static void DisplayWinLetter()
     {
         string prompt = @$"
@@ -610,9 +578,7 @@ Congratulations!
         winMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays lose letter to the console.
-    /// </summary>
+    /// <summary>Displays lose letter to the console.</summary>
     private static void DisplayLoseLetter()
     {
         string prompt = @$"
@@ -645,9 +611,7 @@ Better luck next time...
         loseMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays thanks to the player and information about the creator of the game.
-    /// </summary>
+    /// <summary>Displays thanks to the player and information about the creator of the game.</summary>
     private static void DisplayAboutGameMenu()
     {
         string prompt = @"
@@ -669,9 +633,7 @@ Better luck next time...
         aboutGameMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays exit menu to the console.
-    /// </summary>
+    /// <summary>Displays exit menu to the console.</summary>
     private static void DisplayExitMenu()
     {
         string prompt = "Are you sure you want to exit the game?";

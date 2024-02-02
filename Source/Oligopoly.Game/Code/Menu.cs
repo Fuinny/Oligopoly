@@ -1,25 +1,16 @@
 ﻿namespace Oligopoly.Game;
 
-public class Menu
+public class Menu(string prompt, string[] options, bool canBePaused = false, string[] descriptions = default)
 {
-    private int SelectedIndex;
-    private string Prompt;
-    private string[] Options;
+    private readonly string Prompt = prompt;
+    private readonly string[] Options = options;
+    private readonly string[] Descriptions = descriptions;
+    private readonly bool CanBePaused = canBePaused;
+    private int SelectedOption;
 
-    public Menu(string prompt, string[] options)
-    {
-        Prompt = prompt;
-        Options = options;
-        SelectedIndex = 0;
-    }
-
-    /// <summary>
-    /// Displays and updates menu with given prompt and options.
-    /// </summary>
-    /// <param name="descriptions">An array of descriptions for each menu option.</param>
-    /// <param name="isPausable">Determines if the pause menu can be called from this menu.</param>
-    /// <returns>An integer that represents selected option.</returns>
-    public int RunMenu(string[] descriptions = default, bool isPausable = false)
+    /// <summary>Displays and updates general menu with given prompt and options.</summary>
+    /// <returns>An <see cref="System.Int32"/> value, that represents selected option index.</returns>
+    public int RunMenu()
     {
         ConsoleKey keyPressed;
 
@@ -30,7 +21,7 @@ public class Menu
 
             for (int i = 0; i < Options.Length; i++)
             {
-                if (i == SelectedIndex)
+                if (SelectedOption == i)
                 {
                     (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
                     Console.WriteLine($"[*] {Options[i]}");
@@ -42,69 +33,138 @@ public class Menu
                 }
             }
 
-            if (descriptions != null)
+            if (Descriptions != null && Descriptions.Length <= Options.Length)
             {
                 Console.WriteLine("\nDescription:");
-                Console.WriteLine(descriptions[SelectedIndex]);
+                Console.WriteLine($"{Descriptions[SelectedOption]}");
             }
 
-            ConsoleKeyInfo keyInfo = Console.ReadKey();
-            keyPressed = keyInfo.Key;
+            ConsoleKeyInfo keyPressedInfo = Console.ReadKey(true);
+            keyPressed = keyPressedInfo.Key;
 
-            if (isPausable)
+            switch (keyPressed)
             {
-                switch (keyPressed)
-                {
-                    case ConsoleKey.P:
-                        return -1;
-                    case ConsoleKey.UpArrow:
-                        SelectedIndex--;
-                        if (SelectedIndex == -1)
-                        {
-                            SelectedIndex = Options.Length - 1;
-                        }
-                        break;
-                    case ConsoleKey.DownArrow:
-                        SelectedIndex++;
-                        if (SelectedIndex > Options.Length - 1)
-                        {
-                            SelectedIndex = 0;
-                        }
-                        break;
-                }
-            }
-            else
-            {
-                switch (keyPressed)
-                {
-                    case ConsoleKey.UpArrow:
-                        SelectedIndex--;
-                        if (SelectedIndex == -1)
-                        {
-                            SelectedIndex = Options.Length - 1;
-                        }
-                        break;
-                    case ConsoleKey.DownArrow:
-                        SelectedIndex++;
-                        if (SelectedIndex > Options.Length - 1)
-                        {
-                            SelectedIndex = 0;
-                        }
-                        break;
-                }
+                case ConsoleKey.UpArrow:
+                    SelectedOption--;
+                    if (SelectedOption == -1)
+                    {
+                        SelectedOption = Options.Length - 1;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    SelectedOption++;
+                    if (SelectedOption == Options.Length)
+                    {
+                        SelectedOption = 0;
+                    }
+                    break;
+                case ConsoleKey.P when CanBePaused:
+                    return -1;
             }
         } while (keyPressed != ConsoleKey.Enter);
 
-        return SelectedIndex;
+        return SelectedOption;
     }
 
-    /// <summary>
-    /// Displays and updates money setup menu with given prompt and options.
-    /// </summary>
-    /// <returns>A decimal value that represents selected amount of money.</returns>
+    /// <summary>Displays and updates menu for buying of selling shares.</summary>
+    /// <param name="numberOfSharesToProcess">Number of shares to buy or sell for each company.</param>
+    /// <param name="transactionValue">The total value of the current transaction.</param>
+    /// <param name="money">The player's current amount of money.</param>
+    /// <param name="companies">List of all in-game companies.</param>
+    /// <param name="isTransactionTypeBuying">Flag indicating whether the transaction is buying or selling.</param>
+    public void RunTransactionMenu(ref int[] numberOfSharesToProcess, ref decimal transactionValue, decimal money, List<Company> companies, bool isTransactionTypeBuying)
+    {
+        ConsoleKey keyPressed;
+
+        do
+        {
+            Console.Clear();
+            Console.WriteLine(Prompt);
+
+            for (int i = 0; i < numberOfSharesToProcess.Length; i++)
+            {
+                transactionValue += numberOfSharesToProcess[i] * companies[i].SharePrice;
+            }
+
+            for (int i = 0; i < Options.Length; i++)
+            {
+                if (i == SelectedOption)
+                {
+                    (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
+                    Console.WriteLine($"[*] <{numberOfSharesToProcess[i]}{(isTransactionTypeBuying ? "" : $"/{companies[i].NumberOfShares}")}> {Options[i]}");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine($"[ ] <{numberOfSharesToProcess[i]}> {Options[i]}");
+                }
+            }
+
+            Console.WriteLine($"\nTransaction {(isTransactionTypeBuying ? "cost" : "payout")}: {Math.Round(transactionValue, 2):C}");
+
+            if (Descriptions != null && Descriptions.Length <= Options.Length)
+            {
+                Console.WriteLine("\nDescription:");
+                Console.WriteLine($"{Descriptions[SelectedOption]}");
+            }
+
+            ConsoleKeyInfo keyPressedInfo = Console.ReadKey(true);
+            keyPressed = keyPressedInfo.Key;
+
+            switch (keyPressed)
+            {
+                case ConsoleKey.UpArrow:
+                    SelectedOption--;
+                    if (SelectedOption == -1)
+                    {
+                        SelectedOption = Options.Length - 1;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    SelectedOption++;
+                    if (SelectedOption == Options.Length)
+                    {
+                        SelectedOption = 0;
+                    }
+                    break;
+                case ConsoleKey.LeftArrow:
+                    if (numberOfSharesToProcess[SelectedOption] > 0)
+                    {
+                        numberOfSharesToProcess[SelectedOption]--;
+                    }
+                    break;
+                case ConsoleKey.RightArrow:
+                    if (isTransactionTypeBuying)
+                    {
+                        if (transactionValue + companies[SelectedOption].SharePrice <= money)
+                        {
+                            numberOfSharesToProcess[SelectedOption]++;
+                        }
+                    }
+                    else
+                    {
+                        if (numberOfSharesToProcess[SelectedOption] < companies[SelectedOption].NumberOfShares)
+                        {
+                            numberOfSharesToProcess[SelectedOption]++;
+                        }
+                    }
+                    break;
+            }
+        } while (keyPressed != ConsoleKey.Enter);
+
+        Console.Clear();
+        Console.WriteLine(Prompt);
+        Console.WriteLine("\nTransaction completed.");
+        Console.WriteLine("\nPress any key to continue...");
+        Console.ReadKey(true);
+    }
+
+    /// <summary>Displays and updates a menu for setting up the initial amount of money.</summary>
+    /// <returns>A <see cref="System.Decimal"/> value that represents selected amount of money.</returns>
     public decimal RunMoneySetupMenu()
     {
-        decimal customMoney = 1000M;
+        const decimal standardCustomMoney = 1000M;
+        decimal customMoney = standardCustomMoney;
         ConsoleKey keyPressed;
 
         while (true)
@@ -116,7 +176,7 @@ public class Menu
 
             for (int i = 0; i < Options.Length; i++)
             {
-                if (i == SelectedIndex)
+                if (i == SelectedOption)
                 {
                     (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
                     Console.WriteLine($"[*] {Options[i]}");
@@ -128,35 +188,34 @@ public class Menu
                 }
             }
 
-            ConsoleKeyInfo keyInfo = Console.ReadKey();
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
             keyPressed = keyInfo.Key;
-
 
             switch (keyPressed)
             {
                 case ConsoleKey.UpArrow:
-                    SelectedIndex--;
-                    if (SelectedIndex == -1)
+                    SelectedOption--;
+                    if (SelectedOption == -1)
                     {
-                        SelectedIndex = Options.Length - 1;
+                        SelectedOption = Options.Length - 1;
                     }
                     break;
                 case ConsoleKey.DownArrow:
-                    SelectedIndex++;
-                    if (SelectedIndex > Options.Length - 1)
+                    SelectedOption++;
+                    if (SelectedOption > Options.Length - 1)
                     {
-                        SelectedIndex = 0;
+                        SelectedOption = 0;
                     }
                     break;
                 case ConsoleKey.Enter:
-                    if (SelectedIndex == 0)
+                    if (SelectedOption == 0)
                     {
                         if (customMoney + 100 <= 45000)
                         {
                             customMoney += 100;
                         }
                     }
-                    else if (SelectedIndex == 1)
+                    else if (SelectedOption == 1)
                     {
                         if (customMoney - 100 >= 1000)
                         {
@@ -169,118 +228,25 @@ public class Menu
                     }
                     break;
             }
-
         }
     }
 
-    /// <summary>
-    /// Displays and updates buy or sell menu with given prompt and options.
-    /// </summary>
-    /// <param name="numberOfSharesToProcess">Number of shares that player buy or sell.</param>
+    /// <summary>Draws table with information about all in-game companies to the console.</summary>
     /// <param name="companies">List of all in-game companies.</param>
-    /// <param name="money">Current amount of player's money.</param>
-    /// <param name="isBuying">Determines if the player is buying or selling shares.</param>
-    public void RunBuyOrSellMenu(ref int[] numberOfSharesToProcess, List<Company> companies, decimal money, bool isBuying)
-    {
-        ConsoleKey keyPressed;
-
-        do
-        {
-            Console.Clear();
-            Console.WriteLine(Prompt);
-
-            decimal transactionCost = 0.0M;
-            for (int i = 0; i < numberOfSharesToProcess.Length; i++)
-            {
-                transactionCost += numberOfSharesToProcess[i] * companies[i].SharePrice;
-            }
-
-            for (int i = 0; i < Options.Length; i++)
-            {
-                if (i == SelectedIndex)
-                {
-                    (Console.ForegroundColor, Console.BackgroundColor) = (Console.BackgroundColor, Console.ForegroundColor);
-                    Console.WriteLine($"[*] <{numberOfSharesToProcess[i]}{(isBuying ? "" : $"/{companies[i].NumberOfShares}")}> {Options[i]}");
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.WriteLine($"[ ] <{numberOfSharesToProcess[i]}> {Options[i]}");
-                }
-            }
-
-            Console.WriteLine($"\nTransaction {(isBuying ? "cost" : "payout")}: {Math.Round(transactionCost, 2):C}");
-
-            ConsoleKeyInfo keyInfo = Console.ReadKey();
-            keyPressed = keyInfo.Key;
-
-            switch (keyPressed)
-            {
-                case ConsoleKey.UpArrow:
-                    SelectedIndex--;
-                    if (SelectedIndex == -1)
-                    {
-                        SelectedIndex = Options.Length - 1;
-                    }
-                    break;
-                case ConsoleKey.DownArrow:
-                    SelectedIndex++;
-                    if (SelectedIndex > Options.Length - 1)
-                    {
-                        SelectedIndex = 0;
-                    }
-                    break;
-                case ConsoleKey.LeftArrow:
-                    if (numberOfSharesToProcess[SelectedIndex] > 0)
-                    {
-                        numberOfSharesToProcess[SelectedIndex]--;
-                    }
-                    break;
-                case ConsoleKey.RightArrow:
-                    if (isBuying)
-                    {
-                        if (transactionCost + companies[SelectedIndex].SharePrice <= money)
-                        {
-                            numberOfSharesToProcess[SelectedIndex]++;
-                        }
-                    }
-                    else
-                    {
-                        if (numberOfSharesToProcess[SelectedIndex] < companies[SelectedIndex].NumberOfShares)
-                        {
-                            numberOfSharesToProcess[SelectedIndex]++;
-                        }
-                    }
-                    break;
-            }
-
-        } while (keyPressed != ConsoleKey.Enter);
-
-        Console.Clear();
-        Console.WriteLine(Prompt);
-        Console.WriteLine("\nTransaction completed.");
-        Console.WriteLine("\nPress any key to continue...");
-        Console.ReadKey(true);
-    }
-
-    /// <summary>
-    /// Draws table with information about all in-game companies.
-    /// </summary>
-    /// <param name="companies">List of all in-game companies.</param>
-    /// <returns>A StringBuilder object that contains table.</returns>
+    /// <returns>A <see cref="System.Text.StringBuilder"/> object, that contains formatted table.</returns>
     public static StringBuilder DrawCompaniesTable(List<Company> companies)
     {
-        const int c0 = 30, c1 = 10, c2 = 20, c3 = 15;
+        const int CompanyColumnWidth = 30, IndustryColumnWidth = 10, ShareColumnWidth = 20, YouHaveColumnWidth = 15;
 
-        StringBuilder companiesTable = new StringBuilder();
-        companiesTable.AppendLine($"╔═{new('═', c0)}═╦═{new('═', c1)}═╦═{new('═', c2)}═╦═{new('═', c3)}═╗");
-        companiesTable.AppendLine($"║ {"Company",-c0} ║ {"Industry",c1} ║ {"Share Price",c2} ║ {"You Have",c3} ║");
-        companiesTable.AppendLine($"╠═{new('═', c0)}═╬═{new('═', c1)}═╬═{new('═', c2)}═╬═{new('═', c3)}═╣");
+        StringBuilder companiesTable = new();
+        companiesTable.AppendLine($"╔═{new('═', CompanyColumnWidth)}═╦═{new('═', IndustryColumnWidth)}═╦═{new('═', ShareColumnWidth)}═╦═{new('═', YouHaveColumnWidth)}═╗");
+        companiesTable.AppendLine($"║ {"Company",-CompanyColumnWidth} ║ {"Industry",IndustryColumnWidth} ║ {"Share Price",ShareColumnWidth} ║ {"You Have",YouHaveColumnWidth} ║");
+        companiesTable.AppendLine($"╠═{new('═', CompanyColumnWidth)}═╬═{new('═', IndustryColumnWidth)}═╬═{new('═', ShareColumnWidth)}═╬═{new('═', YouHaveColumnWidth)}═╣");
         foreach (Company company in companies)
         {
-            companiesTable.AppendLine($"║ {company.Name,-c0} ║ {company.Industry,c1} ║ {Math.Round(company.SharePrice, 2),c2:C} ║ {company.NumberOfShares,c3} ║");
+            companiesTable.AppendLine($"║ {company.Name,-CompanyColumnWidth} ║ {company.Industry,IndustryColumnWidth} ║ {Math.Round(company.SharePrice, 2),ShareColumnWidth:C} ║ {company.NumberOfShares,YouHaveColumnWidth} ║");
         }
-        companiesTable.AppendLine($"╚═{new('═', c0)}═╩═{new('═', c1)}═╩═{new('═', c2)}═╩═{new('═', c3)}═╝");
+        companiesTable.AppendLine($"╚═{new('═', CompanyColumnWidth)}═╩═{new('═', IndustryColumnWidth)}═╩═{new('═', ShareColumnWidth)}═╩═{new('═', YouHaveColumnWidth)}═╝");
 
         return companiesTable;
     }
