@@ -2,35 +2,34 @@
 
 public class Program
 {
-    private static List<Company> Companies = new List<Company>();
-    private static List<Event> Events = new List<Event>();
-    private static List<Event> GlobalEvents = new List<Event>();
-    private static bool CloseRequested = false;
-    private static int GameMode;
-    private static int Difficulty;
-    private static int TurnCounter;
-    private static int PositiveEventChance;
-    private static decimal NetWorth;
-    private static decimal Money = 10000M;
+    private readonly static List<Company> s_companies = [];
+    private readonly static List<Event> s_events = [];
+    private readonly static List<Event> s_globalEvents = [];
+
+    private static bool s_isGameEnded = false;
+    private static bool s_closeRequest = false;
+
+    private static int s_gameMode;
+    private static int s_gameDifficulty;
+    private static int s_turnCounter;
+
+    private static int s_positiveEventChance;
+
+    private static decimal s_netWorth;
+    private static decimal s_playerMoney;
+
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
-    /// <summary>
-    /// Contains entry point and main logic of the game.
-    /// </summary>
+
+    /// <summary>Contains the entry point and main logic of the game.</summary>
     private static void Main()
     {
-        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
-        if (OperatingSystem.IsWindows())
-        {
-            Console.CursorVisible = false;
-            Console.BufferWidth = Console.WindowWidth;
-            Console.BufferHeight = Console.WindowHeight;
-        }
+        SetupConsoleEnvironment();
 
-        while (!CloseRequested)
+        while (!s_closeRequest)
         {
-            switch (DisplayMainMenuScreen())
+            switch (DisplayMainMenu())
             {
                 case 0:
                     LoadEmbeddedResources();
@@ -39,9 +38,9 @@ public class Program
                     GameLoop();
                     break;
                 case 1:
-                    LoadEmbeddedResources();
                     if (LoadGame())
                     {
+                        LoadEmbeddedResources();
                         DisplayGameSetupMenu(true);
                         GameLoop();
                     }
@@ -54,62 +53,68 @@ public class Program
                     break;
             }
         }
-        DisplayMainMenuScreen();
     }
 
-    /// <summary>
-    /// Tries to read .xml files from Data folder.
-    /// If it fails, method throw an exception and exits the program.
-    /// </summary>
+    #region GameSetupAndDataHandling
+    /// <summary>Sets up the environment for the game, including Saves folder creation and console settings (Windows only).</summary>
+    private static void SetupConsoleEnvironment()
+    {
+        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
+        if (OperatingSystem.IsWindows())
+        {
+            Console.CursorVisible = false;
+            Console.BufferWidth = Console.WindowWidth;
+            Console.BufferHeight = Console.WindowHeight;
+        }
+    }
+
+    /// <summary>Loads .xml files from Data folder into their respective collections.</summary>
     private static void LoadEmbeddedResources()
     {
         try
         {
-            XDocument document;
-            {
-                document = XDocument.Load(Path.Combine("Data", "Companies.xml"));
-                foreach (XElement companyElement in document.Root.Elements("Company"))
-                {
-                    Company currentCompany = new Company
-                    {
-                        Name = companyElement.Element("Name").Value,
-                        Industry = companyElement.Element("Industry").Value,
-                        SharePrice = decimal.Parse(companyElement.Element("SharePrice").Value),
-                        Description = companyElement.Element("Description").Value
-                    };
+            XDocument xmlDocument;
 
-                    Companies.Add(currentCompany);
-                }
+            xmlDocument = XDocument.Load(Path.Combine("Data", "Companies.xml"));
+            foreach (XElement companyElement in xmlDocument.Root.Elements("Company"))
+            {
+                Company currentCompany = new()
+                {
+                    Name = companyElement.Element("Name").Value,
+                    Industry = companyElement.Element("Industry").Value,
+                    SharePrice = decimal.Parse(companyElement.Element("SharePrice").Value),
+                    Description = companyElement.Element("Description").Value
+                };
+
+                s_companies.Add(currentCompany);
             }
-            {
-                document = XDocument.Load(Path.Combine("Data", "Events.xml"));
-                foreach (XElement eventElement in document.Root.Elements("Event"))
-                {
-                    Event currentEvent = new Event
-                    {
-                        Effect = int.Parse(eventElement.Element("Effect").Value),
-                        Target = eventElement.Element("Target").Value,
-                        Title = eventElement.Element("Title").Value,
-                        Content = eventElement.Element("Content").Value
-                    };
 
-                    Events.Add(currentEvent);
-                }
+            xmlDocument = XDocument.Load(Path.Combine("Data", "Events.xml"));
+            foreach (XElement eventElement in xmlDocument.Root.Elements("Event"))
+            {
+                Event currentEvent = new()
+                {
+                    Effect = int.Parse(eventElement.Element("Effect").Value),
+                    Target = eventElement.Element("Target").Value,
+                    Title = eventElement.Element("Title").Value,
+                    Content = eventElement.Element("Content").Value
+                };
+
+                s_events.Add(currentEvent);
             }
-            {
-                document = XDocument.Load(Path.Combine("Data", "GlobalEvents.xml"));
-                foreach (XElement eventElement in document.Root.Elements("GlobalEvent"))
-                {
-                    Event currentEvent = new Event
-                    {
-                        Effect = int.Parse(eventElement.Element("Effect").Value),
-                        Target = "All",
-                        Title = eventElement.Element("Title").Value,
-                        Content = eventElement.Element("Content").Value
-                    };
 
-                    GlobalEvents.Add(currentEvent);
-                }
+            xmlDocument = XDocument.Load(Path.Combine("Data", "GlobalEvents.xml"));
+            foreach (XElement globalEventElement in xmlDocument.Root.Elements("GlobalEvent"))
+            {
+                Event currentGlobalEvent = new()
+                {
+                    Effect = int.Parse(globalEventElement.Element("Effect").Value),
+                    Target = "All",
+                    Title = globalEventElement.Element("Title").Value,
+                    Content = globalEventElement.Element("Content").Value
+                };
+
+                s_globalEvents.Add(currentGlobalEvent);
             }
         }
         catch (Exception ex)
@@ -121,51 +126,50 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Saves the current state of the game to an .xml file in Saves folder.
-    /// </summary>
+    /// <summary>Saves the current state of the game to .xml file in Saves folder.</summary>
     private static void SaveGame()
     {
-        int fileCounter = 1;
-        string fileName = $"Save_{fileCounter}.xml";
-        string filePath = Path.Combine("Saves", fileName);
+        int saveFileCounter = 1;
+        string saveFileName = $"Save_{saveFileCounter}.xml";
+        string saveFilePath = Path.Combine("Saves", saveFileName);
 
         try
         {
-            while (File.Exists(filePath))
+            while (File.Exists(saveFilePath))
             {
-                fileName = $"Save_{fileCounter}.xml";
-                filePath = Path.Combine("Saves", fileName);
-                fileCounter++;
+                saveFileCounter++;
+                saveFileName = $"Save_{saveFileCounter}.xml";
+                saveFilePath = Path.Combine("Saves", saveFileName);
             }
-            XDocument saveFile = new XDocument(
+
+            XDocument saveFile = new(
                 new XElement("SaveFile",
-                    new XElement("GameMode", GameMode),
-                    new XElement("Difficulty", Difficulty),
-                    new XElement("CurrentTurn", TurnCounter),
-                    new XElement("Money", Money.ToString(CultureInfo.CurrentCulture)),
-                    new XElement("SharePrices", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice.ToString(CultureInfo.CurrentCulture)))),
-                    new XElement("BuyedShares", Companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares.ToString(CultureInfo.CurrentCulture))))
-                    )
-                );
-            saveFile.Save(filePath);
+                    new XElement("GameMode", s_gameMode),
+                    new XElement("Difficulty", s_gameDifficulty),
+                    new XElement("CurrentTurn", s_turnCounter),
+                    new XElement("PlayerMoney", s_playerMoney),
+                    new XElement("SharePrices", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice.ToString(CultureInfo.CurrentCulture)))),
+                    new XElement("BuyedShares", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares.ToString(CultureInfo.CurrentCulture))))
+                )
+            );
+
+            saveFile.Save(saveFilePath);
+
+            Console.WriteLine($"\nYour file was successfully saved with the name {saveFileName}");
+            Console.WriteLine("You can find all of your save files in Saves folder.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error! \nDetails: {ex.Message}");
-            Console.WriteLine("Press any key to exit the menu...");
+        }
+        finally
+        {
+            Console.WriteLine("\nPress any key to exit the menu...");
             Console.ReadKey(true);
         }
-
-        Console.WriteLine($"\nYour file was successfully saved with the name {fileName}");
-        Console.WriteLine("You can find all of your save files in Saves folder.");
-        Console.WriteLine("\nPress any key to exit the menu...");
-        Console.ReadKey(true);
     }
 
-    /// <summary>
-    /// Loads the game from already created .xml files from Saves folder.
-    /// </summary>
+    /// <summary>Loads the game from already created .xml files from Saves folder.</summary>
     private static bool LoadGame()
     {
         string[] saveFilesPaths = Directory.GetFiles("Saves", "*.xml");
@@ -174,42 +178,43 @@ public class Program
         if (saveFilesPaths.Length == 0)
         {
             Console.Clear();
-            Console.WriteLine("No save files found.");
+            Console.WriteLine("No save files were found.");
             Console.WriteLine("\nPress any key to exit the menu...");
             Console.ReadKey(true);
             return false;
         }
 
-        Menu loadMenu = new Menu("Select file to load: ", saveFileNames);
-        int selectedFile = loadMenu.RunMenu();
+        Menu loadMenu = new("Select file to load", saveFileNames);
+        int selectedSaveFile = loadMenu.RunMenu();
 
         try
         {
-            XDocument saveFile = XDocument.Load(saveFilesPaths[selectedFile]);
-            GameMode = int.Parse(saveFile.Element("SaveFile").Element("GameMode").Value);
-            Difficulty = int.Parse(saveFile.Element("SaveFile").Element("Difficulty").Value);
-            TurnCounter = int.Parse(saveFile.Element("SaveFile").Element("CurrentTurn").Value);
-            Money = decimal.Parse(saveFile.Element("SaveFile").Element("Money").Value);
-            var sharePrices = saveFile.Element("SaveFile").Element("SharePrices").Elements();
-            var buyedShares = saveFile.Element("SaveFile").Element("BuyedShares").Elements();
+            XDocument saveFile = XDocument.Load(saveFilesPaths[selectedSaveFile]);
+            s_gameMode = int.Parse(saveFile.Element("SaveFile").Element("GameMode").Value);
+            s_gameDifficulty = int.Parse(saveFile.Element("SaveFile").Element("Difficulty").Value);
+            s_turnCounter = int.Parse(saveFile.Element("SaveFile").Element("CurrentTurn").Value);
+            s_playerMoney = decimal.Parse(saveFile.Element("SaveFile").Element("PlayerMoney").Value);
+            var companySharePrices = saveFile.Element("SaveFile").Element("SharePrices").Elements();
+            var playerBuyedShares = saveFile.Element("SaveFile").Element("BuyedShares").Elements();
 
-            foreach (var companyElement in sharePrices)
+            foreach (var companyElement in companySharePrices)
             {
                 string companyName = companyElement.Name.LocalName.Replace("_", " ");
                 decimal sharePrice = decimal.Parse(companyElement.Value);
 
-                Company company = Companies.FirstOrDefault(c => c.Name == companyName);
+                Company company = s_companies.FirstOrDefault(c => c.Name == companyName);
                 if (company != null)
                 {
                     company.SharePrice = sharePrice;
                 }
             }
-            foreach (var companyElement in buyedShares)
+
+            foreach (var companyElement in playerBuyedShares)
             {
-                string companyName = companyElement.Name.LocalName.Replace("_", " ");
+                string companyName = companyElement.Name.LocalName.Replace('_', ' ');
                 int numberOfShares = int.Parse(companyElement.Value);
 
-                Company company = Companies.FirstOrDefault(c => c.Name == companyName);
+                Company company = s_companies.FirstOrDefault(c => c.Name == companyName);
                 if (company != null)
                 {
                     company.NumberOfShares = numberOfShares;
@@ -226,30 +231,28 @@ public class Program
 
         return true;
     }
+    #endregion
 
-    /// <summary>
-    /// Displays main menu to the console.
-    /// </summary>
-    private static int DisplayMainMenuScreen()
+    #region GameMenus
+    /// <summary>Displays main menu to the console.</summary>
+    /// <returns>An <see cref="System.Int32"/> value, that represents selected option's index.</returns>
+    private static int DisplayMainMenu()
     {
-        string prompt = @"
+        string prompt = @" 
  ██████╗ ██╗     ██╗ ██████╗  ██████╗ ██████╗  ██████╗ ██╗  ██╗   ██╗
 ██╔═══██╗██║     ██║██╔════╝ ██╔═══██╗██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝
 ██║   ██║██║     ██║██║  ███╗██║   ██║██████╔╝██║   ██║██║   ╚████╔╝ 
 ██║   ██║██║     ██║██║   ██║██║   ██║██╔═══╝ ██║   ██║██║    ╚██╔╝  
 ╚██████╔╝███████╗██║╚██████╔╝╚██████╔╝██║     ╚██████╔╝███████╗██║   
- ╚═════╝ ╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝╚═╝
-           Use up and down arrow keys to select an option
+ ╚═════╝ ╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝╚═╝   
+           Use up and down arrow keys to select an option             
 ";
-        string[] options = { "Play", "Load", "About", "Exit" };
-        Menu mainMenu = new Menu(prompt, options);
-
+        string[] options = ["Play", "Load", "About", "Exit"];
+        Menu mainMenu = new(prompt, options);
         return mainMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays pause menu to the console.
-    /// </summary>
+    /// <summary>Displays pause menu to the console.</summary>
     private static void DisplayPauseMenu()
     {
         string prompt = @"
@@ -259,11 +262,11 @@ public class Program
 ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║   ██║██║╚██╗██║    ██╔═══╝ ██╔══██║██║   ██║╚════██║██╔══╝  
 ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ╚██████╔╝██║ ╚████║    ██║     ██║  ██║╚██████╔╝███████║███████╗
  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝ ╚═╝  ╚═══╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
-                           Use up and down arrow keys to select an option
+                           Use up and down arrow keys to select an option                                
 ";
-        string[] options = { "Save", "Load", "Exit" };
-        Menu pauseMenu = new Menu(prompt, options);
-        switch (pauseMenu.RunMenu(default, true))
+        string[] options = ["Save", "Load", "Exit"];
+        Menu pauseMenu = new(prompt, options, true);
+        switch (pauseMenu.RunMenu())
         {
             case 0:
                 SaveGame();
@@ -277,47 +280,47 @@ public class Program
         }
     }
 
-    /// <summary>
-    /// Displays game setup menu to the console.
-    /// </summary>
-    /// <param name="isLoading">Determines if the player is launching the game or loading a save.</param>
     private static void DisplayGameSetupMenu(bool isLoading)
     {
         string prompt = @"
- ██████╗  █████╗ ███╗   ███╗███████╗    ███████╗███████╗████████╗██╗   ██╗██████╗
+ ██████╗  █████╗ ███╗   ███╗███████╗    ███████╗███████╗████████╗██╗   ██╗██████╗ 
 ██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
 ██║  ███╗███████║██╔████╔██║█████╗      ███████╗█████╗     ██║   ██║   ██║██████╔╝
-██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝
-╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ███████║███████╗   ██║   ╚██████╔╝██║
- ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
-         Customize the game to make it interesting for you to play ;)
+██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝ 
+╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ███████║███████╗   ██║   ╚██████╔╝██║     
+ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝     
+         Customize the game to make it interesting for you to play ;)              
 ";
         if (!isLoading)
         {
-            string[] difficultiesOptions = { "Easy", "Normal", "Hard" };
-            string[] gameModesOptions = { "Standard", "Random", "Custom" };
-            string[] difficultiesDescriptions = {
-                "60% chance that the next market event will be positive",
-                "50% chance that the next market event will be positive/negative",
-                "60% change that the next market event will be negative"
-            };
-            string[] gameModesDescriptions = {
-                "Just standard mode, nothing out of the ordinary",
-                "Your money and company shares prices will be randomly generated",
-                "You can set the starting amount of your money"
-            };
+            string[] difficultiesOptions = ["Easy", "Normal", "Hard"];
+            string[] difficultiesDescriptions = 
+            [
+                "60% chance that the next market event will be POSITIVE",
+                "50% chance that the next market event will be POSITIVE/NEGATIVE",
+                "60% chance that the next market event will be NEGATIVE"
+            ];
+            Menu difficultiesMenu = new(prompt, difficultiesOptions, false, difficultiesDescriptions);
 
-            TurnCounter = 1;
-            Menu setupMenu = new Menu(prompt, gameModesOptions);
-            GameMode = setupMenu.RunMenu(gameModesDescriptions);
-            setupMenu = new Menu(prompt, difficultiesOptions);
-            Difficulty = setupMenu.RunMenu(difficultiesDescriptions);
+            string[] gameModesOptions = ["Standard", "Random", "Custom"];
+            string[] gameModesDescriptions =
+            [
+                "You start the game with default values",
+                "Your starting amount of money and company share prices will be randomly generated",
+                "You can set the starting amount of money by yourself"
+            ];
+            Menu gameModesMenu = new(prompt, gameModesOptions, false, gameModesDescriptions);
 
-            switch (GameMode)
+            s_turnCounter = 1;
+            s_playerMoney = 10000.00M;
+            s_gameDifficulty = difficultiesMenu.RunMenu();
+            s_gameMode = gameModesMenu.RunMenu();
+
+            switch(s_gameMode)
             {
                 case 1:
-                    Money = Random.Shared.Next(1000, 30001);
-                    foreach (Company company in Companies)
+                    s_playerMoney = Random.Shared.Next(1000, 30001);
+                    foreach (Company company in s_companies)
                     {
                         company.SharePrice = Random.Shared.Next(100, 5001);
                     }
@@ -325,228 +328,253 @@ public class Program
                 case 2:
                     DisplayMoneySetupMenu();
                     break;
-                case 3:
-                    DisplayMoneySetupMenu();
-                    break;
-            }
+            }    
         }
 
-        switch (Difficulty)
+        switch (s_gameDifficulty)
         {
-            case 0: PositiveEventChance = 60; break;
-            case 1: PositiveEventChance = 50; break;
-            case 2: PositiveEventChance = 40; break;
+            case 0: s_positiveEventChance = 60; break;
+            case 1: s_positiveEventChance = 50; break;
+            case 2: s_positiveEventChance = 40; break;
         }
     }
 
-    /// <summary>
-    /// Displays money setup menu to the console.
-    /// </summary>
+    /// <summary>Displays money setup menu to the console.</summary>
     private static void DisplayMoneySetupMenu()
     {
         string prompt = @"
-
 ███╗   ███╗ ██████╗ ███╗   ██╗███████╗██╗   ██╗    ███████╗███████╗████████╗██╗   ██╗██████╗ 
 ████╗ ████║██╔═══██╗████╗  ██║██╔════╝╚██╗ ██╔╝    ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
 ██╔████╔██║██║   ██║██╔██╗ ██║█████╗   ╚████╔╝     ███████╗█████╗     ██║   ██║   ██║██████╔╝
 ██║╚██╔╝██║██║   ██║██║╚██╗██║██╔══╝    ╚██╔╝      ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝ 
 ██║ ╚═╝ ██║╚██████╔╝██║ ╚████║███████╗   ██║       ███████║███████╗   ██║   ╚██████╔╝██║     
 ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝       ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝     
-                        Customize your starting amount of money
+                        Customize your starting amount of money                               
 ";
-        string[] options = { "(+) Increase", "(-) Decrease", "Done" };
-        Menu moneyMenu = new Menu(prompt, options);
-        Money = moneyMenu.RunMoneySetupMenu();
+        string[] options = ["(+) Increase", "(-) Decrease", "Done"];
+        Menu moneySetupMenu = new(prompt, options);
+        s_playerMoney = moneySetupMenu.RunMoneySetupMenu();
     }
 
-    /// <summary>
-    /// Runs a game session.
-    /// </summary>
+    /// <summary>Displays companies description to the console.</summary>
+    private static void DisplayMoreAboutCompanies()
+    {
+        StringBuilder prompt = new();
+        foreach (Company company in s_companies)
+        {
+            prompt.AppendLine($"{company.Name} - {company.Description}");
+            prompt.AppendLine();
+        }
+
+        string[] options = ["Continue"];
+        Menu aboutCompaniesMenu = new (prompt.ToString(), options);
+        aboutCompaniesMenu.RunMenu();
+    }
+
+    /// <summary>Displays thanks to the player and information about the creator of the game.</summary>
+    private static void DisplayAboutGameMenu()
+    {
+        string prompt = @"
+          ████████╗██╗  ██╗ █████╗ ███╗   ██╗██╗  ██╗███████╗██╗                    
+          ╚══██╔══╝██║  ██║██╔══██╗████╗  ██║██║ ██╔╝██╔════╝██║                    
+             ██║   ███████║███████║██╔██╗ ██║█████╔╝ ███████╗██║                    
+             ██║   ██╔══██║██╔══██║██║╚██╗██║██╔═██╗ ╚════██║╚═╝                    
+             ██║   ██║  ██║██║  ██║██║ ╚████║██║  ██╗███████║██╗                    
+             ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝                    
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║No really, thank you for taking time to play this simple CLI game. It means a lot.║
+║If you find any bug or have an idea how to improve the game, please let me know :D║
+║                                                                                  ║
+║This game was created by Semion Medvedev (Fuinny)                                 ║
+╚══════════════════════════════════════════════════════════════════════════════════╝ 
+";
+        string[] options = ["Return to Main Menu"];
+        Menu aboutGameMenu = new(prompt, options);
+        aboutGameMenu.RunMenu();
+    }
+
+    /// <summary>Displays exit menu to the console.</summary>
+    private static void DisplayExitMenu()
+    {
+        string prompt = @"Are you sure you want to exit the game?";
+        string[] options = ["Exit the Game", "Back"];
+        Menu exitMenu = new(prompt, options);
+        switch (exitMenu.RunMenu())
+        {
+            case 0:
+                s_isGameEnded = true;
+                s_closeRequest = true;
+                break;
+        }
+    }
+    #endregion
+
+    #region GameCore
+    /// <summary>Calculates current net worth.</summary>
+    private static void CalculateNetWorth()
+    {
+        s_netWorth = s_playerMoney;
+        foreach (Company company in s_companies)
+        {
+            s_netWorth += company.NumberOfShares * company.SharePrice;
+        }
+    }
+    
+    /// <summary>Changes the share price of all companies from -3 to 3 per cent.</summary>
+    private static void UpdateMarketPrices()
+    {
+        for (int i = 0; i < s_companies.Count; i++)
+        {
+            Random random = new();
+            int effect = random.Next(-3, 4);
+
+            s_companies[i].SharePrice += s_companies[i].SharePrice * effect / 100;
+        }
+    }
+
+    /// <summary>Generates random event or random global event.</summary>
+    private static void GenerateRandomEvent()
+    {
+        Event currentEvent;
+        StringBuilder prompt = Menu.DrawCompaniesTable(s_companies);
+
+        bool isPositive = Random.Shared.Next(0, 101) <= s_positiveEventChance;
+
+        if (s_turnCounter % 50 == 0)
+        {
+            if (isPositive)
+            {
+                List<Event> positiveGlobalEvents = s_globalEvents.Where(e => e.Effect > 0).ToList();
+                currentEvent = positiveGlobalEvents[Random.Shared.Next(0, positiveGlobalEvents.Count)];
+            }
+            else
+            {
+                List<Event> negativeGlobalEvents = s_globalEvents.Where(e => e.Effect < 0).ToList();
+                currentEvent = negativeGlobalEvents[Random.Shared.Next(0, negativeGlobalEvents.Count)];
+            }
+        }
+        else
+        {
+            if (isPositive)
+            {
+                List<Event> positiveEvents = s_events.Where(e => e.Effect > 0).ToList();
+                currentEvent = positiveEvents[Random.Shared.Next(0, positiveEvents.Count)];
+            }
+            else
+            {
+                List<Event> negativeEvents = s_events.Where(e => e.Effect < 0).ToList();
+                currentEvent = negativeEvents[Random.Shared.Next(0, negativeEvents.Count)];
+            }
+        }
+
+        prompt.AppendLine($"\n{currentEvent.Content}");
+        string[] options = ["Continue"];
+        Menu eventMenu = new(prompt.ToString(), options);
+        eventMenu.RunMenu();
+    }
+
+    /// <summary>Displays buy or sell menu to the console.</summary>
+    /// <param name="isBuying">Determines whether player is buying or selling shares.</param>
+    private static void DisplayBuyOrSellMenu(bool isBuying)
+    {
+        StringBuilder prompt = Menu.DrawCompaniesTable(s_companies);
+        prompt.AppendLine($"\nYou have: {Math.Round(s_playerMoney, 2):C}");
+        prompt.AppendLine($"\nUse the arrow keys to select and enter to confirm how many shares to {(isBuying ? "buy" : "sell")}");
+
+        decimal transactionValue = 0.0M;
+        int[] numberOfSharesToProcess = new int[s_companies.Count];
+        string[] options = new string[s_companies.Count];
+
+        for (int i = 0; i < s_companies.Count; i++)
+        {
+            options[i] = s_companies[i].Name;
+        }
+
+        Menu buyOrSellMenu = new(prompt.ToString(), options);
+        buyOrSellMenu.RunTransactionMenu(ref numberOfSharesToProcess, ref transactionValue, s_playerMoney, s_companies, isBuying);
+
+        for (int i = 0; i < numberOfSharesToProcess.Length; i++)
+        {
+            if (isBuying)
+            {
+                s_playerMoney -= numberOfSharesToProcess[i] * s_companies[i].SharePrice;
+                s_companies[i].NumberOfShares += numberOfSharesToProcess[i];
+            }
+            else
+            {
+                s_playerMoney += numberOfSharesToProcess[i] * s_companies[i].SharePrice;
+                s_companies[i].NumberOfShares -= numberOfSharesToProcess[i];
+            }
+        }
+    }
+
+    /// <summary>Runs a game session.</summary>
     private static void GameLoop()
     {
-        bool isGameEnded = false;
+        s_isGameEnded = false;
 
-        while (!isGameEnded)
+        while (!s_isGameEnded)
         {
             CalculateNetWorth();
 
-            StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-            prompt.AppendLine($"\nYou have: {Math.Round(Money, 2):C}     Your Net Worth: {Math.Round(NetWorth, 2):C}     Current Turn: {TurnCounter}");
-            string[] options = { "Wait For Market Change", "Buy", "Sell", "More About Companies" };
+            StringBuilder prompt = Menu.DrawCompaniesTable(s_companies);
+            prompt.AppendLine($"\nYou have: {Math.Round(s_playerMoney, 2):C}    Your Net Worth: {Math.Round(s_netWorth, 2):C}    Current Turn: {s_turnCounter}");
+            string[] options = ["Wait for Market Change", "Buy", "Sell", "More About Companies"];
 
-            Menu gameMenu = new Menu(prompt.ToString(), options);
+            Menu gameMenu = new(prompt.ToString(), options,true);
 
-            switch (gameMenu.RunMenu(default, true))
+            switch (gameMenu.RunMenu())
             {
                 case -1:
                     DisplayPauseMenu();
                     continue;
                 case 0:
                     UpdateMarketPrices();
-                    GenerateEvent();
+                    GenerateRandomEvent();
                     break;
                 case 1:
-                    DisplayBuyOrSellScreen(true);
+                    DisplayBuyOrSellMenu(true);
                     break;
                 case 2:
-                    DisplayBuyOrSellScreen(false);
+                    DisplayBuyOrSellMenu(false);
                     break;
                 case 3:
-                    DisplayMoreAboutCompaniesScreen();
-                    break;
+                    DisplayMoreAboutCompanies();
+                    continue;
             }
 
-            switch (NetWorth)
+            switch (s_netWorth)
             {
                 case < LosingNetWorth:
-                    isGameEnded = true;
+                    s_isGameEnded = true;
                     DisplayLoseLetter();
                     break;
                 case > WinningNetWorth:
-                    isGameEnded = true;
+                    s_isGameEnded = true;
                     DisplayWinLetter();
                     break;
             }
 
-            TurnCounter++;
+            s_turnCounter++;
         }
 
-        Companies.Clear();
-        Events.Clear();
-        GlobalEvents.Clear();
+        s_companies.Clear();
+        s_events.Clear();
+        s_globalEvents.Clear();
     }
+    #endregion
 
-    /// <summary>
-    /// Changes the share prices of all companies from (-)1 to (-)3 percent.
-    /// </summary>
-    private static void UpdateMarketPrices()
-    {
-        for (int i = 0; i < Companies.Count; i++)
-        {
-            Random random = new Random();
-            int effect = random.Next(0, 2);
-
-            switch (effect)
-            {
-                case 0:
-                    Companies[i].SharePrice += Companies[i].SharePrice * Random.Shared.Next(1, 4) / 100;
-                    break;
-                case 1:
-                    Companies[i].SharePrice += Companies[i].SharePrice * Random.Shared.Next(-3, 0) / 100;
-                    break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Calculates current net worth.
-    /// </summary>
-    private static void CalculateNetWorth()
-    {
-        NetWorth = Money;
-        foreach (Company company in Companies)
-        {
-            NetWorth += company.NumberOfShares * company.SharePrice;
-        }
-    }
-
-    /// <summary>
-    /// Generates a random event or random global event.
-    /// </summary>
-    private static void GenerateEvent()
-    {
-        Event currentEvent;
-        StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-
-        if (TurnCounter % 50 == 0)
-        {
-            currentEvent = GlobalEvents[Random.Shared.Next(0, GlobalEvents.Count)];
-            foreach (Company currentCompany in Companies)
-            {
-                currentCompany.SharePrice += currentCompany.SharePrice * currentEvent.Effect / 100;
-            }
-            prompt.AppendLine($"\n{currentEvent.Title.ToUpper()}");
-        }
-        else
-        {
-            currentEvent = Events[Random.Shared.Next(0, Events.Count)];
-            foreach (Company currentCompany in Companies)
-            {
-                if (currentCompany.Name == currentEvent.Target)
-                {
-                    currentCompany.SharePrice += currentCompany.SharePrice * currentEvent.Effect / 100;
-                }
-            }
-            prompt.AppendLine($"\n{currentEvent.Title}");
-        }
-
-        prompt.AppendLine($"\n{currentEvent.Content}");
-        string[] options = { "Continue" };
-        Menu eventMenu = new Menu(prompt.ToString(), options);
-        eventMenu.RunMenu();
-    }
-
-    /// <summary>
-    /// Displays buy or sell menu to the console.
-    /// </summary>
-    /// <param name="isBuying">Determines if the player is buying or selling shares.</param>
-    public static void DisplayBuyOrSellScreen(bool isBuying)
-    {
-        StringBuilder prompt = Menu.DrawCompaniesTable(Companies);
-        prompt.AppendLine($"\nYou have: {Math.Round(Money, 2)}$");
-        prompt.AppendLine($"\nUse the arrow keys and enter to confirm how many shares to {(isBuying ? "buy" : "sell")}:");
-        int[] numberOfSharesToProcess = new int[Companies.Count];
-        string[] options = new string[Companies.Count];
-        for (int i = 0; i < Companies.Count; i++)
-        {
-            options[i] = Companies[i].Name;
-        }
-        Menu buyOrSellMenu = new Menu(prompt.ToString(), options);
-        buyOrSellMenu.RunBuyOrSellMenu(ref numberOfSharesToProcess, Companies, Money, isBuying);
-
-        for (int i = 0; i < numberOfSharesToProcess.Length; i++)
-        {
-            if (isBuying)
-            {
-                Money -= numberOfSharesToProcess[i] * Companies[i].SharePrice;
-                Companies[i].NumberOfShares += numberOfSharesToProcess[i];
-            }
-            else
-            {
-                Money += numberOfSharesToProcess[i] * Companies[i].SharePrice;
-                Companies[i].NumberOfShares -= numberOfSharesToProcess[i];
-            }
-        }
-    }
-
-    /// <summary>
-    /// Displays companies descriptions to the console.
-    /// </summary>
-    private static void DisplayMoreAboutCompaniesScreen()
-    {
-        StringBuilder prompt = new StringBuilder();
-        foreach (Company company in Companies)
-        {
-            prompt.AppendLine($"{company.Name} - {company.Description}");
-            prompt.AppendLine();
-        }
-        string[] options = { "Continue" };
-        Menu aboutCompaniesMenu = new Menu(prompt.ToString(), options);
-        aboutCompaniesMenu.RunMenu();
-    }
-
-    /// <summary>
-    /// Displays introduction letter to the console.
-    /// </summary>
+    #region Letters
+    /// <summary>Displays introduction letter to the console.</summary>
     private static void DisplayIntroductionLetter()
     {
         string prompt = @"
-          ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗
-          ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝
-          ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗  
-          ██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝  
-          ╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗
-           ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
+          ██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗          
+          ██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝          
+          ██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗            
+          ██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝            
+          ╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗          
+           ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝          
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║ Dear new CEO,                                                                  ║
 ║                                                                                ║
@@ -566,23 +594,21 @@ public class Program
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
 ";
-        string[] options = { "Start the Game" };
-        Menu introductionMenu = new Menu(prompt, options);
+        string[] options = ["Start the Game"];
+        Menu introductionMenu = new(prompt, options);
         introductionMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays win letter to the console.
-    /// </summary>
+    /// <summary>Displays win letter to the console.</summary>
     private static void DisplayWinLetter()
     {
-        string prompt = @$"
-          ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗██╗███╗   ██╗
-          ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██║████╗  ██║
-           ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║██╔██╗ ██║
-            ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║██║╚██╗██║
-             ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║██║ ╚████║
-             ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝
+        string prompt = $@"
+          ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗██╗███╗   ██╗                  
+          ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██║████╗  ██║                  
+           ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║██╔██╗ ██║                  
+            ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║██║╚██╗██║                  
+             ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║██║ ╚████║                  
+             ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝                  
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║ Dear CEO,                                                                      ║
 ║                                                                                ║
@@ -600,28 +626,25 @@ public class Program
 ║ Sincerely,                                                                     ║
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
-
+                                                                                  
 Your Net Worth is over {WinningNetWorth}$
-You have played {TurnCounter} turns
-Congratulations!
-";
-        string[] options = { "Return to Main Menu" };
-        Menu winMenu = new Menu(prompt, options);
+You have played {s_turnCounter} turns
+Congratulations!";
+        string[] options = ["Continue"];
+        Menu winMenu = new(prompt, options);
         winMenu.RunMenu();
     }
 
-    /// <summary>
-    /// Displays lose letter to the console.
-    /// </summary>
+    /// <summary>Displays lose letters to the console.</summary>
     private static void DisplayLoseLetter()
     {
-        string prompt = @$"
-          ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗      ██████╗ ███████╗███████╗
-          ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║     ██╔═══██╗██╔════╝██╔════╝
-           ╚████╔╝ ██║   ██║██║   ██║    ██║     ██║   ██║███████╗█████╗  
-            ╚██╔╝  ██║   ██║██║   ██║    ██║     ██║   ██║╚════██║██╔══╝  
-             ██║   ╚██████╔╝╚██████╔╝    ███████╗╚██████╔╝███████║███████╗
-             ╚═╝    ╚═════╝  ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝╚══════╝
+        string prompt = $@"
+          ██╗   ██╗ ██████╗ ██╗   ██╗    ██╗      ██████╗ ███████╗███████╗        
+          ╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║     ██╔═══██╗██╔════╝██╔════╝        
+           ╚████╔╝ ██║   ██║██║   ██║    ██║     ██║   ██║███████╗█████╗          
+            ╚██╔╝  ██║   ██║██║   ██║    ██║     ██║   ██║╚════██║██╔══╝          
+             ██║   ╚██████╔╝╚██████╔╝    ███████╗╚██████╔╝███████║███████╗        
+             ╚═╝    ╚═════╝  ╚═════╝     ╚══════╝ ╚═════╝ ╚══════╝╚══════╝        
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║ Dear former CEO,                                                               ║
 ║                                                                                ║
@@ -635,53 +658,14 @@ Congratulations!
 ║ Sincerely,                                                                     ║
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
-
+                                                                                  
 Your Net Worth dropped below {LosingNetWorth}$
-You have played {TurnCounter} turns
+You have played {s_turnCounter} turns
 Better luck next time...
 ";
-        string[] options = { "Return to Main Menu" };
-        Menu loseMenu = new Menu(prompt, options);
-        loseMenu.RunMenu();
+        string[] options = ["Continue"];
+        Menu winMenu = new(prompt, options);
+        winMenu.RunMenu();
     }
-
-    /// <summary>
-    /// Displays thanks to the player and information about the creator of the game.
-    /// </summary>
-    private static void DisplayAboutGameMenu()
-    {
-        string prompt = @"
-          ████████╗██╗  ██╗ █████╗ ███╗   ██╗██╗  ██╗███████╗██╗
-          ╚══██╔══╝██║  ██║██╔══██╗████╗  ██║██║ ██╔╝██╔════╝██║
-             ██║   ███████║███████║██╔██╗ ██║█████╔╝ ███████╗██║
-             ██║   ██╔══██║██╔══██║██║╚██╗██║██╔═██╗ ╚════██║╚═╝
-             ██║   ██║  ██║██║  ██║██║ ╚████║██║  ██╗███████║██╗
-             ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝
-╔══════════════════════════════════════════════════════════════════════════════════╗
-║No really, thank you for taking time to play this simple CLI game. It means a lot.║
-║If you find any bug or have an idea how to improve the game, please let me know :D║
-║                                                                                  ║
-║This game was created by Semion Medvedev (Fuinny)                                 ║
-╚══════════════════════════════════════════════════════════════════════════════════╝
-";
-        string[] options = { "Return to Main Menu" };
-        Menu aboutGameMenu = new Menu(prompt, options);
-        aboutGameMenu.RunMenu();
-    }
-
-    /// <summary>
-    /// Displays exit menu to the console.
-    /// </summary>
-    private static void DisplayExitMenu()
-    {
-        string prompt = "Are you sure you want to exit the game?";
-        string[] options = { "Exit the Game", "Back" };
-        Menu exitMenu = new Menu(prompt, options);
-        switch (exitMenu.RunMenu())
-        {
-            case 0:
-                CloseRequested = true;
-                break;
-        }
-    }
+    #endregion
 }
