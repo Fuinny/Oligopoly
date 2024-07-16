@@ -357,18 +357,45 @@ public class Program
     }
 
     /// <summary>Displays companies description to the console.</summary>
-    private static void DisplayMoreAboutCompanies()
+    private static void DisplayMoreAboutCompaniesMenu()
     {
-        StringBuilder prompt = new();
-        foreach (Company company in s_companies)
+        string header = @"
+ █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗     ██████╗ ██████╗ ███╗   ███╗██████╗  █████╗ ███╗   ██╗██╗███████╗███████╗
+██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔═══██╗████╗ ████║██╔══██╗██╔══██╗████╗  ██║██║██╔════╝██╔════╝
+███████║██████╔╝██║   ██║██║   ██║   ██║       ██║     ██║   ██║██╔████╔██║██████╔╝███████║██╔██╗ ██║██║█████╗  ███████╗
+██╔══██║██╔══██╗██║   ██║██║   ██║   ██║       ██║     ██║   ██║██║╚██╔╝██║██╔═══╝ ██╔══██║██║╚██╗██║██║██╔══╝  ╚════██║
+██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║       ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║     ██║  ██║██║ ╚████║██║███████╗███████║
+╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝        ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚══════╝
+                                Select the company you want to learn more about
+";
+        string[] companyNames = new string[s_companies.Count + 1];
+        for (int i = 0; i < s_companies.Count; i++)
         {
-            prompt.AppendLine($"{company.Name} - {company.Description}");
-            prompt.AppendLine();
+            companyNames[i] = s_companies[i].Name;
         }
+        companyNames[s_companies.Count] = "Back";
 
-        string[] options = ["Continue"];
-        Menu aboutCompaniesMenu = new (prompt.ToString(), options);
-        aboutCompaniesMenu.RunMenu();
+        bool exitSelected = false;
+        while (!exitSelected)
+        {
+            Menu companySelectionMenu = new(header, companyNames);
+            int selectedCompany = companySelectionMenu.RunMenu();
+
+            if (selectedCompany == s_companies.Count)
+            {
+                exitSelected = true;
+            }
+            else
+            {
+                StringBuilder companyDetails = new();
+                companyDetails.AppendLine(header);
+                companyDetails.AppendLine($"{s_companies[selectedCompany].Name}:");
+                companyDetails.AppendLine(s_companies[selectedCompany].Description);
+                string[] options = ["Continue"];
+                Menu companyDetailsMenu = new(companyDetails.ToString(), options);
+                companyDetailsMenu.RunMenu();
+            }
+        }
     }
 
     /// <summary>Displays thanks to the player and information about the creator of the game.</summary>
@@ -539,7 +566,7 @@ public class Program
                     DisplayBuyOrSellMenu(false);
                     break;
                 case 3:
-                    DisplayMoreAboutCompanies();
+                    DisplayMoreAboutCompaniesMenu();
                     continue;
             }
 
