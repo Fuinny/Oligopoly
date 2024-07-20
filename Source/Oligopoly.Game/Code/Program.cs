@@ -12,6 +12,7 @@ public class Program
     private static int s_gameMode;
     private static int s_gameDifficulty;
     private static int s_turnCounter;
+    private static int s_skipTurnLimit;
 
     private static int s_positiveEventChance;
 
@@ -280,6 +281,8 @@ public class Program
         }
     }
 
+    /// <summary>Displays game setup menu to the console.</summary>
+    /// <param name="isLoading">Indicates whether the player is loading a saved game or starting a new game.</param>
     private static void DisplayGameSetupMenu(bool isLoading)
     {
         string prompt = @"
@@ -296,9 +299,9 @@ public class Program
             string[] difficultiesOptions = ["Easy", "Normal", "Hard"];
             string[] difficultiesDescriptions = 
             [
-                "60% chance that the next market event will be POSITIVE",
-                "50% chance that the next market event will be POSITIVE/NEGATIVE",
-                "60% chance that the next market event will be NEGATIVE"
+                "The limit of turns you can skip will be set to 10 \n60% chance that the next market event will be POSITIVE",
+                "The limit of turns you can skip will be set to 5 \n50% chance that the next market event will be POSITIVE/NEGATIVE",
+                "The limit of turns you can skip will be set to 3 \n60% chance that the next market event will be NEGATIVE"
             ];
             Menu difficultiesMenu = new(prompt, difficultiesOptions, false, difficultiesDescriptions);
 
@@ -333,9 +336,18 @@ public class Program
 
         switch (s_gameDifficulty)
         {
-            case 0: s_positiveEventChance = 60; break;
-            case 1: s_positiveEventChance = 50; break;
-            case 2: s_positiveEventChance = 40; break;
+            case 0:
+                s_skipTurnLimit = 10;
+                s_positiveEventChance = 60; 
+                break;
+            case 1:
+                s_skipTurnLimit = 5;
+                s_positiveEventChance = 50;
+                break;
+            case 2:
+                s_skipTurnLimit = 3;
+                s_positiveEventChance = 40;
+                break;
         }
     }
 
@@ -539,6 +551,7 @@ public class Program
     private static void GameLoop()
     {
         s_isGameEnded = false;
+        int skipCount = 0;
 
         while (!s_isGameEnded)
         {
@@ -548,7 +561,7 @@ public class Program
             prompt.AppendLine($"\nYou have: {Math.Round(s_playerMoney, 2):C}    Your Net Worth: {Math.Round(s_netWorth, 2):C}    Current Turn: {s_turnCounter}");
             string[] options = ["Wait for Market Change", "Buy", "Sell", "More About Companies"];
 
-            Menu gameMenu = new(prompt.ToString(), options,true);
+            Menu gameMenu = new(prompt.ToString(), options, true);
 
             switch (gameMenu.RunMenu())
             {
@@ -556,14 +569,26 @@ public class Program
                     DisplayPauseMenu();
                     continue;
                 case 0:
-                    UpdateMarketPrices();
-                    GenerateRandomEvent();
+                    if (skipCount == s_skipTurnLimit)
+                    {
+                        Console.WriteLine($"\nYou cannot skip more than {s_skipTurnLimit} turns!");
+                        Console.ReadKey(true);
+                        continue;
+                    }
+                    else
+                    {
+                        UpdateMarketPrices();
+                        GenerateRandomEvent();
+                        skipCount++;
+                    }
                     break;
                 case 1:
                     DisplayBuyOrSellMenu(true);
+                    skipCount = 0;
                     break;
                 case 2:
                     DisplayBuyOrSellMenu(false);
+                    skipCount = 0;
                     break;
                 case 3:
                     DisplayMoreAboutCompaniesMenu();
