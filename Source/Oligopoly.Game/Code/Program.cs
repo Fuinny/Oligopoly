@@ -60,6 +60,7 @@ public class Program
     /// <summary>Sets up the environment for the game, including Saves folder creation and console settings (Windows only).</summary>
     private static void SetupConsoleEnvironment()
     {
+        Console.OutputEncoding = Encoding.UTF8;
         if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
         if (OperatingSystem.IsWindows())
         {
