@@ -149,9 +149,9 @@ public class Program
                     new XElement("GameMode", s_gameMode),
                     new XElement("Difficulty", s_gameDifficulty),
                     new XElement("CurrentTurn", s_turnCounter),
-                    new XElement("PlayerMoney", s_playerMoney),
+                    new XElement("PlayerMoney", s_playerMoney.ToString(CultureInfo.CurrentCulture)),
                     new XElement("SharePrices", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice.ToString(CultureInfo.CurrentCulture)))),
-                    new XElement("BuyedShares", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares.ToString(CultureInfo.CurrentCulture))))
+                    new XElement("BuyedShares", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares)))
                 )
             );
 
