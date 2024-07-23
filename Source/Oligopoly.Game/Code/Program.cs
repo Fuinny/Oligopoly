@@ -39,11 +39,17 @@ public class Program
                     GameLoop();
                     break;
                 case 1:
+                    LoadEmbeddedResources();
                     if (LoadGame())
                     {
-                        LoadEmbeddedResources();
                         DisplayGameSetupMenu(true);
                         GameLoop();
+                    }
+                    else
+                    {
+                        s_companies.Clear();
+                        s_events.Clear();
+                        s_globalEvents.Clear();
                     }
                     break;
                 case 2:
