@@ -12,6 +12,7 @@ public class Program
     private static int s_gameMode;
     private static int s_gameDifficulty;
     private static int s_turnCounter;
+    private static int s_skipCounter;
     private static int s_skipTurnLimit;
 
     private static int s_positiveEventChance;
@@ -21,7 +22,6 @@ public class Program
 
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
-
 
     /// <summary>Contains the entry point and main logic of the game.</summary>
     private static void Main()
@@ -148,7 +148,8 @@ public class Program
                 new XElement("SaveFile",
                     new XElement("GameMode", s_gameMode),
                     new XElement("Difficulty", s_gameDifficulty),
-                    new XElement("CurrentTurn", s_turnCounter),
+                    new XElement("TurnCounter", s_turnCounter),
+                    new XElement("SkipCounter", s_skipCounter),
                     new XElement("PlayerMoney", s_playerMoney.ToString(CultureInfo.CurrentCulture)),
                     new XElement("SharePrices", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.SharePrice.ToString(CultureInfo.CurrentCulture)))),
                     new XElement("BuyedShares", s_companies.Select(company => new XElement($"{company.Name.Replace(" ", "_")}", company.NumberOfShares)))
@@ -194,7 +195,8 @@ public class Program
             XDocument saveFile = XDocument.Load(saveFilesPaths[selectedSaveFile]);
             s_gameMode = int.Parse(saveFile.Element("SaveFile").Element("GameMode").Value);
             s_gameDifficulty = int.Parse(saveFile.Element("SaveFile").Element("Difficulty").Value);
-            s_turnCounter = int.Parse(saveFile.Element("SaveFile").Element("CurrentTurn").Value);
+            s_turnCounter = int.Parse(saveFile.Element("SaveFile").Element("TurnCounter").Value);
+            s_skipCounter = int.Parse(saveFile.Element("SaveFile").Element("SkipCounter").Value);
             s_playerMoney = decimal.Parse(saveFile.Element("SaveFile").Element("PlayerMoney").Value);
             var companySharePrices = saveFile.Element("SaveFile").Element("SharePrices").Elements();
             var playerBuyedShares = saveFile.Element("SaveFile").Element("BuyedShares").Elements();
@@ -515,7 +517,11 @@ public class Program
 
     /// <summary>Displays buy or sell menu to the console.</summary>
     /// <param name="isBuying">Determines whether player is buying or selling shares.</param>
-    private static void DisplayBuyOrSellMenu(bool isBuying)
+    /// <returns>
+    /// A <see cref="bool"/> value indicating whether the transaction was made.
+    /// <c>true</c> if the transaction was made; otherwise, <c>false</c> if the transaction was skipped.
+    /// </returns>
+    private static bool DisplayBuyOrSellMenu(bool isBuying)
     {
         StringBuilder prompt = Menu.DrawCompaniesTable(s_companies);
         prompt.AppendLine($"\nYou have: {Math.Round(s_playerMoney, 2):C}");
@@ -533,18 +539,27 @@ public class Program
         Menu buyOrSellMenu = new(prompt.ToString(), options);
         buyOrSellMenu.RunTransactionMenu(ref numberOfSharesToProcess, ref transactionValue, s_playerMoney, s_companies, isBuying);
 
-        for (int i = 0; i < numberOfSharesToProcess.Length; i++)
+        if (numberOfSharesToProcess.All(x => x == 0))
         {
-            if (isBuying)
+            return false;
+        }
+        else
+        {
+            for (int i = 0; i < numberOfSharesToProcess.Length; i++)
             {
-                s_playerMoney -= numberOfSharesToProcess[i] * s_companies[i].SharePrice;
-                s_companies[i].NumberOfShares += numberOfSharesToProcess[i];
+                if (isBuying)
+                {
+                    s_playerMoney -= numberOfSharesToProcess[i] * s_companies[i].SharePrice;
+                    s_companies[i].NumberOfShares += numberOfSharesToProcess[i];
+                }
+                else
+                {
+                    s_playerMoney += numberOfSharesToProcess[i] * s_companies[i].SharePrice;
+                    s_companies[i].NumberOfShares -= numberOfSharesToProcess[i];
+                }
             }
-            else
-            {
-                s_playerMoney += numberOfSharesToProcess[i] * s_companies[i].SharePrice;
-                s_companies[i].NumberOfShares -= numberOfSharesToProcess[i];
-            }
+
+            return true;
         }
     }
 
@@ -552,7 +567,6 @@ public class Program
     private static void GameLoop()
     {
         s_isGameEnded = false;
-        int skipCount = 0;
 
         while (!s_isGameEnded)
         {
@@ -570,7 +584,7 @@ public class Program
                     DisplayPauseMenu();
                     continue;
                 case 0:
-                    if (skipCount == s_skipTurnLimit)
+                    if (s_skipCounter == s_skipTurnLimit)
                     {
                         Console.WriteLine($"\nYou cannot skip more than {s_skipTurnLimit} turns!");
                         Console.ReadKey(true);
@@ -580,16 +594,28 @@ public class Program
                     {
                         UpdateMarketPrices();
                         GenerateRandomEvent();
-                        skipCount++;
+                        s_skipCounter++;
                     }
                     break;
                 case 1:
-                    DisplayBuyOrSellMenu(true);
-                    skipCount = 0;
+                    if (DisplayBuyOrSellMenu(true))
+                    {
+                        s_skipCounter = 0;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                     break;
                 case 2:
-                    DisplayBuyOrSellMenu(false);
-                    skipCount = 0;
+                    if (DisplayBuyOrSellMenu(false))
+                    {
+                        s_skipCounter = 0;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                     break;
                 case 3:
                     DisplayMoreAboutCompaniesMenu();
