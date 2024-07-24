@@ -712,12 +712,14 @@ public class Program
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
                                                                                   
-Your Net Worth is over {WinningNetWorth}$
+Your Net Worth is over {WinningNetWorth:C}
 You have played {s_turnCounter} turns
-Congratulations!";
+Congratulations!
+
+Press E to exit the menu...";
         string[] options = ["Continue"];
         Menu winMenu = new(prompt, options);
-        winMenu.RunMenu();
+        winMenu.RunMenu(ConsoleKey.E);
     }
 
     /// <summary>Displays lose letters to the console.</summary>
@@ -744,13 +746,14 @@ Congratulations!";
 ║ The board of directors of Oligopoly Investments                                ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
                                                                                   
-Your Net Worth dropped below {LosingNetWorth}$
+Your Net Worth dropped below {LosingNetWorth:C}
 You have played {s_turnCounter} turns
 Better luck next time...
-";
+
+Press E to exit the menu...";
         string[] options = ["Continue"];
         Menu winMenu = new(prompt, options);
-        winMenu.RunMenu();
+        winMenu.RunMenu(ConsoleKey.E);
     }
     #endregion
 }

@@ -9,8 +9,12 @@ public class Menu(string prompt, string[] options, bool canBePaused = false, str
     private int _selectedOption;
 
     /// <summary>Displays and updates menu with given prompt and options.</summary>
+    /// <param name="selectionKey">The <see cref="ConsoleKey"/> that finalizes the selection of an option. Defaults to <see cref="ConsoleKey.Enter".</param>
     /// <returns>An <see cref="System.Int32"/> value, that represents selected option index.</returns>
-    public int RunMenu()
+    /// <remarks>
+    /// If the menu can be paused, pressing the 'P' key will return -1.
+    /// </remarks>
+    public int RunMenu(ConsoleKey selectionKey = ConsoleKey.Enter)
     {
         ConsoleKey keyPressed;
 
@@ -61,7 +65,7 @@ public class Menu(string prompt, string[] options, bool canBePaused = false, str
                 case ConsoleKey.P when _canBePaused:
                     return -1;
             }
-        } while (keyPressed != ConsoleKey.Enter);
+        } while (keyPressed != selectionKey);
 
         return _selectedOption;
     }
