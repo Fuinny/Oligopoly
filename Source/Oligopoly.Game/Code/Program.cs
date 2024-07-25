@@ -262,6 +262,53 @@ public class Program
         return mainMenu.RunMenu();
     }
 
+    private static void DisplaySessionInformation()
+    {
+        string currentDifficulty = default;
+        switch (s_gameDifficulty)
+        {
+            case 0:
+                currentDifficulty = "Easy";
+                break;
+            case 1:
+                currentDifficulty = "Normal";
+                break;
+            case 2:
+                currentDifficulty = "Hard";
+                break;
+        }
+
+        string currentGameMode = default;
+        switch (s_gameMode)
+        {
+            case 0:
+                currentGameMode = "Standard";
+                break;
+            case 1:
+                currentGameMode = "Random";
+                break;
+            case 2:
+                currentGameMode = "Custom";
+                break;
+        }
+
+        string prompt = $@"
+ █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗    ███████╗███████╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
+██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔════╝██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
+███████║██████╔╝██║   ██║██║   ██║   ██║       ███████╗█████╗  ███████╗███████╗██║██║   ██║██╔██╗ ██║
+██╔══██║██╔══██╗██║   ██║██║   ██║   ██║       ╚════██║██╔══╝  ╚════██║╚════██║██║██║   ██║██║╚██╗██║
+██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║       ███████║███████╗███████║███████║██║╚██████╔╝██║ ╚████║
+╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+                                                                                                     
+Current turn: {s_turnCounter}
+Current difficulty: {currentDifficulty}
+Current game mode: {currentGameMode}
+";
+        string[] options = ["Back"];
+        Menu aboutSessionMenu = new(prompt, options);
+        aboutSessionMenu.RunMenu();
+    }
+
     /// <summary>Displays pause menu to the console.</summary>
     private static void DisplayPauseMenu()
     {
@@ -274,19 +321,33 @@ public class Program
  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝     ╚═════╝ ╚═╝  ╚═══╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
                            Use up and down arrow keys to select an option                                
 ";
-        string[] options = ["Save", "Load", "Exit"];
+        string[] options = ["Continue", "Save", "Load", "About session", "Exit the Game"];
         Menu pauseMenu = new(prompt, options, true);
-        switch (pauseMenu.RunMenu())
+        bool isPaused = true;
+        while (isPaused)
         {
-            case 0:
-                SaveGame();
-                break;
-            case 1:
-                LoadGame();
-                break;
-            case 2:
-                DisplayExitMenu();
-                break;
+            switch (pauseMenu.RunMenu())
+            {
+                case -1:
+                case 0:
+                    isPaused = false;
+                    break;
+                case 1:
+                    SaveGame();
+                    isPaused = false;
+                    break;
+                case 2:
+                    LoadGame();
+                    isPaused = false;
+                    break;
+                case 3:
+                    DisplaySessionInformation();
+                    break;
+                case 4:
+                    DisplayExitMenu();
+                    isPaused = false;
+                    break;
+            }
         }
     }
 
