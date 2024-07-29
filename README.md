@@ -1,11 +1,11 @@
-<div>
-  <img align="left" src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg" width="128" height="128"/>
+<div align="center">
+  <img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg" width="256" height="256"/>
   <h1>
     Oligopoly
     <br>
     A stock market betting game
   </h1>
-  <p align="left">
+  <p>
     <a href="https://github.com/Fuinny/Oligopoly"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/github-repo.svg" alt="GitHub Repository"></a>
     <a href="https://github.com/dotnet/dotnet-console-games"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/also-available.svg" alt="dotnet-console-games Repository"></a>
     <a href="https://learn.microsoft.com/en-us/dotnet/csharp/"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/c-sharp-language.svg" alt="C Sharp Language"></a>
@@ -96,4 +96,4 @@ If you want to add your content to the game or you are just curious about how th
 I want to give a special thanks to [ZacharyPatten](https://github.com/ZacharyPatten) for creating the web version, as well as improving the code and concept of the game!
 
 ## :balance_scale: License
-This project and [Oligopoly logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg) are licensed under the [MIT License](https://github.com/Fuinny/Oligopoly/blob/main/LICENSE.md).
+This project, [Oligopoly logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg) and [Oligopoly Documentation logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-documentation-logo.svg) are licensed under the [MIT License](https://github.com/Fuinny/Oligopoly/blob/main/LICENSE.md).
