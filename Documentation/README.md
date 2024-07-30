@@ -1,11 +1,11 @@
-<div>
-  <img align="left" src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg" width="128" height="128"/>
+<div align="center">
+  <img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-documentation-logo.svg" width="256" height="256"/>
   <h1>
     Oligopoly
     <br>
     Documentation Hub
   </h1>
-  <p align="left">
+  <p>
     <a href="https://github.com/Fuinny/Oligopoly"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/github-repo.svg" alt="GitHub Repository"></a>
     <a href="https://github.com/dotnet/dotnet-console-games"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/also-available.svg" alt="dotnet-console-games Repository"></a>
     <a href="https://learn.microsoft.com/en-us/dotnet/csharp/"><img src="https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/c-sharp-language.svg" alt="C Sharp Language"></a>
