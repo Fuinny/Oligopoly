@@ -85,15 +85,17 @@ You can start the game using any of these methods:
   > **Note #2:** You can also download the web version from the dotnet console games repository and run it locally.
 </details>
 
-After following any of these methods, you should be able to run Oligopoly in your command line (terminal). If for some reason you didn't succeed, let me know :D
+After following any of these methods, you should be able to run Oligopoly in your command line (terminal).
 
-Also, thanks for playing or trying to play this simple CLI game! It means a lot :P
+If for some reason you didn't succeed, let me know :D
 
 ## :mag_right: Additional information
 If you want to add your content to the game or you are just curious about how the game files are organized for some reason, you can look at this [kind of documentation](https://github.com/Fuinny/Oligopoly/blob/main/Documentation/README.md).
 
 ## :heart: Special thanks
-I want to give a special thanks to [ZacharyPatten](https://github.com/ZacharyPatten) for creating the web version, as well as improving the code and concept of the game!
+I want to give special thanks to [ZacharyPatten](https://github.com/ZacharyPatten) for creating the web version, as well as improving the code and concept of the game!
+
+Also thanks to everyone who helps improve this simple CLI game or just plays it. It really means a lot!
 
 ## :balance_scale: License
 This project, [Oligopoly logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-logo.svg) and [Oligopoly Documentation logo](https://github.com/Fuinny/Oligopoly/blob/main/.github/resources/oligopoly-documentation-logo.svg) are licensed under the [MIT License](https://github.com/Fuinny/Oligopoly/blob/main/LICENSE.md).
