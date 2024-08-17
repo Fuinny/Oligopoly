@@ -23,6 +23,9 @@ public class Program
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
+    private const string PlaysetsPath = "Playsets";
+    private const string SelectedPlaysetPath = "Standard";
+
     /// <summary>Contains the entry point and main logic of the game.</summary>
     private static void Main()
     {
@@ -83,7 +86,7 @@ public class Program
         {
             XDocument xmlDocument;
 
-            xmlDocument = XDocument.Load(Path.Combine("Data", "Companies.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlaysetPath, "Companies.xml"));
             foreach (XElement companyElement in xmlDocument.Root.Elements("Company"))
             {
                 Company currentCompany = new()
@@ -97,7 +100,7 @@ public class Program
                 s_companies.Add(currentCompany);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine("Data", "Events.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlaysetPath, "Events.xml"));
             foreach (XElement eventElement in xmlDocument.Root.Elements("Event"))
             {
                 Event currentEvent = new()
@@ -111,7 +114,7 @@ public class Program
                 s_events.Add(currentEvent);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine("Data", "GlobalEvents.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlaysetPath, "GlobalEvents.xml"));
             foreach (XElement globalEventElement in xmlDocument.Root.Elements("GlobalEvent"))
             {
                 Event currentGlobalEvent = new()
