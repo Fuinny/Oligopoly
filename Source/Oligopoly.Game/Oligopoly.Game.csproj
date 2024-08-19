@@ -1,21 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>exe</OutputType>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>disable</Nullable>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<PublishAot>false</PublishAot>
-		<InvariantGlobalization>false</InvariantGlobalization>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>NET8.0</TargetFramework>
+		<Nullable>Disable</Nullable>
+		<ImplicitUsings>Disable</ImplicitUsings>
+		<PublishAot>False</PublishAot>
+		<InvariantGlobalization>False</InvariantGlobalization>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Update="Data/Companies.xml">
-			<CopyToOutputDirectory>always</CopyToOutputDirectory>
-		</None>
-		<None Update="Data/Events.xml">
-			<CopyToOutputDirectory>always</CopyToOutputDirectory>
-		</None>
-		<None Update="Data/GlobalEvents.xml">
-			<CopyToOutputDirectory>always</CopyToOutputDirectory>
+		<None Include="../../Playsets/**/*">
+			<LinkBase>Playsets</LinkBase>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 </Project>
