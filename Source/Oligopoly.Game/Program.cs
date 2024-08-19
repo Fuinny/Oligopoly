@@ -20,11 +20,14 @@ public class Program
     private static decimal s_netWorth;
     private static decimal s_playerMoney;
 
+    private static string SelectedPlayset = "Standard";
+
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
+    private const string SavesPath = "Saves";
+    private const string SettingsPath = "Settings";
     private const string PlaysetsPath = "Playsets";
-    private const string SelectedPlaysetPath = "Standard";
 
     /// <summary>Contains the entry point and main logic of the game.</summary>
     private static void Main()
@@ -70,12 +73,35 @@ public class Program
     private static void SetupConsoleEnvironment()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
+
         if (OperatingSystem.IsWindows())
         {
             Console.CursorVisible = false;
             Console.BufferWidth = Console.WindowWidth;
             Console.BufferHeight = Console.WindowHeight;
+        }
+
+        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
+        if (!Directory.Exists("Settings")) Directory.CreateDirectory("Settings");
+
+        if (!File.Exists(Path.Combine(SettingsPath, "Settings.xml")))
+        {
+            try
+            {
+                XDocument settingsFile = new(
+                        new XElement("SaveFile",
+                            new XElement("SelectedPlayset", SelectedPlayset),
+                                   new XElement("Difficulty", s_gameDifficulty),
+                                   new XElement("GameMode", s_gameMode)));
+
+                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error! \nDetails: {ex.Message}");
+                Console.WriteLine("\nPress any key to exit the menu...");
+                Console.ReadKey(true);
+            }
         }
     }
 
@@ -86,7 +112,7 @@ public class Program
         {
             XDocument xmlDocument;
 
-            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlaysetPath, "Companies.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlayset, "Companies.xml"));
             foreach (XElement companyElement in xmlDocument.Root.Elements("Company"))
             {
                 Company currentCompany = new()
@@ -100,7 +126,7 @@ public class Program
                 s_companies.Add(currentCompany);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlaysetPath, "Events.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlayset, "Events.xml"));
             foreach (XElement eventElement in xmlDocument.Root.Elements("Event"))
             {
                 Event currentEvent = new()
@@ -114,7 +140,7 @@ public class Program
                 s_events.Add(currentEvent);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlaysetPath, "GlobalEvents.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, SelectedPlayset, "GlobalEvents.xml"));
             foreach (XElement globalEventElement in xmlDocument.Root.Elements("GlobalEvent"))
             {
                 Event currentGlobalEvent = new()
@@ -142,7 +168,7 @@ public class Program
     {
         int saveFileCounter = 1;
         string saveFileName = $"Save_{saveFileCounter}.xml";
-        string saveFilePath = Path.Combine("Saves", saveFileName);
+        string saveFilePath = Path.Combine(SavesPath, saveFileName);
 
         try
         {
@@ -150,7 +176,7 @@ public class Program
             {
                 saveFileCounter++;
                 saveFileName = $"Save_{saveFileCounter}.xml";
-                saveFilePath = Path.Combine("Saves", saveFileName);
+                saveFilePath = Path.Combine(SavesPath, saveFileName);
             }
 
             XDocument saveFile = new(
@@ -184,7 +210,7 @@ public class Program
     /// <summary>Loads the game from already created .xml files from Saves folder.</summary>
     private static bool LoadGame()
     {
-        string[] saveFilesPaths = Directory.GetFiles("Saves", "*.xml");
+        string[] saveFilesPaths = Directory.GetFiles(SavesPath, "*.xml");
         string[] saveFileNames = Array.ConvertAll(saveFilesPaths, Path.GetFileName);
 
         if (saveFilesPaths.Length == 0)
@@ -370,7 +396,7 @@ Current game mode: {currentGameMode}
         if (!isLoading)
         {
             string[] difficultiesOptions = ["Easy", "Normal", "Hard"];
-            string[] difficultiesDescriptions = 
+            string[] difficultiesDescriptions =
             [
                 "The limit of turns you can skip will be set to 10 \n60% chance that the next market event will be POSITIVE",
                 "The limit of turns you can skip will be set to 5 \n50% chance that the next market event will be POSITIVE/NEGATIVE",
@@ -392,7 +418,7 @@ Current game mode: {currentGameMode}
             s_gameDifficulty = difficultiesMenu.RunMenu();
             s_gameMode = gameModesMenu.RunMenu();
 
-            switch(s_gameMode)
+            switch (s_gameMode)
             {
                 case 1:
                     s_playerMoney = Random.Shared.Next(1000, 30001);
@@ -404,14 +430,14 @@ Current game mode: {currentGameMode}
                 case 2:
                     DisplayMoneySetupMenu();
                     break;
-            }    
+            }
         }
 
         switch (s_gameDifficulty)
         {
             case 0:
                 s_skipTurnLimit = 10;
-                s_positiveEventChance = 60; 
+                s_positiveEventChance = 60;
                 break;
             case 1:
                 s_skipTurnLimit = 5;
@@ -531,7 +557,7 @@ Current game mode: {currentGameMode}
             s_netWorth += company.NumberOfShares * company.SharePrice;
         }
     }
-    
+
     /// <summary>Changes the share price of all companies from -3 to 3 per cent.</summary>
     private static void UpdateMarketPrices()
     {
