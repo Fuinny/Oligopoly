@@ -23,11 +23,11 @@ public class Program
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
-    private static string s_selectedPlayset;
+    private static string s_selectedContentPack;
 
-    private const string SavesPath = "Saves";
-    private const string SettingsPath = "Settings";
-    private const string PlaysetsPath = "Playsets";
+    private const string SavesDirectory = "Saves";
+    private const string ContentDirectory = "Content";
+    private const string SettingsDirectory = "Settings";
 
     /// <summary>Contains the entry point and main logic of the game.</summary>
     private static void Main()
@@ -86,17 +86,17 @@ public class Program
         if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
         if (!Directory.Exists("Settings")) Directory.CreateDirectory("Settings");
 
-        if (!File.Exists(Path.Combine(SettingsPath, "Settings.xml")))
+        if (!File.Exists(Path.Combine(SettingsDirectory, "Settings.xml")))
         {
             try
             {
                 XDocument settingsFile = new(
                         new XElement("SettingsFile",
-                            new XElement("SelectedPlayset", s_selectedPlayset),
+                            new XElement("SelectedPlayset", s_selectedContentPack),
                                    new XElement("Difficulty", s_gameDifficulty),
                                    new XElement("GameMode", s_gameMode)));
 
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
             }
             catch (Exception ex)
             {
@@ -113,8 +113,8 @@ public class Program
         {
             s_turnCounter = 1;
             s_playerMoney = 10000.00M;
-            XDocument settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
-            s_selectedPlayset = settingsFile.Element("SettingsFile").Element("SelectedPlayset").Value.ToString();
+            XDocument settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+            s_selectedContentPack = settingsFile.Element("SettingsFile").Element("SelectedPlayset").Value.ToString();
             s_gameMode = int.Parse(settingsFile.Element("SettingsFile").Element("GameMode").Value);
             s_gameDifficulty = int.Parse(settingsFile.Element("SettingsFile").Element("Difficulty").Value);
 
@@ -157,7 +157,7 @@ public class Program
         {
             XDocument xmlDocument;
 
-            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, s_selectedPlayset, "Companies.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "Companies.xml"));
             foreach (XElement companyElement in xmlDocument.Root.Elements("Company"))
             {
                 Company currentCompany = new()
@@ -171,7 +171,7 @@ public class Program
                 s_companies.Add(currentCompany);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, s_selectedPlayset, "Events.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "Events.xml"));
             foreach (XElement eventElement in xmlDocument.Root.Elements("Event"))
             {
                 Event currentEvent = new()
@@ -185,7 +185,7 @@ public class Program
                 s_events.Add(currentEvent);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine(PlaysetsPath, s_selectedPlayset, "GlobalEvents.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "GlobalEvents.xml"));
             foreach (XElement globalEventElement in xmlDocument.Root.Elements("GlobalEvent"))
             {
                 Event currentGlobalEvent = new()
@@ -213,7 +213,7 @@ public class Program
     {
         int saveFileCounter = 1;
         string saveFileName = $"Save_{saveFileCounter}.xml";
-        string saveFilePath = Path.Combine(SavesPath, saveFileName);
+        string saveFilePath = Path.Combine(SavesDirectory, saveFileName);
 
         try
         {
@@ -221,12 +221,12 @@ public class Program
             {
                 saveFileCounter++;
                 saveFileName = $"Save_{saveFileCounter}.xml";
-                saveFilePath = Path.Combine(SavesPath, saveFileName);
+                saveFilePath = Path.Combine(SavesDirectory, saveFileName);
             }
 
             XDocument saveFile = new(
                 new XElement("SaveFile",
-                new XElement("SelectedPlayset", s_selectedPlayset),
+                new XElement("SelectedPlayset", s_selectedContentPack),
                     new XElement("GameMode", s_gameMode),
                     new XElement("Difficulty", s_gameDifficulty),
                     new XElement("TurnCounter", s_turnCounter),
@@ -256,7 +256,7 @@ public class Program
     /// <summary>Loads the game from already created .xml files from Saves folder.</summary>
     private static bool LoadGame()
     {
-        string[] saveFilesPaths = Directory.GetFiles(SavesPath, "*.xml");
+        string[] saveFilesPaths = Directory.GetFiles(SavesDirectory, "*.xml");
         string[] saveFileNames = Array.ConvertAll(saveFilesPaths, Path.GetFileName);
 
         if (saveFilesPaths.Length == 0)
@@ -274,10 +274,20 @@ public class Program
         try
         {
             XDocument saveFile = XDocument.Load(saveFilesPaths[selectedSaveFile]);
-            s_selectedPlayset = saveFile.Element("SaveFile").Element("SelectedPlayset").Value;
-
+            s_selectedContentPack = saveFile.Element("SaveFile").Element("SelectedPlayset").Value;
             LoadEmbeddedResources();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading content pack! \nDetails: {ex.Message}");
+            Console.WriteLine("Press any key to exit the menu...");
+            Console.ReadKey(true);
+            return false;
+        }
 
+        try
+        {
+            XDocument saveFile = XDocument.Load(saveFilesPaths[selectedSaveFile]);
             s_gameMode = int.Parse(saveFile.Element("SaveFile").Element("GameMode").Value);
             s_gameDifficulty = int.Parse(saveFile.Element("SaveFile").Element("Difficulty").Value);
             s_turnCounter = int.Parse(saveFile.Element("SaveFile").Element("TurnCounter").Value);
@@ -341,8 +351,13 @@ public class Program
         return mainMenu.RunMenu();
     }
 
-    private static void DisplaySessionInformation()
+    /// <summary>Displays active settings from Settings.xml file to the console.</summary>
+    private static void DisplayActiveSettingsMenu()
     {
+        XDocument settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+        s_selectedContentPack = settingsFile.Element("SettingsFile").Element("SelectedPlayset").Value.ToString();
+        s_gameMode = int.Parse(settingsFile.Element("SettingsFile").Element("GameMode").Value);
+        s_gameDifficulty = int.Parse(settingsFile.Element("SettingsFile").Element("Difficulty").Value);
         string currentDifficulty = default;
         switch (s_gameDifficulty)
         {
@@ -372,14 +387,14 @@ public class Program
         }
 
         string prompt = $@"
- █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗    ███████╗███████╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
-██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔════╝██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
-███████║██████╔╝██║   ██║██║   ██║   ██║       ███████╗█████╗  ███████╗███████╗██║██║   ██║██╔██╗ ██║
-██╔══██║██╔══██╗██║   ██║██║   ██║   ██║       ╚════██║██╔══╝  ╚════██║╚════██║██║██║   ██║██║╚██╗██║
-██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║       ███████║███████╗███████║███████║██║╚██████╔╝██║ ╚████║
-╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-                                                                                                     
-Current turn: {s_turnCounter}
+ █████╗  ██████╗████████╗██╗██╗   ██╗███████╗    ███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
+██╔══██╗██╔════╝╚══██╔══╝██║██║   ██║██╔════╝    ██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗  ██║██╔════╝ ██╔════╝
+███████║██║        ██║   ██║██║   ██║█████╗      ███████╗█████╗     ██║      ██║   ██║██╔██╗ ██║██║  ███╗███████╗
+██╔══██║██║        ██║   ██║╚██╗ ██╔╝██╔══╝      ╚════██║██╔══╝     ██║      ██║   ██║██║╚██╗██║██║   ██║╚════██║
+██║  ██║╚██████╗   ██║   ██║ ╚████╔╝ ███████╗    ███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
+╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═══╝  ╚══════╝    ╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+                                                                                                                                
+Current content pack: {s_selectedContentPack}
 Current difficulty: {currentDifficulty}
 Current game mode: {currentGameMode}
 ";
@@ -420,7 +435,7 @@ Current game mode: {currentGameMode}
                     isPaused = false;
                     break;
                 case 3:
-                    DisplaySessionInformation();
+                    DisplayActiveSettingsMenu();
                     break;
                 case 4:
                     DisplayExitMenu();
@@ -430,6 +445,7 @@ Current game mode: {currentGameMode}
         }
     }
 
+    /// <summary>Displays settings menu to the console.</summary>
     private static void DisplaySettingsMenu()
     {
         string prompt = @"
@@ -440,7 +456,7 @@ Current game mode: {currentGameMode}
 ███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
 ╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝                                                                
 ";
-        string[] options = ["Change Playset", "Change Difficulty", "Change Game Mode", "Back"];
+        string[] options = ["View Current Settings", "Change Content Pack", "Change Difficulty", "Change Game Mode", "Back"];
         Menu settingsMenu = new(prompt, options);
 
         bool exitSelected = false;
@@ -449,36 +465,40 @@ Current game mode: {currentGameMode}
             switch (settingsMenu.RunMenu())
             {
                 case 0:
-                    DisplayPlaysetsMenu();
+                    DisplayActiveSettingsMenu();
                     break;
                 case 1:
-                    DisplayDifficultyMenu();
+                    DisplayContentPackMenu();
                     break;
                 case 2:
-                    DisplayGameModeMenu();
+                    DisplayDifficultyMenu();
                     break;
                 case 3:
+                    DisplayGameModeMenu();
+                    break;
+                case 4:
                     exitSelected = true;
                     break;
             }
         }
     }
 
-    private static void DisplayPlaysetsMenu()
+    /// <summary>Displays content packs menu to the console.</summary>
+    private static void DisplayContentPackMenu()
     {
         string prompt = @"
-██████╗ ██╗      █████╗ ██╗   ██╗███████╗███████╗████████╗███████╗
-██╔══██╗██║     ██╔══██╗╚██╗ ██╔╝██╔════╝██╔════╝╚══██╔══╝██╔════╝
-██████╔╝██║     ███████║ ╚████╔╝ ███████╗█████╗     ██║   ███████╗
-██╔═══╝ ██║     ██╔══██║  ╚██╔╝  ╚════██║██╔══╝     ██║   ╚════██║
-██║     ███████╗██║  ██║   ██║   ███████║███████╗   ██║   ███████║
-╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚══════╝
+ ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗
+██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝    ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝
+██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║       ██████╔╝███████║██║     █████╔╝ 
+██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║       ██╔═══╝ ██╔══██║██║     ██╔═██╗ 
+╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║       ██║     ██║  ██║╚██████╗██║  ██╗
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
 ";
-        string[] optionsPath = Directory.GetDirectories(PlaysetsPath);
-        string[] options = Array.ConvertAll(optionsPath, Path.GetFileName);
-        string[] descriptions = new string[options.Length];
+        string[] contentPacksPaths = Directory.GetDirectories(ContentDirectory);
+        string[] contentPacksNames = Array.ConvertAll(contentPacksPaths, Path.GetFileName);
+        string[] contentPacksDescriptions = new string[contentPacksNames.Length];
         int i = 0;
-        foreach (var directory in Directory.GetDirectories(PlaysetsPath))
+        foreach (var directory in Directory.GetDirectories(ContentDirectory))
         {
             var descriptionFile = Path.Combine(directory, "_Description.txt");
 
@@ -487,17 +507,18 @@ Current game mode: {currentGameMode}
                 string description = File.ReadAllText(descriptionFile).Trim();
                 string playsetName = Path.GetFileName(directory);
 
-                descriptions[i] = description;
+                contentPacksDescriptions[i] = description;
             }
             i++;
         }
-        Menu playsetsMenu = new(prompt, options, false, descriptions);
-        XDocument settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+        Menu playsetsMenu = new(prompt, contentPacksNames, false, contentPacksDescriptions);
+        XDocument settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
         XElement playsetElement = settingsFile.Root.Element("SelectedPlayset");
-        playsetElement.Value = options[playsetsMenu.RunMenu()].ToString();
-        settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+        playsetElement.Value = contentPacksNames[playsetsMenu.RunMenu()].ToString();
+        settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
     }
 
+    /// <summary>Displays difficulty menu to the console.</summary>
     private static void DisplayDifficultyMenu()
     {
         string prompt = @"
@@ -521,26 +542,27 @@ Current game mode: {currentGameMode}
         switch (difficultiesMenu.RunMenu())
         {
             case 0:
-                settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
                 difficultyElement = settingsFile.Root.Element("Difficulty");
                 difficultyElement.Value = 0.ToString();
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
             case 1:
-                settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
                 difficultyElement = settingsFile.Root.Element("Difficulty");
                 difficultyElement.Value = 1.ToString();
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
             case 2:
-                settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
                 difficultyElement = settingsFile.Root.Element("Difficulty");
                 difficultyElement.Value = 2.ToString();
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
         }
     }
 
+    /// <summary>Displays game mode menu to the console.</summary>
     private static void DisplayGameModeMenu()
     {
         string prompt = @"
@@ -564,22 +586,22 @@ Current game mode: {currentGameMode}
         switch (difficultiesMenu.RunMenu())
         {
             case 0:
-                settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
                 difficultyElement = settingsFile.Root.Element("GameMode");
                 difficultyElement.Value = 0.ToString();
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
             case 1:
-                settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
                 difficultyElement = settingsFile.Root.Element("GameMode");
                 difficultyElement.Value = 1.ToString();
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
             case 2:
-                settingsFile = XDocument.Load(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
                 difficultyElement = settingsFile.Root.Element("GameMode");
                 difficultyElement.Value = 2.ToString();
-                settingsFile.Save(Path.Combine(SettingsPath, "Settings.xml"));
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
         }
     }

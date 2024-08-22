@@ -1,16 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>NET8.0</TargetFramework>
-		<Nullable>Disable</Nullable>
-		<ImplicitUsings>Disable</ImplicitUsings>
-		<PublishAot>False</PublishAot>
-		<InvariantGlobalization>False</InvariantGlobalization>
-	</PropertyGroup>
-	<ItemGroup>
-		<None Include="../../Playsets/**/*">
-			<LinkBase>Playsets</LinkBase>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>NET8.0</TargetFramework>
+        <ImplicitUsings>Disable</ImplicitUsings>
+        <Nullable>Disable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="../../Content/**/*">
+            <LinkBase>Content</LinkBase>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>
