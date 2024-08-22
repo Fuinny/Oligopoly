@@ -92,7 +92,7 @@ public class Program
             {
                 XDocument settingsFile = new(
                         new XElement("SettingsFile",
-                            new XElement("SelectedPlayset", s_selectedContentPack),
+                            new XElement("SelectedPlayset", "Standard"),
                                    new XElement("Difficulty", s_gameDifficulty),
                                    new XElement("GameMode", s_gameMode)));
 
