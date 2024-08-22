@@ -158,6 +158,7 @@ public class Program
             XDocument xmlDocument;
 
             xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "Companies.xml"));
+
             foreach (XElement companyElement in xmlDocument.Root.Elements("Company"))
             {
                 Company currentCompany = new()
@@ -172,6 +173,7 @@ public class Program
             }
 
             xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "Events.xml"));
+
             foreach (XElement eventElement in xmlDocument.Root.Elements("Event"))
             {
                 Event currentEvent = new()
@@ -185,7 +187,9 @@ public class Program
                 s_events.Add(currentEvent);
             }
 
+
             xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "GlobalEvents.xml"));
+          
             foreach (XElement globalEventElement in xmlDocument.Root.Elements("GlobalEvent"))
             {
                 Event currentGlobalEvent = new()
