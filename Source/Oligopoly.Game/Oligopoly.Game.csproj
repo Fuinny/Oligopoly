@@ -8,8 +8,8 @@
 		<InvariantGlobalization>False</InvariantGlobalization>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Include="../../Playsets/**/*">
-			<LinkBase>Playsets</LinkBase>
+		<None Include="../../Content/**/*">
+			<LinkBase>Content</LinkBase>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
