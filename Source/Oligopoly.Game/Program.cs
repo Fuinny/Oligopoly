@@ -23,8 +23,11 @@ public class Program
     private const decimal LosingNetWorth = 2000.00M;
     private const decimal WinningNetWorth = 50000.00M;
 
+    private static string s_selectedContentPack;
+
+    private const string SavesDirectory = "Saves";
     private const string ContentDirectory = "Content";
-    private const string SelectedContentPackDirectory = "Standard";
+    private const string SettingsDirectory = "Settings";
 
     /// <summary>Contains the entry point and main logic of the game.</summary>
     private static void Main()
@@ -36,16 +39,15 @@ public class Program
             switch (DisplayMainMenu())
             {
                 case 0:
+                    InitializeGame(false);
                     LoadEmbeddedResources();
-                    DisplayGameSetupMenu(false);
                     DisplayIntroductionLetter();
                     GameLoop();
                     break;
                 case 1:
-                    LoadEmbeddedResources();
                     if (LoadGame())
                     {
-                        DisplayGameSetupMenu(true);
+                        InitializeGame(true);
                         GameLoop();
                     }
                     else
@@ -56,9 +58,12 @@ public class Program
                     }
                     break;
                 case 2:
-                    DisplayAboutGameMenu();
+                    DisplaySettingsMenu();
                     break;
                 case 3:
+                    DisplayAboutGameMenu();
+                    break;
+                case 4:
                     DisplayExitMenu();
                     break;
             }
@@ -70,12 +75,78 @@ public class Program
     private static void SetupConsoleEnvironment()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
+
         if (OperatingSystem.IsWindows())
         {
             Console.CursorVisible = false;
             Console.BufferWidth = Console.WindowWidth;
             Console.BufferHeight = Console.WindowHeight;
+        }
+
+        if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
+        if (!Directory.Exists("Settings")) Directory.CreateDirectory("Settings");
+
+        if (!File.Exists(Path.Combine(SettingsDirectory, "Settings.xml")))
+        {
+            try
+            {
+                XDocument settingsFile = new(
+                        new XElement("SettingsFile",
+                            new XElement("SelectedPlayset", s_selectedContentPack),
+                                   new XElement("Difficulty", s_gameDifficulty),
+                                   new XElement("GameMode", s_gameMode)));
+
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error! \nDetails: {ex.Message}");
+                Console.WriteLine("\nPress any key to exit the menu...");
+                Console.ReadKey(true);
+            }
+        }
+    }
+
+    private static void InitializeGame(bool isLoading)
+    {
+        if (!isLoading)
+        {
+            s_turnCounter = 1;
+            s_playerMoney = 10000.00M;
+            XDocument settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+            s_selectedContentPack = settingsFile.Element("SettingsFile").Element("SelectedPlayset").Value.ToString();
+            s_gameMode = int.Parse(settingsFile.Element("SettingsFile").Element("GameMode").Value);
+            s_gameDifficulty = int.Parse(settingsFile.Element("SettingsFile").Element("Difficulty").Value);
+
+            switch (s_gameMode)
+            {
+                case 1:
+                    s_playerMoney = Random.Shared.Next(1000, 30001);
+                    foreach (Company company in s_companies)
+                    {
+                        company.SharePrice = Random.Shared.Next(100, 5001);
+                    }
+                    break;
+                case 2:
+                    DisplayMoneySetupMenu();
+                    break;
+            }
+        }
+
+        switch (s_gameDifficulty)
+        {
+            case 0:
+                s_skipTurnLimit = 10;
+                s_positiveEventChance = 60;
+                break;
+            case 1:
+                s_skipTurnLimit = 5;
+                s_positiveEventChance = 50;
+                break;
+            case 2:
+                s_skipTurnLimit = 3;
+                s_positiveEventChance = 40;
+                break;
         }
     }
 
@@ -86,7 +157,8 @@ public class Program
         {
             XDocument xmlDocument;
 
-            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, SelectedContentPackDirectory, "Companies.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "Companies.xml"));
+
             foreach (XElement companyElement in xmlDocument.Root.Elements("Company"))
             {
                 Company currentCompany = new()
@@ -100,7 +172,8 @@ public class Program
                 s_companies.Add(currentCompany);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, SelectedContentPackDirectory, "Events.xml"));
+            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "Events.xml"));
+
             foreach (XElement eventElement in xmlDocument.Root.Elements("Event"))
             {
                 Event currentEvent = new()
@@ -114,7 +187,9 @@ public class Program
                 s_events.Add(currentEvent);
             }
 
-            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, SelectedContentPackDirectory, "GlobalEvents.xml"));
+
+            xmlDocument = XDocument.Load(Path.Combine(ContentDirectory, s_selectedContentPack, "GlobalEvents.xml"));
+          
             foreach (XElement globalEventElement in xmlDocument.Root.Elements("GlobalEvent"))
             {
                 Event currentGlobalEvent = new()
@@ -142,7 +217,7 @@ public class Program
     {
         int saveFileCounter = 1;
         string saveFileName = $"Save_{saveFileCounter}.xml";
-        string saveFilePath = Path.Combine("Saves", saveFileName);
+        string saveFilePath = Path.Combine(SavesDirectory, saveFileName);
 
         try
         {
@@ -150,11 +225,12 @@ public class Program
             {
                 saveFileCounter++;
                 saveFileName = $"Save_{saveFileCounter}.xml";
-                saveFilePath = Path.Combine("Saves", saveFileName);
+                saveFilePath = Path.Combine(SavesDirectory, saveFileName);
             }
 
             XDocument saveFile = new(
                 new XElement("SaveFile",
+                new XElement("SelectedPlayset", s_selectedContentPack),
                     new XElement("GameMode", s_gameMode),
                     new XElement("Difficulty", s_gameDifficulty),
                     new XElement("TurnCounter", s_turnCounter),
@@ -184,7 +260,7 @@ public class Program
     /// <summary>Loads the game from already created .xml files from Saves folder.</summary>
     private static bool LoadGame()
     {
-        string[] saveFilesPaths = Directory.GetFiles("Saves", "*.xml");
+        string[] saveFilesPaths = Directory.GetFiles(SavesDirectory, "*.xml");
         string[] saveFileNames = Array.ConvertAll(saveFilesPaths, Path.GetFileName);
 
         if (saveFilesPaths.Length == 0)
@@ -198,6 +274,20 @@ public class Program
 
         Menu loadMenu = new("Select file to load", saveFileNames);
         int selectedSaveFile = loadMenu.RunMenu();
+
+        try
+        {
+            XDocument saveFile = XDocument.Load(saveFilesPaths[selectedSaveFile]);
+            s_selectedContentPack = saveFile.Element("SaveFile").Element("SelectedPlayset").Value;
+            LoadEmbeddedResources();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading content pack! \nDetails: {ex.Message}");
+            Console.WriteLine("Press any key to exit the menu...");
+            Console.ReadKey(true);
+            return false;
+        }
 
         try
         {
@@ -260,13 +350,18 @@ public class Program
  ╚═════╝ ╚══════╝╚═╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝╚═╝   
            Use up and down arrow keys to select an option             
 ";
-        string[] options = ["Play", "Load", "About", "Exit"];
+        string[] options = ["Play", "Load", "Settings", "About", "Exit"];
         Menu mainMenu = new(prompt, options);
         return mainMenu.RunMenu();
     }
 
-    private static void DisplaySessionInformation()
+    /// <summary>Displays active settings from Settings.xml file to the console.</summary>
+    private static void DisplayActiveSettingsMenu()
     {
+        XDocument settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+        s_selectedContentPack = settingsFile.Element("SettingsFile").Element("SelectedPlayset").Value.ToString();
+        s_gameMode = int.Parse(settingsFile.Element("SettingsFile").Element("GameMode").Value);
+        s_gameDifficulty = int.Parse(settingsFile.Element("SettingsFile").Element("Difficulty").Value);
         string currentDifficulty = default;
         switch (s_gameDifficulty)
         {
@@ -296,14 +391,14 @@ public class Program
         }
 
         string prompt = $@"
- █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗    ███████╗███████╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
-██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔════╝██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
-███████║██████╔╝██║   ██║██║   ██║   ██║       ███████╗█████╗  ███████╗███████╗██║██║   ██║██╔██╗ ██║
-██╔══██║██╔══██╗██║   ██║██║   ██║   ██║       ╚════██║██╔══╝  ╚════██║╚════██║██║██║   ██║██║╚██╗██║
-██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║       ███████║███████╗███████║███████║██║╚██████╔╝██║ ╚████║
-╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝       ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-                                                                                                     
-Current turn: {s_turnCounter}
+ █████╗  ██████╗████████╗██╗██╗   ██╗███████╗    ███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
+██╔══██╗██╔════╝╚══██╔══╝██║██║   ██║██╔════╝    ██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗  ██║██╔════╝ ██╔════╝
+███████║██║        ██║   ██║██║   ██║█████╗      ███████╗█████╗     ██║      ██║   ██║██╔██╗ ██║██║  ███╗███████╗
+██╔══██║██║        ██║   ██║╚██╗ ██╔╝██╔══╝      ╚════██║██╔══╝     ██║      ██║   ██║██║╚██╗██║██║   ██║╚════██║
+██║  ██║╚██████╗   ██║   ██║ ╚████╔╝ ███████╗    ███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
+╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═══╝  ╚══════╝    ╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+                                                                                                                                
+Current content pack: {s_selectedContentPack}
 Current difficulty: {currentDifficulty}
 Current game mode: {currentGameMode}
 ";
@@ -344,7 +439,7 @@ Current game mode: {currentGameMode}
                     isPaused = false;
                     break;
                 case 3:
-                    DisplaySessionInformation();
+                    DisplayActiveSettingsMenu();
                     break;
                 case 4:
                     DisplayExitMenu();
@@ -354,72 +449,163 @@ Current game mode: {currentGameMode}
         }
     }
 
-    /// <summary>Displays game setup menu to the console.</summary>
-    /// <param name="isLoading">Indicates whether the player is loading a saved game or starting a new game.</param>
-    private static void DisplayGameSetupMenu(bool isLoading)
+    /// <summary>Displays settings menu to the console.</summary>
+    private static void DisplaySettingsMenu()
     {
         string prompt = @"
- ██████╗  █████╗ ███╗   ███╗███████╗    ███████╗███████╗████████╗██╗   ██╗██████╗ 
-██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
-██║  ███╗███████║██╔████╔██║█████╗      ███████╗█████╗     ██║   ██║   ██║██████╔╝
-██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝ 
-╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ███████║███████╗   ██║   ╚██████╔╝██║     
- ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝     
-         Customize the game to make it interesting for you to play ;)              
+███████╗███████╗████████╗████████╗██╗███╗   ██╗ ██████╗ ███████╗
+██╔════╝██╔════╝╚══██╔══╝╚══██╔══╝██║████╗  ██║██╔════╝ ██╔════╝
+███████╗█████╗     ██║      ██║   ██║██╔██╗ ██║██║  ███╗███████╗
+╚════██║██╔══╝     ██║      ██║   ██║██║╚██╗██║██║   ██║╚════██║
+███████║███████╗   ██║      ██║   ██║██║ ╚████║╚██████╔╝███████║
+╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝                                                                
 ";
-        if (!isLoading)
+        string[] options = ["View Current Settings", "Change Content Pack", "Change Difficulty", "Change Game Mode", "Back"];
+        Menu settingsMenu = new(prompt, options);
+
+        bool exitSelected = false;
+        while (!exitSelected)
         {
-            string[] difficultiesOptions = ["Easy", "Normal", "Hard"];
-            string[] difficultiesDescriptions = 
+            switch (settingsMenu.RunMenu())
+            {
+                case 0:
+                    DisplayActiveSettingsMenu();
+                    break;
+                case 1:
+                    DisplayContentPackMenu();
+                    break;
+                case 2:
+                    DisplayDifficultyMenu();
+                    break;
+                case 3:
+                    DisplayGameModeMenu();
+                    break;
+                case 4:
+                    exitSelected = true;
+                    break;
+            }
+        }
+    }
+
+    /// <summary>Displays content packs menu to the console.</summary>
+    private static void DisplayContentPackMenu()
+    {
+        string prompt = @"
+ ██████╗ ██████╗ ███╗   ██╗████████╗███████╗███╗   ██╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗
+██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔════╝████╗  ██║╚══██╔══╝    ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝
+██║     ██║   ██║██╔██╗ ██║   ██║   █████╗  ██╔██╗ ██║   ██║       ██████╔╝███████║██║     █████╔╝ 
+██║     ██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██║╚██╗██║   ██║       ██╔═══╝ ██╔══██║██║     ██╔═██╗ 
+╚██████╗╚██████╔╝██║ ╚████║   ██║   ███████╗██║ ╚████║   ██║       ██║     ██║  ██║╚██████╗██║  ██╗
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
+";
+        string[] contentPacksPaths = Directory.GetDirectories(ContentDirectory);
+        string[] contentPacksNames = Array.ConvertAll(contentPacksPaths, Path.GetFileName);
+        string[] contentPacksDescriptions = new string[contentPacksNames.Length];
+        int i = 0;
+        foreach (var directory in Directory.GetDirectories(ContentDirectory))
+        {
+            var descriptionFile = Path.Combine(directory, "_Description.txt");
+
+            if (File.Exists(descriptionFile))
+            {
+                string description = File.ReadAllText(descriptionFile).Trim();
+                string playsetName = Path.GetFileName(directory);
+
+                contentPacksDescriptions[i] = description;
+            }
+            i++;
+        }
+        Menu playsetsMenu = new(prompt, contentPacksNames, false, contentPacksDescriptions);
+        XDocument settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+        XElement playsetElement = settingsFile.Root.Element("SelectedPlayset");
+        playsetElement.Value = contentPacksNames[playsetsMenu.RunMenu()].ToString();
+        settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
+    }
+
+    /// <summary>Displays difficulty menu to the console.</summary>
+    private static void DisplayDifficultyMenu()
+    {
+        string prompt = @"
+██████╗ ██╗███████╗███████╗██╗ ██████╗██╗   ██╗██╗  ████████╗██╗   ██╗
+██╔══██╗██║██╔════╝██╔════╝██║██╔════╝██║   ██║██║  ╚══██╔══╝╚██╗ ██╔╝
+██║  ██║██║█████╗  █████╗  ██║██║     ██║   ██║██║     ██║    ╚████╔╝ 
+██║  ██║██║██╔══╝  ██╔══╝  ██║██║     ██║   ██║██║     ██║     ╚██╔╝  
+██████╔╝██║██║     ██║     ██║╚██████╗╚██████╔╝███████╗██║      ██║   
+╚═════╝ ╚═╝╚═╝     ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝      ╚═╝   
+";
+        string[] options = ["Easy", "Normal", "Hard"];
+        string[] descriptions =
             [
                 "The limit of turns you can skip will be set to 10 \n60% chance that the next market event will be POSITIVE",
                 "The limit of turns you can skip will be set to 5 \n50% chance that the next market event will be POSITIVE/NEGATIVE",
                 "The limit of turns you can skip will be set to 3 \n60% chance that the next market event will be NEGATIVE"
             ];
-            Menu difficultiesMenu = new(prompt, difficultiesOptions, false, difficultiesDescriptions);
+        Menu difficultiesMenu = new(prompt, options, false, descriptions);
+        XDocument settingsFile;
+        XElement difficultyElement;
+        switch (difficultiesMenu.RunMenu())
+        {
+            case 0:
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+                difficultyElement = settingsFile.Root.Element("Difficulty");
+                difficultyElement.Value = 0.ToString();
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
+                break;
+            case 1:
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+                difficultyElement = settingsFile.Root.Element("Difficulty");
+                difficultyElement.Value = 1.ToString();
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
+                break;
+            case 2:
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+                difficultyElement = settingsFile.Root.Element("Difficulty");
+                difficultyElement.Value = 2.ToString();
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
+                break;
+        }
+    }
 
-            string[] gameModesOptions = ["Standard", "Random", "Custom"];
-            string[] gameModesDescriptions =
-            [
+    /// <summary>Displays game mode menu to the console.</summary>
+    private static void DisplayGameModeMenu()
+    {
+        string prompt = @"
+ ██████╗  █████╗ ███╗   ███╗███████╗    ███╗   ███╗ ██████╗ ██████╗ ███████╗
+██╔════╝ ██╔══██╗████╗ ████║██╔════╝    ████╗ ████║██╔═══██╗██╔══██╗██╔════╝
+██║  ███╗███████║██╔████╔██║█████╗      ██╔████╔██║██║   ██║██║  ██║█████╗  
+██║   ██║██╔══██║██║╚██╔╝██║██╔══╝      ██║╚██╔╝██║██║   ██║██║  ██║██╔══╝  
+╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗    ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████╗
+ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
+";
+        string[] options = ["Standard", "Random", "Custom"];
+        string[] descriptions =
+                    [
                 "You start the game with default values",
                 "Your starting amount of money and company share prices will be randomly generated",
                 "You can set the starting amount of money by yourself"
-            ];
-            Menu gameModesMenu = new(prompt, gameModesOptions, false, gameModesDescriptions);
-
-            s_turnCounter = 1;
-            s_playerMoney = 10000.00M;
-            s_gameDifficulty = difficultiesMenu.RunMenu();
-            s_gameMode = gameModesMenu.RunMenu();
-
-            switch(s_gameMode)
-            {
-                case 1:
-                    s_playerMoney = Random.Shared.Next(1000, 30001);
-                    foreach (Company company in s_companies)
-                    {
-                        company.SharePrice = Random.Shared.Next(100, 5001);
-                    }
-                    break;
-                case 2:
-                    DisplayMoneySetupMenu();
-                    break;
-            }    
-        }
-
-        switch (s_gameDifficulty)
+             ];
+        Menu difficultiesMenu = new(prompt, options, false, descriptions);
+        XDocument settingsFile;
+        XElement difficultyElement;
+        switch (difficultiesMenu.RunMenu())
         {
             case 0:
-                s_skipTurnLimit = 10;
-                s_positiveEventChance = 60; 
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+                difficultyElement = settingsFile.Root.Element("GameMode");
+                difficultyElement.Value = 0.ToString();
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
             case 1:
-                s_skipTurnLimit = 5;
-                s_positiveEventChance = 50;
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+                difficultyElement = settingsFile.Root.Element("GameMode");
+                difficultyElement.Value = 1.ToString();
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
             case 2:
-                s_skipTurnLimit = 3;
-                s_positiveEventChance = 40;
+                settingsFile = XDocument.Load(Path.Combine(SettingsDirectory, "Settings.xml"));
+                difficultyElement = settingsFile.Root.Element("GameMode");
+                difficultyElement.Value = 2.ToString();
+                settingsFile.Save(Path.Combine(SettingsDirectory, "Settings.xml"));
                 break;
         }
     }
@@ -531,7 +717,7 @@ Current game mode: {currentGameMode}
             s_netWorth += company.NumberOfShares * company.SharePrice;
         }
     }
-    
+
     /// <summary>Changes the share price of all companies from -3 to 3 per cent.</summary>
     private static void UpdateMarketPrices()
     {
