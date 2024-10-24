@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks":
+    [
+        {
+            "label": "Build Oligopoly Game",
+            "command": "dotnet",
+            "type": "process",
+            "args":
+            [
+                "build",
+                "${workspaceFolder}/src/Oligopoly.Game/Oligopoly.Game.csproj",
+            ]
+        }
+    ]
+}
