@@ -6,7 +6,7 @@
         <Nullable>Disable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="../../Content/**/*">
+        <None Include="../../content/**/*">
             <LinkBase>Content</LinkBase>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

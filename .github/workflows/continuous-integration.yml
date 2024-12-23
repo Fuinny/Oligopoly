@@ -6,7 +6,12 @@ on:
       - main
     paths-ignore:
       - '.github/**'
-      - 'Documentation/**'
+      - 'assets/**'
+      - 'content/**'
+      - 'docs/**'
+      - '.editorconfig'
+      - '.gitattributes'
+      - '.gitignore'
       - 'LICENSE.md'
       - 'README.md'
   pull_request:
@@ -14,7 +19,12 @@ on:
       - main
     paths-ignore:
       - '.github/**'
-      - 'Documentation/**'
+      - 'assets/**'
+      - 'content/**'
+      - 'docs/**'
+      - '.editorconfig'
+      - '.gitattributes'
+      - '.gitignore'
       - 'LICENSE.md'
       - 'README.md'
 jobs:
@@ -27,8 +37,8 @@ jobs:
       with:
         dotnet-version: 9.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: cd src && dotnet restore
     - name: Build
-      run: dotnet build --configuration 'Release' --no-restore
+      run: cd src && dotnet build --configuration 'Release' --no-restore
     - name: Test
-      run: dotnet test --configuration 'Release' --no-build --verbosity normal
+      run: cd src && dotnet test --configuration 'Release' --no-build --verbosity normal
