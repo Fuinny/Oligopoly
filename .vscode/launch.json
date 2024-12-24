@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations":
+    [
+        {
+            "name": "Oligopoly Game",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Oligopoly Game",
+            "program": "${workspaceFolder}/src/Oligopoly.Game/bin/Debug/net8.0/Oligopoly.Game.dll",
+            "cwd": "${workspaceFolder}/src/Oligopoly.Game/bin/Debug/net8.0",
+            "console": "externalTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

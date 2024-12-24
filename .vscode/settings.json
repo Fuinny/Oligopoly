@@ -1,0 +1,10 @@
+{
+    "dotnet.defaultSolution": "Oligopoly.sln",
+    "files.exclude":
+    {
+        "**/.git": true,
+		"**/.vs": true,
+		"**/bin": true,
+		"**/obj": true,
+    }
+}
